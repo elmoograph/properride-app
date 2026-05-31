@@ -13,15 +13,8 @@ import { GarageTabs } from "../../src/features/garage/components/GarageTabs";
 import { GarageSetupList } from "../../src/features/garage/components/GarageSetupList";
 
 import { GarageTimelineList } from "../../src/features/garage/components/GarageTimelineList";
+
 import { GarageGalleryGrid } from "../../src/features/garage/components/GarageGalleryGrid";
-
-function TimelineSection() {
-  return <GarageTimelineList />;
-}
-
-function GallerySection() {
-  return <GarageGalleryGrid />;
-}
 
 export default function GarageScreen() {
   const [activeTab, setActiveTab] = useState("Setup");
@@ -42,8 +35,9 @@ export default function GarageScreen() {
         <GarageStats />
         <GarageTabs activeTab={activeTab} onChangeTab={setActiveTab} />
         {activeTab === "Setup" && <GarageSetupList />}
-        {activeTab === "Timeline" && <TimelineSection />}
-        {activeTab === "Gallery" && <GallerySection />}
+        {activeTab === "Timeline" && <GarageTimelineList />}
+
+        {activeTab === "Gallery" && <GarageGalleryGrid />}
       </View>
     </ScrollView>
   );

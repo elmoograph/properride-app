@@ -1,4 +1,4 @@
-import { View, TextInput } from "react-native";
+import { View, TextInput, Text } from "react-native";
 import { useMemo, useState } from "react";
 
 import { spacing } from "../../../constants/spacing";
@@ -15,7 +15,9 @@ export function GarageTimelineList() {
 
   const filteredTimeline = useMemo(() => {
     return timelineData.filter((item) =>
-      item.title.toLowerCase().includes(search.toLowerCase()),
+      `${item.title} ${item.date} ${item.price}`
+        .toLowerCase()
+        .includes(search.toLowerCase()),
     );
   }, [search]);
 
@@ -63,15 +65,33 @@ export function GarageTimelineList() {
         />
       </View>
 
-      {filteredTimeline.map((item, index) => (
-        <GarageTimelineItem
-          key={item.id}
-          title={item.title}
-          date={item.date}
-          price={item.price}
-          isLast={index === filteredTimeline.length - 1}
-        />
-      ))}
+      {filteredTimeline.length === 0 ? (
+        <View
+          style={{
+            paddingVertical: spacing["4xl"],
+
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: colors.mute,
+            }}
+          >
+            No timeline found
+          </Text>
+        </View>
+      ) : (
+        filteredTimeline.map((item, index) => (
+          <GarageTimelineItem
+            key={item.id}
+            title={item.title}
+            date={item.date}
+            price={item.price}
+            isLast={index === filteredTimeline.length - 1}
+          />
+        ))
+      )}
     </View>
   );
 }

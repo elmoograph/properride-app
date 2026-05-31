@@ -6,7 +6,6 @@ import { typography } from "../../../styles/typography";
 
 import { setupData } from "../data/setup.data";
 
-import { GarageSetupItem } from "./GarageSetupItem";
 import { TouchableOpacity } from "react-native";
 import { radius } from "../../../constants/radius";
 import { GarageSetupSection } from "./GarageSetupSection";
@@ -20,13 +19,6 @@ export function GarageSetupList() {
         paddingHorizontal: spacing.screen,
       }}
     >
-      {/* {setupData.map(() => (
-        <View>
-          {setupData.map((section) => (
-            <GarageSetupSection key={section.title} section={section} />
-          ))}
-        </View>
-      ))} */}
       {setupData.map((section) => (
         <GarageSetupSection key={section.title} section={section} />
       ))}

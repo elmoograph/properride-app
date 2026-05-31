@@ -1,7 +1,5 @@
 import { ScrollView, Text, TouchableOpacity } from "react-native";
 
-import { useState } from "react";
-
 import { colors } from "../../../constants/colors";
 import { radius } from "../../../constants/radius";
 import { spacing } from "../../../constants/spacing";
@@ -9,9 +7,13 @@ import { typography } from "../../../styles/typography";
 
 import { categoriesData } from "../data/categories.data";
 
-export function FeedCategories() {
-  const [active, setActive] = useState("For You");
+type Props = {
+  active: string;
 
+  onChange: (value: string) => void;
+};
+
+export function FeedCategories({ active, onChange }: Props) {
   return (
     <ScrollView
       horizontal
@@ -33,7 +35,7 @@ export function FeedCategories() {
           <TouchableOpacity
             key={item}
             activeOpacity={0.8}
-            onPress={() => setActive(item)}
+            onPress={() => onChange(item)}
             style={{
               backgroundColor: isActive ? colors.lime : colors.grey,
 

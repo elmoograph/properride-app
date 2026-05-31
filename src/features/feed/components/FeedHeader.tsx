@@ -5,7 +5,13 @@ import { spacing } from "../../../constants/spacing";
 import { FeedCategories } from "./FeedCategories";
 import { FeedTopbar } from "./FeedTopbar";
 
-export function FeedHeader() {
+type Props = {
+  activeCategory: string;
+
+  onChangeCategory: (value: string) => void;
+};
+
+export function FeedHeader({ activeCategory, onChangeCategory }: Props) {
   return (
     <View
       style={{
@@ -14,7 +20,7 @@ export function FeedHeader() {
     >
       <FeedTopbar />
 
-      <FeedCategories />
+      <FeedCategories active={activeCategory} onChange={onChangeCategory} />
     </View>
   );
 }

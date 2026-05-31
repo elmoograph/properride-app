@@ -51,7 +51,7 @@ export function FeedPostActions({ likes, comments }: Props) {
       style={{
         paddingHorizontal: spacing.screen,
 
-        marginTop: spacing.lg,
+        marginTop: spacing.md,
 
         flexDirection: "row",
         alignItems: "center",

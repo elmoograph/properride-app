@@ -13,9 +13,17 @@ type Props = {
   time: string;
 
   category: string;
+
+  badge: string;
 };
 
-export function FeedPostHeader({ username, handle, time, category }: Props) {
+export function FeedPostHeader({
+  username,
+  handle,
+  time,
+  category,
+  badge,
+}: Props) {
   return (
     <View
       style={{
@@ -99,7 +107,7 @@ export function FeedPostHeader({ username, handle, time, category }: Props) {
                   color: colors.white,
                 }}
               >
-                Clean Build
+                {badge}
               </Text>
             </View>
           </View>

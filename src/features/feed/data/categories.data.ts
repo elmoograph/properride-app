@@ -5,4 +5,6 @@ export const categoriesData = [
   "Aerox",
   "PCX",
   "Trending",
+  "Vespa",
+  "MT15",
 ];

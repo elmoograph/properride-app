@@ -15,6 +15,8 @@ export type FeedPost = {
 
   time: string;
 
+  badge: string;
+
   category: string;
 
   caption: string;
