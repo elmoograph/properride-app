@@ -10,6 +10,7 @@ import { radius } from "../../../constants/radius";
 import ProfileImage from "../../../../assets/images/profile-photo.jpg";
 import { statsData } from "../data/stats.data";
 import { levelData } from "../data/level.data";
+import { userData } from "../data/user.data";
 
 function StatusItem({
   icon,
@@ -72,7 +73,7 @@ export function GarageProfile() {
         zIndex: 10,
         elevation: 10,
         marginTop: -20,
-        gap: 30,
+        gap: spacing.lg,
       }}
     >
       {/* PROFILE PHOTO */}
@@ -90,8 +91,8 @@ export function GarageProfile() {
           source={ProfileImage}
           resizeMode="cover"
           style={{
-            width: 80,
-            height: 80,
+            width: 72,
+            height: 72,
 
             borderRadius: radius.full,
           }}
@@ -101,30 +102,31 @@ export function GarageProfile() {
       {/* STATUS */}
       <View
         style={{
+          flex: 1,
           flexDirection: "row",
-          alignItems: "center",
-          gap: 30,
 
           flexShrink: 1,
           flexWrap: "wrap",
-          justifyContent: "flex-end",
+          justifyContent: "space-between",
+          rowGap: spacing.lg,
+          marginLeft: spacing.lg,
         }}
       >
         <StatusItem
           icon={<UsersRound size={14} color={colors.lime} />}
-          value="1,247"
+          value={userData.followers}
           label="Followers"
         />
 
         <StatusItem
           icon={<Eye size={14} color={colors.lime} />}
-          value="8,732"
+          value={userData.views}
           label="Views"
         />
 
         <StatusItem
           icon={<Wrench size={14} color={colors.lime} />}
-          value="12"
+          value={userData.parts}
           label="Parts"
         />
       </View>

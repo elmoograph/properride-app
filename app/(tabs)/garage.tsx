@@ -40,7 +40,7 @@ export default function GarageScreen() {
         <GarageIdentity />
         <GarageLevelCard />
         <GarageStats />
-        <GarageTabs activeTab={activeTab} onChangeTab={setActiveTab} /> ```tsx
+        <GarageTabs activeTab={activeTab} onChangeTab={setActiveTab} />
         {activeTab === "Setup" && <GarageSetupList />}
         {activeTab === "Timeline" && <TimelineSection />}
         {activeTab === "Gallery" && <GallerySection />}

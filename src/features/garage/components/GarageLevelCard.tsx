@@ -90,7 +90,7 @@ export function GarageLevelCard() {
         >
           <View
             style={{
-              width: "72%",
+              width: `${levelData.progress}%`,
               height: "100%",
 
               backgroundColor: colors.lime,

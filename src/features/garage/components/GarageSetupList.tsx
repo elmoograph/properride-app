@@ -20,12 +20,15 @@ export function GarageSetupList() {
         paddingHorizontal: spacing.screen,
       }}
     >
-      {setupData.map(() => (
+      {/* {setupData.map(() => (
         <View>
           {setupData.map((section) => (
             <GarageSetupSection key={section.title} section={section} />
           ))}
         </View>
+      ))} */}
+      {setupData.map((section) => (
+        <GarageSetupSection key={section.title} section={section} />
       ))}
       {/* ADD PART BUTTON */}
       <TouchableOpacity

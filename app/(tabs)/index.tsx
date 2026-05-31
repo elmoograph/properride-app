@@ -1,24 +1,37 @@
-import { Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
+
+import { StatusBar } from "expo-status-bar";
 
 import { colors } from "../../src/constants/colors";
-import { typography } from "../../src/styles/typography";
 
-export default function HomeScreen() {
+import { FeedHeader } from "../../src/features/feed/components/FeedHeader";
+import { postsData } from "../../src/features/feed/data/posts.data";
+
+import { FeedPostCard } from "../../src/features/feed/components/FeedPostCard";
+
+export default function FeedScreen() {
   return (
-    <View
-      className="flex-1 items-center justify-center"
-      style={{
-        backgroundColor: colors.primarytext,
-      }}
-    >
-      <Text
+    <>
+      <StatusBar hidden />
+
+      <ScrollView
         style={{
-          ...typography.heading.lg,
-          color: colors.white,
+          flex: 1,
+          backgroundColor: colors.primarytext,
         }}
+        showsVerticalScrollIndicator={false}
       >
-        Feed
-      </Text>
-    </View>
+        <View
+          style={{
+            paddingBottom: 140,
+          }}
+        >
+          <FeedHeader />
+          {postsData.map((post) => (
+            <FeedPostCard key={post.id} post={post} />
+          ))}
+        </View>
+      </ScrollView>
+    </>
   );
 }
