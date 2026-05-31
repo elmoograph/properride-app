@@ -4,6 +4,7 @@ import { colors } from "../../../constants/colors";
 import { radius } from "../../../constants/radius";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
+import { levelData } from "../data/level.data";
 
 export function GarageLevelCard() {
   return (
@@ -11,7 +12,7 @@ export function GarageLevelCard() {
       style={{
         width: "100%",
 
-        marginTop: 30,
+        marginTop: spacing.lg,
 
         paddingHorizontal: spacing.screen,
       }}
@@ -68,7 +69,7 @@ export function GarageLevelCard() {
               color: colors.mute,
             }}
           >
-            3,420 XP
+            {levelData.xp}
           </Text>
         </View>
 
@@ -108,7 +109,7 @@ export function GarageLevelCard() {
             marginTop: 10,
           }}
         >
-          580 XP lagi untuk Level 8
+          {levelData.nextLevel} lagi untuk Level 8
         </Text>
       </View>
     </View>

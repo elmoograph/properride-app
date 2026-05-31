@@ -5,6 +5,7 @@ export const fonts = {
   jakartaBold: "PlusJakartaSans-Bold",
   jakartaExtraBold: "PlusJakartaSans-ExtraBold",
 
+  interLight: "Inter-Light",
   interRegular: "Inter-Regular",
   interMedium: "Inter-Medium",
   interSemiBold: "Inter-SemiBold",

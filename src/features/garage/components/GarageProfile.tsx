@@ -8,6 +8,8 @@ import { typography } from "../../../styles/typography";
 import { radius } from "../../../constants/radius";
 
 import ProfileImage from "../../../../assets/images/profile-photo.jpg";
+import { statsData } from "../data/stats.data";
+import { levelData } from "../data/level.data";
 
 function StatusItem({
   icon,
@@ -101,7 +103,11 @@ export function GarageProfile() {
         style={{
           flexDirection: "row",
           alignItems: "center",
-          gap: 35,
+          gap: 30,
+
+          flexShrink: 1,
+          flexWrap: "wrap",
+          justifyContent: "flex-end",
         }}
       >
         <StatusItem

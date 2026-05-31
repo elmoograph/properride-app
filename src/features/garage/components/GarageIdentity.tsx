@@ -6,6 +6,7 @@ import { colors } from "../../../constants/colors";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
 import { radius } from "../../../constants/radius";
+import { userData } from "../data/user.data";
 
 export function GarageIdentity() {
   return (
@@ -25,9 +26,8 @@ export function GarageIdentity() {
           color: colors.white,
         }}
       >
-        Ryan Kusuma
+        {userData.name}
       </Text>
-
       {/* NICKNAME 
       <Text
         style={{
@@ -37,9 +37,8 @@ export function GarageIdentity() {
           marginTop: 2,
         }}
       >
-        “Scream Machine”
+        {userData.nickname}
       </Text>*/}
-
       {/* USERNAME */}
       <Text
         style={{
@@ -49,10 +48,9 @@ export function GarageIdentity() {
           marginTop: 4,
         }}
       >
-        @ryan_nmax2024 · Jakarta Selatan
+        {userData.username} · {userData.location}
       </Text>
-
-      {/* BUTTON */}
+      {/* BUTTON
       <TouchableOpacity
         activeOpacity={0.8}
         style={{
@@ -82,7 +80,7 @@ export function GarageIdentity() {
         >
           Add Part
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 }

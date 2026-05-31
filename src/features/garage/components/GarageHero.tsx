@@ -8,6 +8,9 @@ import { spacing } from "../../../constants/spacing";
 import { radius } from "../../../constants/radius";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { hp } from "../../../utils/responsive";
+import { statsData } from "../data/stats.data";
+import { bikeData } from "../data/bike.data";
 
 export function GarageHero() {
   const insets = useSafeAreaInsets();
@@ -15,7 +18,7 @@ export function GarageHero() {
     <View
       style={{
         width: "100%",
-        height: 224,
+        height: hp(28),
 
         // borderRadius: 24,
         overflow: "hidden",
@@ -66,7 +69,7 @@ export function GarageHero() {
               color: colors.primarytext,
             }}
           >
-            NMAX 155
+            {bikeData.name}
           </Text>
         </View>
 
