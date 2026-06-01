@@ -30,7 +30,7 @@ export function FeedPostCTA({ totalPrice }: Props) {
 
           borderRadius: radius.sm,
 
-          paddingVertical: spacing.md,
+          paddingVertical: spacing.xs,
 
           flexDirection: "row",
           alignItems: "center",
@@ -43,7 +43,7 @@ export function FeedPostCTA({ totalPrice }: Props) {
 
         <Text
           style={{
-            ...typography.heading.md,
+            ...typography.body.md,
             color: colors.lime,
           }}
         >

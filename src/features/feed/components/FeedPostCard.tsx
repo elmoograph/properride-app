@@ -1,6 +1,8 @@
 import { View } from "react-native";
 
 import { FeedPost } from "../types/feed.types";
+import { router } from "expo-router";
+import { TouchableOpacity } from "react-native";
 
 import { FeedPostActions } from "./FeedPostActions";
 import { FeedPostCaption } from "./FeedPostCaption";
@@ -16,28 +18,33 @@ type Props = {
 
 export function FeedPostCard({ post }: Props) {
   return (
-    <View
-      style={{
-        marginTop: spacing["2xl"],
-        paddingBottom: spacing["2xl"],
-        borderBottomWidth: 1,
-        borderColor: colors.grey,
-      }}
+    <TouchableOpacity
+      activeOpacity={0.96}
+      onPress={() => router.push(`/feed/${post.id}`)}
     >
-      <FeedPostHeader
-        username={post.username}
-        handle={post.handle}
-        time={post.time}
-        category={post.category}
-        badge={post.badge}
-      />
+      <View
+        style={{
+          marginTop: spacing["2xl"],
+          paddingBottom: spacing["2xl"],
+          borderBottomWidth: 1,
+          borderColor: colors.grey,
+        }}
+      >
+        <FeedPostHeader
+          username={post.username}
+          handle={post.handle}
+          time={post.time}
+          category={post.category}
+          badge={post.badge}
+        />
 
-      <FeedPostImage image={post.image} />
+        <FeedPostImage image={post.image} />
 
-      <FeedPostActions likes={post.likes} comments={post.comments} />
+        <FeedPostActions likes={post.likes} comments={post.comments} />
 
-      <FeedPostCaption caption={post.caption} hashtags={post.hashtags} />
-      <FeedPostCTA totalPrice={post.totalPrice} />
-    </View>
+        <FeedPostCaption caption={post.caption} hashtags={post.hashtags} />
+        <FeedPostCTA totalPrice={post.totalPrice} />
+      </View>
+    </TouchableOpacity>
   );
 }

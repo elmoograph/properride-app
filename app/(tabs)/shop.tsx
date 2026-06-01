@@ -17,7 +17,7 @@ export default function ShopScreen() {
           color: colors.white,
         }}
       >
-        Shop
+        Comming Soon
       </Text>
     </View>
   );

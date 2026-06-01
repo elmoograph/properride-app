@@ -17,7 +17,7 @@ export default function ExploreScreen() {
           color: colors.white,
         }}
       >
-        Explore
+        Comming Soon
       </Text>
     </View>
   );
