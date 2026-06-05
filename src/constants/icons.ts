@@ -1,6 +1,13 @@
 export const icons = {
-  xs: 16,
-  sm: 20,
-  md: 24,
-  lg: 32,
+  xs: 12,
+
+  sm: 16,
+
+  md: 20,
+
+  lg: 24,
+
+  xl: 32,
+
+  hero: 48,
 };

@@ -2,9 +2,10 @@ import { TextInput, View } from "react-native";
 
 import { Search } from "lucide-react-native";
 
-import { colors } from "@/constants/colors";
-import { input } from "@/constants/input";
-import { spacing } from "@/constants/spacing";
+import { colors } from "../../constants/colors";
+import { input } from "../../constants/input";
+import { spacing } from "../../constants/spacing";
+import { icons } from "../../constants/icons";
 
 type Props = {
   value: string;
@@ -31,13 +32,13 @@ export function SearchInput({ value, onChangeText }: Props) {
         gap: spacing.sm,
       }}
     >
-      <Search size={18} color={colors.placeholder} />
+      <Search size={icons.sm} color={colors.surface} />
 
       <TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder="Search..."
-        placeholderTextColor={colors.placeholder}
+        placeholderTextColor={colors.surface}
         style={{
           flex: 1,
 

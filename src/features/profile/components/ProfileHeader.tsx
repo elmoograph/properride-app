@@ -5,6 +5,7 @@ import { Settings2 } from "lucide-react-native";
 import { colors } from "../../../constants/colors";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
+import { icons } from "../../../constants/icons";
 
 export function ProfileHeader() {
   return (
@@ -20,14 +21,14 @@ export function ProfileHeader() {
         justifyContent: "space-between",
 
         borderBottomWidth: 1,
-        borderBottomColor: colors.grey,
+        borderBottomColor: colors.surface,
       }}
     >
       {/* TITLE */}
       <Text
         style={{
           ...typography.heading.lg,
-          color: colors.white,
+          color: colors.textPrimary,
         }}
       >
         Profile
@@ -35,7 +36,7 @@ export function ProfileHeader() {
 
       {/* SETTINGS */}
       <TouchableOpacity activeOpacity={0.8}>
-        <Settings2 size={20} color={colors.mute} />
+        <Settings2 size={icons.md} color={colors.surface} />
       </TouchableOpacity>
     </View>
   );

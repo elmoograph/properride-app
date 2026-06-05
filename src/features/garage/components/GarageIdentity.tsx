@@ -22,8 +22,8 @@ export function GarageIdentity() {
       {/* NAME */}
       <Text
         style={{
-          ...typography.display.title,
-          color: colors.white,
+          ...typography.heading.sm,
+          color: colors.textPrimary,
         }}
       >
         {userData.name}
@@ -43,44 +43,13 @@ export function GarageIdentity() {
       <Text
         style={{
           ...typography.body.sm,
-          color: colors.mute,
+          color: colors.surface,
 
           marginTop: 4,
         }}
       >
         {userData.username} · {userData.location}
       </Text>
-      {/* BUTTON
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={{
-          marginTop: 14,
-
-          alignSelf: "flex-start",
-
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 6,
-
-          backgroundColor: colors.lime,
-
-          paddingHorizontal: 14,
-          paddingVertical: 10,
-
-          borderRadius: radius.md,
-        }}
-      >
-        <Plus size={14} color={colors.primarytext} />
-
-        <Text
-          style={{
-            ...typography.label.md,
-            color: colors.primarytext,
-          }}
-        >
-          Add Part
-        </Text>
-      </TouchableOpacity> */}
     </View>
   );
 }

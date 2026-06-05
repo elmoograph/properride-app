@@ -4,6 +4,7 @@ import { BadgeCheck, Tag } from "lucide-react-native";
 
 import { colors } from "../../../constants/colors";
 import { typography } from "../../../styles/typography";
+import { icons } from "../../../constants/icons";
 
 type Props = {
   name: string;
@@ -35,13 +36,13 @@ export function GarageSetupItem({ name, brand, price }: Props) {
           gap: 12,
         }}
       >
-        <BadgeCheck size={16} color={colors.lime} />
+        <BadgeCheck size={icons.sm} color={colors.primary} />
 
         <View>
           <Text
             style={{
               ...typography.body.lg,
-              color: colors.white,
+              color: colors.textPrimary,
             }}
           >
             {name}
@@ -50,7 +51,7 @@ export function GarageSetupItem({ name, brand, price }: Props) {
           <Text
             style={{
               ...typography.caption.md,
-              color: colors.mute,
+              color: colors.surface,
             }}
           >
             {brand}
@@ -69,13 +70,13 @@ export function GarageSetupItem({ name, brand, price }: Props) {
         <Text
           style={{
             ...typography.body.md,
-            color: colors.mute,
+            color: colors.surface,
           }}
         >
           {price}
         </Text>
 
-        <Tag size={16} color={colors.lime} />
+        <Tag size={icons.sm} color={colors.primary} />
       </View>
     </View>
   );

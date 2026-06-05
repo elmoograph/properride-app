@@ -2,11 +2,12 @@ import { Text, View } from "react-native";
 
 import { Bike } from "lucide-react-native";
 
-import { colors } from "@/constants/colors";
-import { spacing } from "@/constants/spacing";
+import { colors } from "../../constants/colors";
+import { spacing } from "../../constants/spacing";
 
 import { Button } from "./Button";
-import { typography } from "@/styles/typography";
+import { typography } from "../../styles/typography";
+import { icons } from "../../constants/icons";
 
 type Props = {
   title: string;
@@ -32,7 +33,7 @@ export function EmptyState({
         alignItems: "center",
       }}
     >
-      <Bike size={48} color={colors.primary} />
+      <Bike size={icons.hero} color={colors.primary} />
 
       <Text
         style={{

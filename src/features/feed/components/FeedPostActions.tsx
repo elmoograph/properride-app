@@ -5,6 +5,7 @@ import { Bookmark, Heart, MessageCircle, Share2 } from "lucide-react-native";
 import { colors } from "../../../constants/colors";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
+import { icons } from "../../../constants/icons";
 
 type Props = {
   likes: string;
@@ -35,7 +36,7 @@ function ActionItem({
         <Text
           style={{
             ...typography.body.md,
-            color: colors.mute,
+            color: colors.surface,
           }}
         >
           {value}
@@ -68,20 +69,20 @@ export function FeedPostActions({ likes, comments }: Props) {
         }}
       >
         <ActionItem
-          icon={<Heart size={22} color={colors.mute} />}
+          icon={<Heart size={icons.md} color={colors.surface} />}
           value={likes}
         />
 
         <ActionItem
-          icon={<MessageCircle size={22} color={colors.mute} />}
+          icon={<MessageCircle size={icons.md} color={colors.surface} />}
           value={comments}
         />
 
-        <ActionItem icon={<Share2 size={20} color={colors.mute} />} />
+        <ActionItem icon={<Share2 size={icons.md} color={colors.surface} />} />
       </View>
 
       {/* RIGHT */}
-      <Bookmark size={20} color={colors.mute} />
+      <Bookmark size={icons.md} color={colors.surface} />
     </View>
   );
 }

@@ -12,6 +12,7 @@ import { SetupSection } from "../types/garage.types";
 
 import { GarageSetupItem } from "./GarageSetupItem";
 import { spacing } from "../../../constants/spacing";
+import { icons } from "../../../constants/icons";
 
 type Props = {
   section: SetupSection;
@@ -62,14 +63,14 @@ export function GarageSetupSection({ section }: Props) {
 
               borderRadius: 999,
 
-              backgroundColor: colors.lime,
+              backgroundColor: colors.primary,
             }}
           />
 
           <Text
             style={{
               ...typography.heading.md,
-              color: colors.white,
+              color: colors.textPrimary,
             }}
           >
             {section.title}
@@ -78,9 +79,9 @@ export function GarageSetupSection({ section }: Props) {
 
         {/* ICON */}
         {collapsed ? (
-          <ChevronRight size={18} color={colors.mute} />
+          <ChevronRight size={icons.sm} color={colors.surface} />
         ) : (
-          <ChevronDown size={18} color={colors.mute} />
+          <ChevronDown size={icons.sm} color={colors.surface} />
         )}
       </TouchableOpacity>
 

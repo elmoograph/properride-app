@@ -5,6 +5,7 @@ import { ChevronRight } from "lucide-react-native";
 import { colors } from "../../../constants/colors";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
+import { icons } from "../../../constants/icons";
 
 type Props = {
   icon: React.ReactNode;
@@ -62,7 +63,7 @@ export function ProfileMenuItem({ icon, title, count }: Props) {
           style={{
             ...typography.heading.md,
 
-            color: colors.white,
+            color: colors.textPrimary,
           }}
         >
           {title}
@@ -94,16 +95,16 @@ export function ProfileMenuItem({ icon, title, count }: Props) {
         >
           <Text
             style={{
-              ...typography.label.sm,
+              ...typography.caption.md,
 
-              color: colors.white,
+              color: colors.textPrimary,
             }}
           >
             {count}
           </Text>
         </View>
 
-        <ChevronRight size={16} color={colors.mute} />
+        <ChevronRight size={icons.md} color={colors.surface} />
       </View>
     </TouchableOpacity>
   );

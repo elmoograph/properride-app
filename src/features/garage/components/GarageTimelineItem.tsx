@@ -5,6 +5,7 @@ import { Clock3 } from "lucide-react-native";
 import { colors } from "../../../constants/colors";
 import { radius } from "../../../constants/radius";
 import { typography } from "../../../styles/typography";
+import { icons } from "../../../constants/icons";
 
 type Props = {
   title: string;
@@ -39,7 +40,7 @@ export function GarageTimelineItem({ title, date, price, isLast }: Props) {
 
             borderRadius: 999,
 
-            backgroundColor: colors.lime,
+            backgroundColor: colors.primary,
 
             marginTop: 18,
           }}
@@ -94,7 +95,7 @@ export function GarageTimelineItem({ title, date, price, isLast }: Props) {
             <Text
               style={{
                 ...typography.heading.md,
-                color: colors.white,
+                color: colors.textPrimary,
               }}
             >
               {title}
@@ -111,12 +112,12 @@ export function GarageTimelineItem({ title, date, price, isLast }: Props) {
                 marginTop: 10,
               }}
             >
-              <Clock3 size={12} color={colors.mute} />
+              <Clock3 size={icons.xs} color={colors.surface} />
 
               <Text
                 style={{
                   ...typography.caption.md,
-                  color: colors.mute,
+                  color: colors.surface,
                 }}
               >
                 {date}
@@ -128,7 +129,7 @@ export function GarageTimelineItem({ title, date, price, isLast }: Props) {
           <Text
             style={{
               ...typography.heading.md,
-              color: colors.lime,
+              color: colors.primary,
             }}
           >
             {price}

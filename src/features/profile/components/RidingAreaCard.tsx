@@ -6,6 +6,7 @@ import { colors } from "../../../constants/colors";
 import { radius } from "../../../constants/radius";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
+import { icons } from "../../../constants/icons";
 
 export function RidingAreaCard() {
   return (
@@ -34,13 +35,13 @@ export function RidingAreaCard() {
           gap: spacing.sm,
         }}
       >
-        <MapPin size={16} color={colors.lime} />
+        <MapPin size={icons.sm} color={colors.primary} />
 
         <Text
           style={{
             ...typography.heading.md,
 
-            color: colors.white,
+            color: colors.textPrimary,
           }}
         >
           Riding Area
@@ -66,9 +67,9 @@ export function RidingAreaCard() {
       >
         <Text
           style={{
-            ...typography.label.md,
+            ...typography.caption.md,
 
-            color: colors.lime,
+            color: colors.primary,
           }}
         >
           Jakarta Selatan
@@ -80,7 +81,7 @@ export function RidingAreaCard() {
         style={{
           ...typography.body.md,
 
-          color: colors.mute,
+          color: colors.surface,
 
           marginTop: spacing.md,
         }}

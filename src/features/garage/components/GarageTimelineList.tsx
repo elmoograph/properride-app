@@ -9,6 +9,7 @@ import { GarageTimelineItem } from "./GarageTimelineItem";
 import { Search } from "lucide-react-native";
 import { colors } from "../../../constants/colors";
 import { radius } from "../../../constants/radius";
+import { icons } from "../../../constants/icons";
 
 export function GarageTimelineList() {
   const [search, setSearch] = useState("");
@@ -50,17 +51,17 @@ export function GarageTimelineList() {
           gap: spacing.md,
         }}
       >
-        <Search size={18} color={colors.mute} />
+        <Search size={icons.sm} color={colors.surface} />
 
         <TextInput
           value={search}
           onChangeText={setSearch}
           placeholder="Search timeline..."
-          placeholderTextColor={colors.mute}
+          placeholderTextColor={colors.surface}
           style={{
             flex: 1,
 
-            color: colors.white,
+            color: colors.textPrimary,
           }}
         />
       </View>
@@ -75,7 +76,7 @@ export function GarageTimelineList() {
         >
           <Text
             style={{
-              color: colors.mute,
+              color: colors.surface,
             }}
           >
             No timeline found

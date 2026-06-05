@@ -5,6 +5,7 @@ import { Bell, Search } from "lucide-react-native";
 import { colors } from "../../../constants/colors";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
+import { icons } from "../../../constants/icons";
 
 export function FeedTopbar() {
   return (
@@ -20,14 +21,14 @@ export function FeedTopbar() {
       {/* LOGO */}
       <Text
         style={{
-          ...typography.display.title,
-          color: colors.white,
+          ...typography.heading.sm,
+          color: colors.textPrimary,
         }}
       >
         Proper
         <Text
           style={{
-            color: colors.lime,
+            color: colors.primary,
           }}
         >
           Ride
@@ -43,10 +44,10 @@ export function FeedTopbar() {
           gap: spacing.lg,
         }}
       >
-        <Search size={22} color={colors.white} />
+        <Search size={icons.md} color={colors.textPrimary} />
 
         <View>
-          <Bell size={22} color={colors.white} />
+          <Bell size={icons.md} color={colors.textPrimary} />
 
           {/* NOTIFICATION DOT */}
           <View
@@ -61,7 +62,7 @@ export function FeedTopbar() {
 
               borderRadius: 999,
 
-              backgroundColor: colors.lime,
+              backgroundColor: colors.textPrimary,
             }}
           />
         </View>

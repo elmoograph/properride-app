@@ -10,6 +10,7 @@ import { typography } from "../../../styles/typography";
 import { profileData } from "../data/profile.data";
 
 import HeroImage from "../../../../assets/images/feed/feed-1.jpg";
+import { icons } from "../../../constants/icons";
 
 function StatCard({
   icon,
@@ -45,7 +46,7 @@ function StatCard({
         <Text
           style={{
             ...typography.body.md,
-            color: colors.white,
+            color: colors.textPrimary,
           }}
         >
           {value}
@@ -55,7 +56,7 @@ function StatCard({
       <Text
         style={{
           ...typography.caption.md,
-          color: colors.mute,
+          color: colors.surface,
         }}
       >
         {label}
@@ -72,12 +73,12 @@ export function ProfileHero() {
 
         marginHorizontal: spacing.screen,
 
-        backgroundColor: colors.primarytext,
+        backgroundColor: colors.background,
 
         borderRadius: radius.lg,
 
         borderWidth: 1,
-        borderColor: colors.grey,
+        borderColor: colors.surface,
 
         overflow: "hidden",
       }}
@@ -118,10 +119,10 @@ export function ProfileHero() {
 
               borderRadius: radius.full,
 
-              backgroundColor: colors.lime,
+              backgroundColor: colors.primary,
 
               borderWidth: 4,
-              borderColor: colors.primarytext,
+              borderColor: colors.background,
 
               alignItems: "center",
               justifyContent: "center",
@@ -130,7 +131,7 @@ export function ProfileHero() {
             <Text
               style={{
                 ...typography.heading.xl,
-                color: colors.primarytext,
+                color: colors.background,
               }}
             >
               {profileData.avatar}
@@ -143,10 +144,10 @@ export function ProfileHero() {
             style={{
               //   marginTop: 44,
 
-              backgroundColor: colors.primarytext,
+              backgroundColor: colors.background,
 
               borderWidth: 1,
-              borderColor: colors.grey,
+              borderColor: colors.surface,
 
               borderRadius: radius.sm,
 
@@ -157,8 +158,8 @@ export function ProfileHero() {
           >
             <Text
               style={{
-                ...typography.label.md,
-                color: colors.white,
+                ...typography.caption.md,
+                color: colors.textPrimary,
               }}
             >
               Edit Profile
@@ -175,7 +176,7 @@ export function ProfileHero() {
           <Text
             style={{
               ...typography.heading.xl,
-              color: colors.white,
+              color: colors.textPrimary,
             }}
           >
             {profileData.name}
@@ -184,7 +185,7 @@ export function ProfileHero() {
           <Text
             style={{
               ...typography.body.md,
-              color: colors.lime,
+              color: colors.primary,
 
               marginTop: spacing.xs,
             }}
@@ -202,12 +203,12 @@ export function ProfileHero() {
               gap: spacing.xs,
             }}
           >
-            <MapPin size={14} color={colors.mute} />
+            <MapPin size={icons.xs} color={colors.surface} />
 
             <Text
               style={{
                 ...typography.caption.md,
-                color: colors.mute,
+                color: colors.surface,
               }}
             >
               {profileData.location}
@@ -226,19 +227,19 @@ export function ProfileHero() {
           }}
         >
           <StatCard
-            icon={<UsersRound size={14} color={colors.lime} />}
+            icon={<UsersRound size={icons.xs} color={colors.primary} />}
             value={profileData.stats.followers}
             label="Followers"
           />
 
           <StatCard
-            icon={<Heart size={14} color={colors.lime} />}
+            icon={<Heart size={icons.xs} color={colors.primary} />}
             value={profileData.stats.likes}
             label="Likes"
           />
 
           <StatCard
-            icon={<Star size={14} color={colors.lime} />}
+            icon={<Star size={icons.xs} color={colors.primary} />}
             value={profileData.stats.garage}
             label="Garage"
           />

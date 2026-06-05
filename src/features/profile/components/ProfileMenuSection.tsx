@@ -7,6 +7,7 @@ import { radius } from "../../../constants/radius";
 import { spacing } from "../../../constants/spacing";
 
 import { ProfileMenuItem } from "./ProfileMenuItem";
+import { icons } from "../../../constants/icons";
 
 export function ProfileMenuSection() {
   return (
@@ -27,19 +28,19 @@ export function ProfileMenuSection() {
       }}
     >
       <ProfileMenuItem
-        icon={<Bookmark size={18} color={colors.lime} />}
+        icon={<Bookmark size={icons.sm} color={colors.primary} />}
         title="Saved Setups"
         count="12"
       />
 
       <ProfileMenuItem
-        icon={<Heart size={18} color={colors.lime} />}
+        icon={<Heart size={icons.sm} color={colors.primary} />}
         title="Wishlist"
         count="7"
       />
 
       <ProfileMenuItem
-        icon={<UsersRound size={18} color={colors.lime} />}
+        icon={<UsersRound size={icons.sm} color={colors.primary} />}
         title="Following"
         count="34"
       />

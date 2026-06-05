@@ -12,6 +12,7 @@ import { spacing } from "../../src/constants/spacing";
 import { typography } from "../../src/styles/typography";
 
 import { postsData } from "../../src/features/feed/data/posts.data";
+import { icons } from "../../src/constants/icons";
 
 export default function FeedDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -29,7 +30,7 @@ export default function FeedDetailScreen() {
       <View
         style={{
           flex: 1,
-          backgroundColor: colors.primarytext,
+          backgroundColor: colors.textPrimary,
         }}
       >
         {/* BACK BUTTON */}
@@ -55,7 +56,7 @@ export default function FeedDetailScreen() {
             justifyContent: "center",
           }}
         >
-          <ArrowLeft size={20} color={colors.white} />
+          <ArrowLeft size={icons.md} color={colors.textPrimary} />
         </TouchableOpacity>
 
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -74,7 +75,7 @@ export default function FeedDetailScreen() {
             style={{
               marginTop: -28,
 
-              backgroundColor: colors.primarytext,
+              backgroundColor: colors.background,
 
               borderTopLeftRadius: spacing["3xl"],
 
@@ -98,8 +99,8 @@ export default function FeedDetailScreen() {
             >
               <Text
                 style={{
-                  ...typography.label.md,
-                  color: colors.lime,
+                  ...typography.caption.md,
+                  color: colors.primary,
                 }}
               >
                 {post.category}
@@ -111,7 +112,7 @@ export default function FeedDetailScreen() {
               style={{
                 ...typography.heading.lg,
 
-                color: colors.white,
+                color: colors.textPrimary,
 
                 marginTop: spacing.sm,
               }}
@@ -124,7 +125,7 @@ export default function FeedDetailScreen() {
               style={{
                 ...typography.body.md,
 
-                color: colors.mute,
+                color: colors.surface,
 
                 marginTop: spacing.xs,
               }}
@@ -137,7 +138,7 @@ export default function FeedDetailScreen() {
               style={{
                 ...typography.body.md,
 
-                color: colors.white,
+                color: colors.textPrimary,
 
                 lineHeight: spacing.screen,
 
@@ -152,7 +153,7 @@ export default function FeedDetailScreen() {
               style={{
                 ...typography.body.md,
 
-                color: colors.lime,
+                color: colors.primary,
 
                 marginTop: spacing.sm,
               }}
@@ -166,7 +167,7 @@ export default function FeedDetailScreen() {
               style={{
                 marginTop: spacing["3xl"],
 
-                backgroundColor: colors.lime,
+                backgroundColor: colors.primary,
 
                 borderRadius: radius.xl,
 
@@ -179,13 +180,13 @@ export default function FeedDetailScreen() {
                 gap: spacing.md,
               }}
             >
-              <Bolt size={18} color={colors.primarytext} />
+              <Bolt size={icons.sm} color={colors.textPrimary} />
 
               <Text
                 style={{
                   ...typography.heading.md,
 
-                  color: colors.primarytext,
+                  color: colors.textPrimary,
                 }}
               >
                 Build This Setup — {post.totalPrice}

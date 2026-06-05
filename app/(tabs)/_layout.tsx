@@ -10,6 +10,7 @@ import {
 
 import { colors } from "../../src/constants/colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { icons } from "../../src/constants/icons";
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
@@ -20,15 +21,15 @@ export default function TabsLayout() {
 
         tabBarShowLabel: true,
 
-        tabBarActiveTintColor: colors.lime,
+        tabBarActiveTintColor: colors.primary,
 
-        tabBarInactiveTintColor: colors.white,
+        tabBarInactiveTintColor: colors.textPrimary,
 
         tabBarStyle: {
-          backgroundColor: colors.primarytext,
+          backgroundColor: colors.background,
 
           borderTopWidth: 1,
-          borderTopColor: colors.lime,
+          borderTopColor: colors.primary,
 
           // paddingHorizontal: 20,
           paddingTop: 5,
@@ -48,7 +49,7 @@ export default function TabsLayout() {
         options={{
           title: "home",
 
-          tabBarIcon: ({ color }) => <House size={22} color={color} />,
+          tabBarIcon: ({ color }) => <House size={icons.sm} color={color} />,
         }}
       />
 
@@ -57,7 +58,7 @@ export default function TabsLayout() {
         options={{
           title: "explore",
 
-          tabBarIcon: ({ color }) => <Compass size={22} color={color} />,
+          tabBarIcon: ({ color }) => <Compass size={icons.md} color={color} />,
         }}
       />
 
@@ -66,7 +67,7 @@ export default function TabsLayout() {
         options={{
           title: "garage",
 
-          tabBarIcon: ({ color }) => <Wrench size={22} color={color} />,
+          tabBarIcon: ({ color }) => <Wrench size={icons.md} color={color} />,
         }}
       />
 
@@ -75,7 +76,9 @@ export default function TabsLayout() {
         options={{
           title: "shop",
 
-          tabBarIcon: ({ color }) => <ShoppingBag size={22} color={color} />,
+          tabBarIcon: ({ color }) => (
+            <ShoppingBag size={icons.md} color={color} />
+          ),
         }}
       />
 
@@ -85,7 +88,7 @@ export default function TabsLayout() {
           title: "profile",
 
           tabBarIcon: ({ color }) => (
-            <CircleUserRound size={22} color={color} />
+            <CircleUserRound size={icons.md} color={color} />
           ),
         }}
       />

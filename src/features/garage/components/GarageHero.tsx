@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { hp } from "../../../utils/responsive";
 import { statsData } from "../data/stats.data";
 import { bikeData } from "../data/bike.data";
+import { icons } from "../../../constants/icons";
 
 export function GarageHero() {
   const insets = useSafeAreaInsets();
@@ -54,7 +55,7 @@ export function GarageHero() {
         {/* MOTOR TYPE */}
         <View
           style={{
-            backgroundColor: colors.lime,
+            backgroundColor: colors.primary,
 
             paddingHorizontal: 12,
             paddingVertical: 4,
@@ -66,7 +67,7 @@ export function GarageHero() {
             style={{
               ...typography.body.sm,
 
-              color: colors.primarytext,
+              color: colors.textPrimary,
             }}
           >
             {bikeData.name}
@@ -89,13 +90,13 @@ export function GarageHero() {
             borderRadius: radius.sm,
           }}
         >
-          <Settings2 size={14} color={colors.white} />
+          <Settings2 size={icons.xs} color={colors.textPrimary} />
 
           <Text
             style={{
               ...typography.body.sm,
 
-              color: colors.white,
+              color: colors.textPrimary,
             }}
           >
             Edit Garage

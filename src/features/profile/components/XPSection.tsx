@@ -8,6 +8,7 @@ import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
 
 import { profileXPData } from "../data/profile-xp.data";
+import { icons } from "../../../constants/icons";
 
 export function XPSection() {
   const progress = profileXPData.currentXP / profileXPData.nextLevelXP;
@@ -65,7 +66,7 @@ export function XPSection() {
               style={{
                 ...typography.heading.md,
 
-                color: colors.lime,
+                color: colors.primary,
               }}
             >
               {profileXPData.level}
@@ -78,7 +79,7 @@ export function XPSection() {
               style={{
                 ...typography.heading.md,
 
-                color: colors.white,
+                color: colors.textPrimary,
               }}
             >
               Level
@@ -89,7 +90,7 @@ export function XPSection() {
               style={{
                 ...typography.body.md,
 
-                color: colors.mute,
+                color: colors.surface,
 
                 marginTop: 2,
               }}
@@ -104,7 +105,7 @@ export function XPSection() {
           style={{
             ...typography.heading.lg,
 
-            color: colors.lime,
+            color: colors.primary,
           }}
         >
           {profileXPData.currentXP.toLocaleString()} XP
@@ -135,7 +136,7 @@ export function XPSection() {
 
               height: "100%",
 
-              backgroundColor: colors.lime,
+              backgroundColor: colors.primary,
             }}
           />
         </View>
@@ -154,7 +155,7 @@ export function XPSection() {
             style={{
               ...typography.caption.md,
 
-              color: colors.mute,
+              color: colors.surface,
             }}
           >
             {profileXPData.currentXP.toLocaleString()} XP
@@ -164,7 +165,7 @@ export function XPSection() {
             style={{
               ...typography.caption.md,
 
-              color: colors.mute,
+              color: colors.surface,
             }}
           >
             {profileXPData.nextLevelXP} XP untuk Level {profileXPData.level + 1}
@@ -202,7 +203,7 @@ export function XPSection() {
             justifyContent: "center",
           }}
         >
-          <Map size={24} color={colors.lime} />
+          <Map size={icons.lg} color={colors.primary} />
         </View>
 
         {/* TEXT */}
@@ -211,7 +212,7 @@ export function XPSection() {
             style={{
               ...typography.caption.md,
 
-              color: colors.mute,
+              color: colors.surface,
             }}
           >
             Next Badge:
@@ -221,7 +222,7 @@ export function XPSection() {
             style={{
               ...typography.body.lg,
 
-              color: colors.white,
+              color: colors.textPrimary,
 
               marginTop: 2,
             }}
@@ -231,9 +232,9 @@ export function XPSection() {
 
           <Text
             style={{
-              ...typography.label.sm,
+              ...typography.caption.md,
 
-              color: colors.mute,
+              color: colors.surface,
 
               marginTop: 2,
             }}

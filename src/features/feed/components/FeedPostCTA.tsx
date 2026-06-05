@@ -6,6 +6,7 @@ import { colors } from "../../../constants/colors";
 import { radius } from "../../../constants/radius";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
+import { icons } from "../../../constants/icons";
 
 type Props = {
   totalPrice: string;
@@ -39,12 +40,12 @@ export function FeedPostCTA({ totalPrice }: Props) {
           gap: spacing.md,
         }}
       >
-        <Bolt size={16} color={colors.lime} />
+        <Bolt size={icons.sm} color={colors.primary} />
 
         <Text
           style={{
             ...typography.body.md,
-            color: colors.lime,
+            color: colors.primary,
           }}
         >
           Build This Setup — {totalPrice}

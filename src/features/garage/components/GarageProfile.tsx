@@ -11,6 +11,7 @@ import ProfileImage from "../../../../assets/images/profile-photo.jpg";
 import { statsData } from "../data/stats.data";
 import { levelData } from "../data/level.data";
 import { userData } from "../data/user.data";
+import { icons } from "../../../constants/icons";
 
 function StatusItem({
   icon,
@@ -40,7 +41,7 @@ function StatusItem({
         <Text
           style={{
             ...typography.heading.md,
-            color: colors.white,
+            color: colors.textPrimary,
           }}
         >
           {value}
@@ -49,8 +50,8 @@ function StatusItem({
 
       <Text
         style={{
-          ...typography.caption.sm,
-          color: colors.mute,
+          ...typography.caption.md,
+          color: colors.surface,
         }}
       >
         {label}
@@ -82,7 +83,7 @@ export function GarageProfile() {
           padding: 4,
 
           borderWidth: 2,
-          borderColor: colors.lime,
+          borderColor: colors.primary,
 
           borderRadius: radius.full,
         }}
@@ -113,19 +114,19 @@ export function GarageProfile() {
         }}
       >
         <StatusItem
-          icon={<UsersRound size={14} color={colors.lime} />}
+          icon={<UsersRound size={icons.xs} color={colors.primary} />}
           value={userData.followers}
           label="Followers"
         />
 
         <StatusItem
-          icon={<Eye size={14} color={colors.lime} />}
+          icon={<Eye size={icons.xs} color={colors.primary} />}
           value={userData.views}
           label="Views"
         />
 
         <StatusItem
-          icon={<Wrench size={14} color={colors.lime} />}
+          icon={<Wrench size={icons.xs} color={colors.primary} />}
           value={userData.parts}
           label="Parts"
         />

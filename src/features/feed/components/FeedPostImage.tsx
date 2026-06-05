@@ -5,6 +5,7 @@ import { Bolt } from "lucide-react-native";
 import { colors } from "../../../constants/colors";
 import { radius } from "../../../constants/radius";
 import { spacing } from "../../../constants/spacing";
+import { icons } from "../../../constants/icons";
 
 type Props = {
   image: any;
@@ -57,7 +58,7 @@ export function FeedPostImage({ image }: Props) {
             gap: 8,
           }}
         >
-          <Bolt size={14} color={colors.lime} />
+          <Bolt size={icons.xs} color={colors.primary} />
         </View>
       </View>
     </View>
