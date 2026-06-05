@@ -63,7 +63,7 @@ export function BadgeCard({ title, icon, unlocked }: Props) {
         style={{
           ...typography.caption.md,
 
-          color: unlocked ? colors.white : "#5A5A5A",
+          color: unlocked ? colors.textPrimary : "#5A5A5A",
 
           textAlign: "center",
         }}
@@ -80,7 +80,7 @@ export function BadgeCard({ title, icon, unlocked }: Props) {
 
             borderRadius: radius.full,
 
-            backgroundColor: colors.lime,
+            backgroundColor: colors.primary,
           }}
         />
       )}

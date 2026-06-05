@@ -28,17 +28,6 @@ export function GarageIdentity() {
       >
         {userData.name}
       </Text>
-      {/* NICKNAME 
-      <Text
-        style={{
-          ...typography.heading.lg,
-          color: colors.lime,
-
-          marginTop: 2,
-        }}
-      >
-        {userData.nickname}
-      </Text>*/}
       {/* USERNAME */}
       <Text
         style={{

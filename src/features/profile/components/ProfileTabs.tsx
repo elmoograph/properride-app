@@ -36,7 +36,7 @@ export function ProfileTabs({ activeTab, onChangeTab }: Props) {
             activeOpacity={0.8}
             onPress={() => onChangeTab(tab)}
             style={{
-              backgroundColor: isActive ? colors.lime : "#0A0A0A",
+              backgroundColor: isActive ? colors.primary : "#0A0A0A",
 
               borderRadius: radius.full,
 
@@ -47,9 +47,9 @@ export function ProfileTabs({ activeTab, onChangeTab }: Props) {
           >
             <Text
               style={{
-                ...typography.label.md,
+                ...typography.caption.md,
 
-                color: isActive ? colors.primarytext : colors.mute,
+                color: isActive ? colors.background : colors.surface,
               }}
             >
               {tab}

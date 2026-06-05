@@ -27,7 +27,7 @@ export function FeedPostCard({ post }: Props) {
           marginTop: spacing["2xl"],
           paddingBottom: spacing["2xl"],
           borderBottomWidth: 1,
-          borderColor: colors.grey,
+          borderColor: colors.surface,
         }}
       >
         <FeedPostHeader

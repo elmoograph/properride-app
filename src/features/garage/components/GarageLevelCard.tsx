@@ -19,7 +19,7 @@ export function GarageLevelCard() {
     >
       <View
         style={{
-          backgroundColor: colors.grey,
+          backgroundColor: colors.surface,
 
           borderRadius: radius.lg,
 
@@ -46,7 +46,7 @@ export function GarageLevelCard() {
             <Text
               style={{
                 ...typography.heading.md,
-                color: colors.lime,
+                color: colors.primary,
               }}
             >
               Level
@@ -55,7 +55,7 @@ export function GarageLevelCard() {
             <Text
               style={{
                 ...typography.body.md,
-                color: colors.mute,
+                color: colors.surface,
               }}
             >
               ProperRide Builder
@@ -66,7 +66,7 @@ export function GarageLevelCard() {
           <Text
             style={{
               ...typography.body.md,
-              color: colors.mute,
+              color: colors.surface,
             }}
           >
             {levelData.xp}
@@ -93,7 +93,7 @@ export function GarageLevelCard() {
               width: `${levelData.progress}%`,
               height: "100%",
 
-              backgroundColor: colors.lime,
+              backgroundColor: colors.primary,
 
               borderRadius: radius.full,
             }}
@@ -104,7 +104,7 @@ export function GarageLevelCard() {
         <Text
           style={{
             ...typography.caption.md,
-            color: colors.mute,
+            color: colors.surface,
 
             marginTop: 10,
           }}

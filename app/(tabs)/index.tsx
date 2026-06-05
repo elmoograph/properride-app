@@ -5,7 +5,7 @@ import { StatusBar } from "expo-status-bar";
 
 import { colors } from "../../src/constants/colors";
 
-import { FeedHeader } from "../../src/features/feed/components/FeedHeader";
+import { FeedTopbar } from "../../src/features/feed/components/FeedTopbar";
 import { postsData } from "../../src/features/feed/data/posts.data";
 import { FeedPostCard } from "../../src/features/feed/components/FeedPostCard";
 
@@ -27,7 +27,7 @@ export default function FeedScreen() {
       <ScrollView
         style={{
           flex: 1,
-          backgroundColor: colors.primarytext,
+          backgroundColor: colors.background,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -36,10 +36,7 @@ export default function FeedScreen() {
             paddingBottom: 140,
           }}
         >
-          <FeedHeader
-            activeCategory={activeCategory}
-            onChangeCategory={setActiveCategory}
-          />
+          <FeedTopbar />
 
           {filteredPosts.map((post) => (
             <FeedPostCard key={post.id} post={post} />

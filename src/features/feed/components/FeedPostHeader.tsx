@@ -62,8 +62,8 @@ export function FeedPostHeader({
         >
           <Text
             style={{
-              ...typography.label.md,
-              color: colors.lime,
+              ...typography.caption.md,
+              color: colors.primary,
             }}
           >
             RI
@@ -83,7 +83,7 @@ export function FeedPostHeader({
             <Text
               style={{
                 ...typography.body.lg,
-                color: colors.white,
+                color: colors.textPrimary,
               }}
             >
               {username}
@@ -91,20 +91,18 @@ export function FeedPostHeader({
 
             <View
               style={{
-                // backgroundColor: colors.lime,
-
                 borderRadius: radius.full,
 
                 paddingHorizontal: 8,
                 paddingVertical: 2,
-                borderColor: colors.lime,
+                borderColor: colors.primary,
                 borderWidth: 1,
               }}
             >
               <Text
                 style={{
-                  ...typography.caption.sm,
-                  color: colors.white,
+                  ...typography.caption.md,
+                  color: colors.textPrimary,
                 }}
               >
                 {badge}
@@ -115,7 +113,7 @@ export function FeedPostHeader({
           <Text
             style={{
               ...typography.caption.md,
-              color: colors.mute,
+              color: colors.surface,
             }}
           >
             {handle} · {time}
@@ -137,7 +135,7 @@ export function FeedPostHeader({
         <Text
           style={{
             ...typography.caption.md,
-            color: colors.mute,
+            color: colors.surface,
           }}
         >
           {category}

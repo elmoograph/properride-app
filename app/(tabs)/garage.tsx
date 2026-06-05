@@ -23,7 +23,7 @@ export default function GarageScreen() {
     <ScrollView
       style={{
         flex: 1,
-        backgroundColor: colors.primarytext,
+        backgroundColor: colors.background,
       }}
       showsVerticalScrollIndicator={false}
     >

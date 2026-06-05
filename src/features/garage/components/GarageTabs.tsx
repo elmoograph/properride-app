@@ -28,7 +28,7 @@ export function GarageTabs({ activeTab, onChangeTab }: Props) {
           alignItems: "center",
           justifyContent: "space-between",
 
-          backgroundColor: colors.grey,
+          backgroundColor: colors.surface,
 
           borderRadius: radius.lg,
 
@@ -55,9 +55,9 @@ export function GarageTabs({ activeTab, onChangeTab }: Props) {
             >
               <Text
                 style={{
-                  ...typography.label.md,
+                  ...typography.caption.md,
 
-                  color: active ? colors.lime : colors.mute,
+                  color: active ? colors.primary : colors.surface,
                 }}
               >
                 {tab}

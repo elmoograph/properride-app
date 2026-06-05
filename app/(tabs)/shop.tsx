@@ -8,13 +8,13 @@ export default function ShopScreen() {
     <View
       className="flex-1 items-center justify-center"
       style={{
-        backgroundColor: colors.primarytext,
+        backgroundColor: colors.background,
       }}
     >
       <Text
         style={{
           ...typography.heading.lg,
-          color: colors.white,
+          color: colors.textPrimary,
         }}
       >
         Comming Soon

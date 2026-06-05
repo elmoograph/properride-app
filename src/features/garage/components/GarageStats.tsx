@@ -29,7 +29,7 @@ export function GarageStats() {
         <Text
           style={{
             ...typography.body.md,
-            color: colors.mute,
+            color: colors.surface,
           }}
         >
           Total Build Cost
@@ -37,8 +37,8 @@ export function GarageStats() {
 
         <Text
           style={{
-            ...typography.display.title,
-            color: colors.lime,
+            ...typography.heading.sm,
+            color: colors.primary,
           }}
         >
           {statsData.totalCost}
@@ -55,7 +55,7 @@ export function GarageStats() {
         <Text
           style={{
             ...typography.body.md,
-            color: colors.mute,
+            color: colors.surface,
           }}
         >
           {statsData.brand}
@@ -64,7 +64,7 @@ export function GarageStats() {
         <Text
           style={{
             ...typography.heading.xl,
-            color: colors.white,
+            color: colors.textPrimary,
           }}
         >
           {statsData.totalParts}

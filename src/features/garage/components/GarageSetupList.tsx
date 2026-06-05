@@ -30,7 +30,7 @@ export function GarageSetupList() {
 
           marginTop: 4,
 
-          backgroundColor: colors.lime,
+          backgroundColor: colors.primary,
 
           alignItems: "center",
           justifyContent: "center",
@@ -44,7 +44,7 @@ export function GarageSetupList() {
         <Text
           style={{
             ...typography.heading.md,
-            color: colors.primarytext,
+            color: colors.background,
           }}
         >
           + Add Part

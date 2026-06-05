@@ -39,7 +39,7 @@ export function ActivitySection() {
       style={{
         paddingHorizontal: spacing.screen,
         borderBottomWidth: 1,
-        borderBottomColor: colors.grey,
+        borderBottomColor: colors.surface,
         paddingVertical: spacing.screen,
       }}
     >
@@ -48,7 +48,7 @@ export function ActivitySection() {
         style={{
           ...typography.heading.lg,
 
-          color: colors.white,
+          color: colors.textPrimary,
         }}
       >
         Aktivitas Terakhir
@@ -118,9 +118,9 @@ export function ActivitySection() {
               >
                 <Text
                   style={{
-                    ...typography.label.md,
+                    ...typography.caption.md,
 
-                    color: colors.white,
+                    color: colors.textPrimary,
                   }}
                 >
                   {item.title}

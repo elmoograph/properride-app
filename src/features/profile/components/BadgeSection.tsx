@@ -24,13 +24,13 @@ export function BadgeSection() {
         style={{
           ...typography.heading.lg,
 
-          color: colors.white,
+          color: colors.textPrimary,
         }}
       >
         Badges
         <Text
           style={{
-            color: colors.lime,
+            color: colors.primary,
           }}
         >
           ({unlockedBadges}/{badgesData.length})
