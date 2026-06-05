@@ -1,11 +1,11 @@
 export const colors = {
-  white: "#FFFFFF",
+  primary: "#17FF88",
 
-  lime: "#17FF88",
+  textPrimary: "#FFFFFF",
 
-  mute: "#717171",
+  textSecondary: "#717171",
 
-  primarytext: "#030303",
+  background: "#030303",
 
-  grey: "#121212",
+  surface: "#121212",
 };
