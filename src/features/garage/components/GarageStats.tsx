@@ -3,9 +3,14 @@ import { Text, View } from "react-native";
 import { colors } from "../../../constants/colors";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
-import { statsData } from "../data/stats.data";
 
-export function GarageStats() {
+import { StatsData } from "../types/garage.types";
+
+type Props = {
+  stats: StatsData;
+};
+
+export function GarageStats({ stats }: Props) {
   return (
     <View
       style={{
@@ -41,7 +46,7 @@ export function GarageStats() {
             color: colors.primary,
           }}
         >
-          {statsData.totalCost}
+          {stats.totalCost}
         </Text>
       </View>
 
@@ -58,7 +63,7 @@ export function GarageStats() {
             color: colors.surface,
           }}
         >
-          {statsData.brand}
+          {stats.brand}
         </Text>
 
         <Text
@@ -67,7 +72,7 @@ export function GarageStats() {
             color: colors.textPrimary,
           }}
         >
-          {statsData.totalParts}
+          {stats.totalParts}
         </Text>
       </View>
     </View>

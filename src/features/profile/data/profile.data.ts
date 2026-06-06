@@ -1,4 +1,6 @@
-export const profileData = {
+import { Profile } from "../../../types/database";
+
+export const profileData: Profile = {
   name: "Ryan Kusuma",
 
   username: "@ryan_nmax2024",

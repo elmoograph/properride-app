@@ -33,3 +33,11 @@ export type FeedPost = {
 
   parts: FeedPart[];
 };
+
+export type FeedCategory =
+  | "For You"
+  | "NMAX"
+  | "Aerox"
+  | "PCX"
+  | "Vespa"
+  | "MT15";

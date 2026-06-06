@@ -7,8 +7,13 @@ import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
 import { radius } from "../../../constants/radius";
 import { userData } from "../data/user.data";
+import { UserData } from "../types/garage.types";
 
-export function GarageIdentity() {
+type Props = {
+  user: UserData;
+};
+
+export function GarageIdentity({ user }: Props) {
   return (
     <View
       style={{
@@ -26,7 +31,7 @@ export function GarageIdentity() {
           color: colors.textPrimary,
         }}
       >
-        {userData.name}
+        {user.name}
       </Text>
       {/* USERNAME */}
       <Text
@@ -37,7 +42,7 @@ export function GarageIdentity() {
           marginTop: 4,
         }}
       >
-        {userData.username} · {userData.location}
+        {user.username} · {user.location}
       </Text>
     </View>
   );

@@ -7,10 +7,13 @@ import { radius } from "../../../constants/radius";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
 
-import { profileData } from "../data/profile.data";
-
+import { Profile } from "../../../types/database";
 import HeroImage from "../../../../assets/images/feed/feed-1.jpg";
 import { icons } from "../../../constants/icons";
+
+type Props = {
+  profile: Profile;
+};
 
 function StatCard({
   icon,
@@ -65,7 +68,7 @@ function StatCard({
   );
 }
 
-export function ProfileHero() {
+export function ProfileHero({ profile }: Props) {
   return (
     <View
       style={{
@@ -134,7 +137,7 @@ export function ProfileHero() {
                 color: colors.background,
               }}
             >
-              {profileData.avatar}
+              {profile.avatar}
             </Text>
           </View>
 
@@ -179,7 +182,7 @@ export function ProfileHero() {
               color: colors.textPrimary,
             }}
           >
-            {profileData.name}
+            {profile.name}
           </Text>
 
           <Text
@@ -190,7 +193,7 @@ export function ProfileHero() {
               marginTop: spacing.xs,
             }}
           >
-            {profileData.username}
+            {profile.username}
           </Text>
 
           <View
@@ -211,7 +214,7 @@ export function ProfileHero() {
                 color: colors.surface,
               }}
             >
-              {profileData.location}
+              {profile.location}
             </Text>
           </View>
         </View>
@@ -228,19 +231,19 @@ export function ProfileHero() {
         >
           <StatCard
             icon={<UsersRound size={icons.xs} color={colors.primary} />}
-            value={profileData.stats.followers}
+            value={profile.stats.followers}
             label="Followers"
           />
 
           <StatCard
             icon={<Heart size={icons.xs} color={colors.primary} />}
-            value={profileData.stats.likes}
+            value={profile.stats.likes}
             label="Likes"
           />
 
           <StatCard
             icon={<Star size={icons.xs} color={colors.primary} />}
-            value={profileData.stats.garage}
+            value={profile.stats.garage}
             label="Garage"
           />
         </View>

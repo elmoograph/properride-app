@@ -1,10 +1,10 @@
-export const categoriesData = [
+import { FeedCategory } from "../types/feed.types";
+
+export const categories: FeedCategory[] = [
   "For You",
-  "Following",
   "NMAX",
   "Aerox",
   "PCX",
-  "Trending",
   "Vespa",
   "MT15",
 ];

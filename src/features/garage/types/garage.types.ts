@@ -18,16 +18,6 @@ export type UserData = {
   parts: string;
 };
 
-export type LevelData = {
-  title: string;
-
-  xp: string;
-
-  progress: number;
-
-  nextLevel: string;
-};
-
 export type StatsData = {
   totalCost: string;
 

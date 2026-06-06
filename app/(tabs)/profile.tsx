@@ -2,18 +2,20 @@ import { ScrollView, View } from "react-native";
 
 import { StatusBar } from "expo-status-bar";
 
-import { colors } from "../../src/constants/colors";
+import { colors } from "@/constants/colors";
 
-import { ProfileHeader } from "../../src/features/profile/components/ProfileHeader";
+import { ProfileHeader } from "@/features/profile/components/ProfileHeader";
 
-import { ProfileHero } from "../../src/features/profile/components/ProfileHero";
+import { ProfileHero } from "@/features/profile/components/ProfileHero";
+import { profileData } from "@/features/profile/data/profile.data";
 
-import { ActivitySection } from "../../src/features/profile/components/ActivitySection";
-import { ProfileMenuSection } from "../../src/features/profile/components/ProfileMenuSection";
-import { RidingAreaCard } from "../../src/features/profile/components/RidingAreaCard";
-import { LogoutButton } from "../../src/features/profile/components/LogoutButton";
+import { ActivitySection } from "@/features/profile/components/ActivitySection";
+import { ProfileMenuSection } from "@/features/profile/components/ProfileMenuSection";
+import { RidingAreaCard } from "@/features/profile/components/RidingAreaCard";
+import { LogoutButton } from "@/features/profile/components/LogoutButton";
 
 export default function ProfileScreen() {
+  const profile = profileData;
   return (
     <>
       <StatusBar hidden />
@@ -31,7 +33,7 @@ export default function ProfileScreen() {
           }}
         >
           <ProfileHeader />
-          <ProfileHero />
+          <ProfileHero profile={profile} />
           <ActivitySection />
           <ProfileMenuSection />
           <RidingAreaCard />

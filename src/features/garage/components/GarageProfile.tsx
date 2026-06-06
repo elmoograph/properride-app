@@ -8,10 +8,8 @@ import { typography } from "../../../styles/typography";
 import { radius } from "../../../constants/radius";
 
 import ProfileImage from "../../../../assets/images/profile-photo.jpg";
-import { statsData } from "../data/stats.data";
-import { levelData } from "../data/level.data";
-import { userData } from "../data/user.data";
 import { icons } from "../../../constants/icons";
+import { UserData } from "../types/garage.types";
 
 function StatusItem({
   icon,
@@ -60,7 +58,11 @@ function StatusItem({
   );
 }
 
-export function GarageProfile() {
+type Props = {
+  user: UserData;
+};
+
+export function GarageProfile({ user }: Props) {
   return (
     <View
       style={{
@@ -115,19 +117,19 @@ export function GarageProfile() {
       >
         <StatusItem
           icon={<UsersRound size={icons.xs} color={colors.primary} />}
-          value={userData.followers}
+          value={user.followers}
           label="Followers"
         />
 
         <StatusItem
           icon={<Eye size={icons.xs} color={colors.primary} />}
-          value={userData.views}
+          value={user.views}
           label="Views"
         />
 
         <StatusItem
           icon={<Wrench size={icons.xs} color={colors.primary} />}
-          value={userData.parts}
+          value={user.parts}
           label="Parts"
         />
       </View>
