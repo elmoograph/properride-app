@@ -1,5 +1,5 @@
 import { profileData } from "../data/profile.data";
 
-export function getProfile() {
-  return profileData;
-}
+export async function getProfile() {}
+
+export async function updateProfile() {}

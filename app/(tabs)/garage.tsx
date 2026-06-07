@@ -14,10 +14,6 @@ import { GarageSetupList } from "@/features/garage/components/GarageSetupList";
 import { GarageTimelineList } from "@/features/garage/components/GarageTimelineList";
 
 import { GarageGalleryGrid } from "@/features/garage/components/GarageGalleryGrid";
-
-import { userData } from "@/features/garage/data/user.data";
-
-import { statsData } from "@/features/garage/data/stats.data";
 import {
   getGarageStats,
   getGarageUser,

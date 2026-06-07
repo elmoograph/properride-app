@@ -15,6 +15,7 @@ import { postsData } from "../../src/features/feed/data/posts.data";
 import { icons } from "../../src/constants/icons";
 import * as Linking from "expo-linking";
 import { getProductById } from "@/features/shop/repositories/shop.repository";
+import { getPostById } from "@/features/feed/repositories/feed.repository";
 
 export default function FeedDetailScreen() {
   function handleOpenAffiliate(productId: string) {
@@ -27,8 +28,11 @@ export default function FeedDetailScreen() {
     Linking.openURL(product.affiliateUrl);
   }
   const { id } = useLocalSearchParams();
+  if (typeof id !== "string") {
+    return null;
+  }
 
-  const post = postsData.find((item) => item.id === id);
+  const post = getPostById(id);
 
   if (!post) {
     return null;

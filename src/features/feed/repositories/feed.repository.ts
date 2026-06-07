@@ -1,10 +1,9 @@
 import { postsData } from "../data/posts.data";
-import { categories } from "../data/categories.data";
 
 export function getFeedPosts() {
   return postsData;
 }
 
-export function getCategories() {
-  return categories;
+export function getPostById(id: string) {
+  return postsData.find((post) => post.id === id);
 }

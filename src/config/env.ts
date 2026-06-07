@@ -1,5 +1,5 @@
 export const env = {
-  supabaseUrl: "",
+  supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL ?? "",
 
-  supabaseAnonKey: "",
+  supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? "",
 };
