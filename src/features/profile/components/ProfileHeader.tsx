@@ -13,21 +13,21 @@ export function ProfileHeader() {
       style={{
         paddingHorizontal: spacing.screen,
 
-        paddingTop: spacing.lg,
-        paddingBottom: spacing.lg,
+        paddingTop: spacing.screen,
+        paddingBottom: spacing.screen,
 
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
 
         borderBottomWidth: 1,
-        borderBottomColor: colors.surface,
+        borderBottomColor: colors.mute,
       }}
     >
       {/* TITLE */}
       <Text
         style={{
-          ...typography.heading.lg,
+          ...typography.heading.md,
           color: colors.textPrimary,
         }}
       >
@@ -36,7 +36,7 @@ export function ProfileHeader() {
 
       {/* SETTINGS */}
       <TouchableOpacity activeOpacity={0.8}>
-        <Settings2 size={icons.md} color={colors.surface} />
+        <Settings2 size={icons.md} color={colors.textPrimary} />
       </TouchableOpacity>
     </View>
   );

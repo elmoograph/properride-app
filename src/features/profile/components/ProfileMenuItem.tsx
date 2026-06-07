@@ -6,6 +6,7 @@ import { colors } from "../../../constants/colors";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
 import { icons } from "../../../constants/icons";
+import { radius } from "@/constants/radius";
 
 type Props = {
   icon: React.ReactNode;
@@ -29,7 +30,7 @@ export function ProfileMenuItem({ icon, title, count }: Props) {
         justifyContent: "space-between",
 
         borderBottomWidth: 1,
-        borderBottomColor: "#111111",
+        borderBottomColor: colors.mute,
       }}
     >
       {/* LEFT */}
@@ -47,7 +48,7 @@ export function ProfileMenuItem({ icon, title, count }: Props) {
             width: 36,
             height: 36,
 
-            borderRadius: 999,
+            borderRadius: radius.full,
 
             backgroundColor: "#0A0A0A",
 
@@ -61,7 +62,7 @@ export function ProfileMenuItem({ icon, title, count }: Props) {
         {/* TITLE */}
         <Text
           style={{
-            ...typography.heading.md,
+            ...typography.body.md,
 
             color: colors.textPrimary,
           }}
@@ -83,19 +84,19 @@ export function ProfileMenuItem({ icon, title, count }: Props) {
           style={{
             minWidth: 28,
 
-            paddingHorizontal: 8,
-            paddingVertical: 4,
+            paddingHorizontal: 10,
+            paddingVertical: 8,
 
             borderRadius: 999,
 
-            backgroundColor: "#111111",
+            backgroundColor: "#0A0A0A",
 
             alignItems: "center",
           }}
         >
           <Text
             style={{
-              ...typography.caption.md,
+              ...typography.body.md,
 
               color: colors.textPrimary,
             }}
@@ -104,7 +105,7 @@ export function ProfileMenuItem({ icon, title, count }: Props) {
           </Text>
         </View>
 
-        <ChevronRight size={icons.md} color={colors.surface} />
+        <ChevronRight size={icons.md} color={colors.textPrimary} />
       </View>
     </TouchableOpacity>
   );

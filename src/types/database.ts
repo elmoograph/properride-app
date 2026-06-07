@@ -1,3 +1,13 @@
+import { ImageSourcePropType } from "react-native";
+
+export type ProductCategory =
+  | "All"
+  | "Windshield"
+  | "Bolt"
+  | "Footstep"
+  | "Brake"
+  | "Suspension";
+
 export type Profile = {
   name: string;
 
@@ -14,4 +24,22 @@ export type Profile = {
 
     posts: string;
   };
+};
+
+export type Product = {
+  id: string;
+
+  name: string;
+
+  brand: string;
+
+  category: ProductCategory;
+
+  price: number;
+
+  image: ImageSourcePropType;
+
+  description: string;
+
+  affiliateUrl: string;
 };

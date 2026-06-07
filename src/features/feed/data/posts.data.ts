@@ -28,6 +28,7 @@ export const postsData: FeedPost[] = [
     parts: [
       {
         id: "1",
+        productId: "1",
 
         name: "NYTROSYNC Carbon Windshield",
 
@@ -36,6 +37,7 @@ export const postsData: FeedPost[] = [
 
       {
         id: "2",
+        productId: "2",
 
         name: "NYTROSYNC CNC Footstep",
 
@@ -44,6 +46,7 @@ export const postsData: FeedPost[] = [
 
       {
         id: "3",
+        productId: "3",
 
         name: "NYTROSYNC Bolt Kit Titanium",
 
@@ -75,7 +78,28 @@ export const postsData: FeedPost[] = [
 
     image: require("../../../../assets/images/feed/feed-2.jpg"),
 
-    parts: [],
+    parts: [
+      {
+        id: "1",
+        productId: "1",
+        name: "Titanium Exhaust Cover",
+        price: "Rp 850.000",
+      },
+
+      {
+        id: "2",
+        productId: "2",
+        name: "CNC Brake Lever",
+        price: "Rp 450.000",
+      },
+
+      {
+        id: "3",
+        productId: "3",
+        name: "LED Projector Lamp",
+        price: "Rp 1.150.000",
+      },
+    ],
   },
 
   {
@@ -102,7 +126,28 @@ export const postsData: FeedPost[] = [
 
     image: require("../../../../assets/images/feed/feed-3.jpeg"),
 
-    parts: [],
+    parts: [
+      {
+        id: "1",
+        productId: "1",
+        name: "Titanium Exhaust Cover",
+        price: "Rp 850.000",
+      },
+
+      {
+        id: "2",
+        productId: "2",
+        name: "CNC Brake Lever",
+        price: "Rp 450.000",
+      },
+
+      {
+        id: "3",
+        productId: "3",
+        name: "LED Projector Lamp",
+        price: "Rp 1.150.000",
+      },
+    ],
   },
 
   {
@@ -129,7 +174,28 @@ export const postsData: FeedPost[] = [
 
     image: require("../../../../assets/images/feed/feed-4.jpg"),
 
-    parts: [],
+    parts: [
+      {
+        id: "1",
+        productId: "1",
+        name: "Titanium Exhaust Cover",
+        price: "Rp 850.000",
+      },
+
+      {
+        id: "2",
+        productId: "2",
+        name: "CNC Brake Lever",
+        price: "Rp 450.000",
+      },
+
+      {
+        id: "3",
+        productId: "3",
+        name: "LED Projector Lamp",
+        price: "Rp 1.150.000",
+      },
+    ],
   },
 
   {
@@ -156,7 +222,28 @@ export const postsData: FeedPost[] = [
 
     image: require("../../../../assets/images/feed/feed-5.jpg"),
 
-    parts: [],
+    parts: [
+      {
+        id: "1",
+        productId: "1",
+        name: "Titanium Exhaust Cover",
+        price: "Rp 850.000",
+      },
+
+      {
+        id: "2",
+        productId: "2",
+        name: "CNC Brake Lever",
+        price: "Rp 450.000",
+      },
+
+      {
+        id: "3",
+        productId: "3",
+        name: "LED Projector Lamp",
+        price: "Rp 1.150.000",
+      },
+    ],
   },
 
   {
@@ -183,6 +270,27 @@ export const postsData: FeedPost[] = [
 
     image: require("../../../../assets/images/feed/feed-6.jpg"),
 
-    parts: [],
+    parts: [
+      {
+        id: "1",
+        productId: "1",
+        name: "Titanium Exhaust Cover",
+        price: "Rp 850.000",
+      },
+
+      {
+        id: "2",
+        productId: "2",
+        name: "CNC Brake Lever",
+        price: "Rp 450.000",
+      },
+
+      {
+        id: "3",
+        productId: "3",
+        name: "LED Projector Lamp",
+        price: "Rp 1.150.000",
+      },
+    ],
   },
 ];

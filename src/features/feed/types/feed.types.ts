@@ -3,6 +3,8 @@ import { ImageSourcePropType } from "react-native";
 export type FeedPart = {
   id: string;
 
+  productId: string;
+
   name: string;
 
   price: string;

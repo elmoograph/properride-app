@@ -2,7 +2,6 @@ import { Tabs } from "expo-router";
 
 import {
   House,
-  Compass,
   Wrench,
   ShoppingBag,
   CircleUserRound,
@@ -53,14 +52,14 @@ export default function TabsLayout() {
         }}
       />
 
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="explore"
         options={{
           title: "explore",
 
           tabBarIcon: ({ color }) => <Compass size={icons.md} color={color} />,
         }}
-      />
+      /> */}
 
       <Tabs.Screen
         name="garage"

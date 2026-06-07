@@ -13,6 +13,7 @@ import { ActivitySection } from "@/features/profile/components/ActivitySection";
 import { ProfileMenuSection } from "@/features/profile/components/ProfileMenuSection";
 import { RidingAreaCard } from "@/features/profile/components/RidingAreaCard";
 import { LogoutButton } from "@/features/profile/components/LogoutButton";
+import { spacing } from "@/constants/spacing";
 
 export default function profileScreen() {
   const profile = getProfile();
@@ -29,7 +30,7 @@ export default function profileScreen() {
       >
         <View
           style={{
-            paddingBottom: 140,
+            paddingBottom: spacing["3xl"],
           }}
         >
           <ProfileHeader />

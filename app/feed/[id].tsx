@@ -4,7 +4,7 @@ import { StatusBar } from "expo-status-bar";
 
 import { router, useLocalSearchParams } from "expo-router";
 
-import { ArrowLeft, Bolt } from "lucide-react-native";
+import { ArrowLeft, Bolt, Tag } from "lucide-react-native";
 
 import { colors } from "../../src/constants/colors";
 import { radius } from "../../src/constants/radius";
@@ -13,8 +13,19 @@ import { typography } from "../../src/styles/typography";
 
 import { postsData } from "../../src/features/feed/data/posts.data";
 import { icons } from "../../src/constants/icons";
+import * as Linking from "expo-linking";
+import { getProductById } from "@/features/shop/repositories/shop.repository";
 
 export default function FeedDetailScreen() {
+  function handleOpenAffiliate(productId: string) {
+    const product = getProductById(productId);
+
+    if (!product) {
+      return;
+    }
+
+    Linking.openURL(product.affiliateUrl);
+  }
   const { id } = useLocalSearchParams();
 
   const post = postsData.find((item) => item.id === id);
@@ -110,7 +121,7 @@ export default function FeedDetailScreen() {
             {/* USERNAME */}
             <Text
               style={{
-                ...typography.heading.lg,
+                ...typography.heading.sm,
 
                 color: colors.textPrimary,
 
@@ -123,9 +134,9 @@ export default function FeedDetailScreen() {
             {/* HANDLE */}
             <Text
               style={{
-                ...typography.body.md,
+                ...typography.body.sm,
 
-                color: colors.surface,
+                color: colors.textSecondary,
 
                 marginTop: spacing.xs,
               }}
@@ -133,72 +144,108 @@ export default function FeedDetailScreen() {
               {post.handle} · {post.time}
             </Text>
 
-            {/* CAPTION */}
-            <Text
+            <View
               style={{
-                ...typography.body.md,
-
-                color: colors.textPrimary,
-
-                lineHeight: spacing.screen,
-
-                marginTop: spacing["md"],
-              }}
-            >
-              {post.caption}
-            </Text>
-
-            {/* HASHTAGS */}
-            <Text
-              style={{
-                ...typography.body.md,
-
-                color: colors.primary,
-
-                marginTop: spacing.sm,
-              }}
-            >
-              {post.hashtags.join(" ")}
-            </Text>
-
-            {/* CTA */}
-            <TouchableOpacity
-              activeOpacity={0.9}
-              style={{
-                marginTop: spacing["3xl"],
-
-                backgroundColor: colors.primary,
-
-                borderRadius: radius.xl,
-
                 paddingVertical: spacing.lg,
 
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-
-                gap: spacing.md,
+                borderBottomWidth: 1,
+                borderBottomColor: colors.mute,
               }}
             >
-              <Bolt size={icons.sm} color={colors.textPrimary} />
+              <Text
+                style={{
+                  ...typography.body.sm,
+                  color: colors.textSecondary,
+                }}
+              >
+                Total Build Cost
+              </Text>
 
               <Text
                 style={{
-                  ...typography.heading.md,
+                  ...typography.heading.lg,
+                  color: colors.primary,
+                }}
+              >
+                {post.totalPrice}
+              </Text>
+            </View>
 
+            <View
+              style={{
+                marginTop: spacing.md,
+              }}
+            >
+              <Text
+                style={{
+                  ...typography.body.lg,
                   color: colors.textPrimary,
                 }}
               >
-                Build This Setup — {post.totalPrice}
+                Parts Used
               </Text>
-            </TouchableOpacity>
 
-            {/* BOTTOM SPACE */}
-            <View
-              style={{
-                height: 120,
-              }}
-            />
+              <View
+                style={{
+                  marginTop: spacing.md,
+                  gap: spacing.md,
+                }}
+              >
+                {post.parts.map((part) => (
+                  <View
+                    key={part.id}
+                    style={{
+                      padding: spacing.lg,
+
+                      borderWidth: 1,
+                      borderColor: "#111111",
+
+                      borderRadius: radius.sm,
+
+                      backgroundColor: "#050505",
+
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        ...typography.body.md,
+                        color: colors.textPrimary,
+                      }}
+                    >
+                      {part.name}
+                    </Text>
+
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+
+                        gap: spacing.md,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          ...typography.body.md,
+                          color: colors.textSecondary,
+                        }}
+                      >
+                        {part.price}
+                      </Text>
+
+                      <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={() => handleOpenAffiliate(part.productId)}
+                      >
+                        <Tag size={icons.sm} color={colors.primary} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
           </View>
         </ScrollView>
       </View>

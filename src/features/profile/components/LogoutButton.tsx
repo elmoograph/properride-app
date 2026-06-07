@@ -3,6 +3,7 @@ import { Text, TouchableOpacity } from "react-native";
 import { radius } from "../../../constants/radius";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
+import { colors } from "@/constants/colors";
 
 export function LogoutButton() {
   return (
@@ -12,22 +13,20 @@ export function LogoutButton() {
         marginTop: spacing.xl,
 
         marginHorizontal: spacing.screen,
+        backgroundColor: "#ff4d4d",
 
-        borderWidth: 1,
-        borderColor: "#111111",
+        borderRadius: radius.sm,
 
-        borderRadius: radius.xl,
-
-        paddingVertical: spacing.lg,
+        paddingVertical: spacing.md,
 
         alignItems: "center",
       }}
     >
       <Text
         style={{
-          ...typography.heading.md,
+          ...typography.heading.sm,
 
-          color: "#FF4D4D",
+          color: colors.background,
         }}
       >
         Keluar

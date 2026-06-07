@@ -19,9 +19,9 @@ export function RidingAreaCard() {
         backgroundColor: "#050505",
 
         borderWidth: 1,
-        borderColor: "#111111",
+        borderColor: colors.mute,
 
-        borderRadius: radius.lg,
+        borderRadius: radius.sm,
 
         padding: spacing.lg,
       }}
@@ -39,7 +39,7 @@ export function RidingAreaCard() {
 
         <Text
           style={{
-            ...typography.heading.md,
+            ...typography.heading.sm,
 
             color: colors.textPrimary,
           }}
@@ -55,10 +55,10 @@ export function RidingAreaCard() {
 
           alignSelf: "flex-start",
 
-          borderRadius: 999,
+          borderRadius: radius.full,
 
           borderWidth: 1,
-          borderColor: "#3F6900",
+          borderColor: colors.primary,
 
           paddingHorizontal: spacing.md,
 
@@ -79,9 +79,9 @@ export function RidingAreaCard() {
       {/* DESC */}
       <Text
         style={{
-          ...typography.body.md,
+          ...typography.body.sm,
 
-          color: colors.surface,
+          color: colors.textSecondary,
 
           marginTop: spacing.md,
         }}

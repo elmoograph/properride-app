@@ -58,8 +58,8 @@ function StatCard({
 
       <Text
         style={{
-          ...typography.caption.md,
-          color: colors.surface,
+          ...typography.body.sm,
+          color: colors.textSecondary,
         }}
       >
         {label}
@@ -76,12 +76,9 @@ export function ProfileHero({ profile }: Props) {
 
         marginHorizontal: spacing.screen,
 
-        backgroundColor: colors.background,
+        // backgroundColor: colors.background,
 
-        borderRadius: radius.lg,
-
-        borderWidth: 1,
-        borderColor: colors.surface,
+        borderRadius: radius.sm,
 
         overflow: "hidden",
       }}
@@ -94,7 +91,7 @@ export function ProfileHero({ profile }: Props) {
           width: "100%",
           height: 100,
 
-          opacity: 0.4,
+          // opacity: 0.4,
         }}
       />
 
@@ -111,14 +108,14 @@ export function ProfileHero({ profile }: Props) {
             alignItems: "center",
             justifyContent: "space-between",
 
-            marginTop: -52,
+            // marginTop: -52,
           }}
         >
           {/* AVATAR */}
           <View
             style={{
-              width: 74,
-              height: 74,
+              width: 90,
+              height: 90,
 
               borderRadius: radius.full,
 
@@ -142,7 +139,7 @@ export function ProfileHero({ profile }: Props) {
           </View>
 
           {/* EDIT BUTTON */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             activeOpacity={0.8}
             style={{
               //   marginTop: 44,
@@ -167,18 +164,18 @@ export function ProfileHero({ profile }: Props) {
             >
               Edit Profile
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* USER INFO */}
         <View
           style={{
-            marginTop: spacing.lg,
+            marginTop: spacing.sm,
           }}
         >
           <Text
             style={{
-              ...typography.heading.xl,
+              ...typography.heading.lg,
               color: colors.textPrimary,
             }}
           >
@@ -206,12 +203,12 @@ export function ProfileHero({ profile }: Props) {
               gap: spacing.xs,
             }}
           >
-            <MapPin size={icons.xs} color={colors.surface} />
+            <MapPin size={icons.xs} color={colors.textSecondary} />
 
             <Text
               style={{
                 ...typography.caption.md,
-                color: colors.surface,
+                color: colors.textSecondary,
               }}
             >
               {profile.location}
@@ -230,19 +227,19 @@ export function ProfileHero({ profile }: Props) {
           }}
         >
           <StatCard
-            icon={<UsersRound size={icons.xs} color={colors.primary} />}
+            icon={<UsersRound size={icons.sm} color={colors.primary} />}
             value={profile.stats.followers}
             label="Followers"
           />
 
           <StatCard
-            icon={<UserPlus size={icons.xs} color={colors.primary} />}
+            icon={<UserPlus size={icons.sm} color={colors.primary} />}
             value={profile.stats.following}
             label="Followings"
           />
 
           <StatCard
-            icon={<Grid3x3 size={icons.xs} color={colors.primary} />}
+            icon={<Grid3x3 size={icons.sm} color={colors.primary} />}
             value={profile.stats.posts}
             label="Posts"
           />

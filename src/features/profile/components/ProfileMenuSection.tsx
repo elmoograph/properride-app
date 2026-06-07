@@ -13,16 +13,16 @@ export function ProfileMenuSection() {
   return (
     <View
       style={{
-        marginTop: spacing["2xl"],
+        marginTop: spacing.xl,
 
         marginHorizontal: spacing.screen,
 
         backgroundColor: "#050505",
 
         borderWidth: 1,
-        borderColor: "#111111",
+        borderColor: colors.mute,
 
-        borderRadius: radius.lg,
+        borderRadius: radius.sm,
 
         overflow: "hidden",
       }}
