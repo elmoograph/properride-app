@@ -6,6 +6,7 @@ import { colors } from "../../../constants/colors";
 import { radius } from "../../../constants/radius";
 import { typography } from "../../../styles/typography";
 import { icons } from "../../../constants/icons";
+import { spacing } from "@/constants/spacing";
 
 type Props = {
   title: string;
@@ -42,7 +43,7 @@ export function GarageTimelineItem({ title, date, price, isLast }: Props) {
 
             backgroundColor: colors.primary,
 
-            marginTop: 18,
+            marginTop: spacing.screen,
           }}
         />
 
@@ -54,7 +55,7 @@ export function GarageTimelineItem({ title, date, price, isLast }: Props) {
 
               flex: 1,
 
-              backgroundColor: "#1A1A1A",
+              backgroundColor: colors.mute,
             }}
           />
         )}
@@ -65,14 +66,11 @@ export function GarageTimelineItem({ title, date, price, isLast }: Props) {
         style={{
           flex: 1,
 
-          backgroundColor: "#0A0A0A",
+          backgroundColor: colors.mute,
 
-          borderWidth: 1,
-          borderColor: "#151515",
+          borderRadius: radius.sm,
 
-          borderRadius: radius.xl,
-
-          padding: 18,
+          padding: spacing.lg,
 
           marginBottom: 20,
         }}
@@ -94,7 +92,7 @@ export function GarageTimelineItem({ title, date, price, isLast }: Props) {
           >
             <Text
               style={{
-                ...typography.heading.md,
+                ...typography.body.md,
                 color: colors.textPrimary,
               }}
             >
@@ -109,15 +107,15 @@ export function GarageTimelineItem({ title, date, price, isLast }: Props) {
 
                 gap: 6,
 
-                marginTop: 10,
+                marginTop: 5,
               }}
             >
-              <Clock3 size={icons.xs} color={colors.surface} />
+              <Clock3 size={icons.xs} color={colors.textSecondary} />
 
               <Text
                 style={{
                   ...typography.caption.md,
-                  color: colors.surface,
+                  color: colors.textSecondary,
                 }}
               >
                 {date}
@@ -128,7 +126,7 @@ export function GarageTimelineItem({ title, date, price, isLast }: Props) {
           {/* PRICE */}
           <Text
             style={{
-              ...typography.heading.md,
+              ...typography.body.md,
               color: colors.primary,
             }}
           >

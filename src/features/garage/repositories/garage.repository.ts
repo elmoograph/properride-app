@@ -1,10 +1,10 @@
 import { userData } from "../data/user.data";
 import { statsData } from "../data/stats.data";
 
-export async function getGarageUser() {
+export function getGarageUser() {
   return userData;
 }
 
-export async function getGarageStats() {
+export function getGarageStats() {
   return statsData;
 }

@@ -18,31 +18,45 @@ import { GarageGalleryGrid } from "@/features/garage/components/GarageGalleryGri
 import { userData } from "@/features/garage/data/user.data";
 
 import { statsData } from "@/features/garage/data/stats.data";
+import {
+  getGarageStats,
+  getGarageUser,
+} from "@/features/garage/repositories/garage.repository";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 
 export default function GarageScreen() {
-  const user = userData;
-  const stats = statsData;
+  const user = getGarageUser();
+  const stats = getGarageStats();
   const [activeTab, setActiveTab] = useState("Setup");
 
   return (
-    <ScrollView
+    <SafeAreaView
       style={{
         flex: 1,
         backgroundColor: colors.background,
       }}
-      showsVerticalScrollIndicator={false}
     >
-      <View>
-        <GarageHero />
-        <GarageProfile user={user} />
-        <GarageIdentity user={user} />
-        <GarageStats stats={stats} />
-        <GarageTabs activeTab={activeTab} onChangeTab={setActiveTab} />
-        {activeTab === "Setup" && <GarageSetupList />}
-        {activeTab === "Timeline" && <GarageTimelineList />}
+      <StatusBar hidden />
+      <ScrollView
+        style={{
+          flex: 1,
+          backgroundColor: colors.background,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View>
+          <GarageHero />
+          <GarageProfile user={user} />
+          <GarageIdentity user={user} />
+          <GarageStats stats={stats} />
+          <GarageTabs activeTab={activeTab} onChangeTab={setActiveTab} />
+          {activeTab === "Setup" && <GarageSetupList />}
+          {activeTab === "Timeline" && <GarageTimelineList />}
 
-        {activeTab === "Gallery" && <GarageGalleryGrid />}
-      </View>
-    </ScrollView>
+          {activeTab === "Gallery" && <GarageGalleryGrid />}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

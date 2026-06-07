@@ -32,12 +32,9 @@ export function GarageSetupSection({ section }: Props) {
         activeOpacity={0.8}
         onPress={() => setCollapsed(!collapsed)}
         style={{
-          backgroundColor: "#0A0A0A",
+          backgroundColor: colors.mute,
 
-          borderWidth: 1,
-          borderColor: "#151515",
-
-          borderRadius: radius.lg,
+          borderRadius: radius.sm,
 
           paddingHorizontal: spacing.lg,
           paddingVertical: spacing.md,
@@ -69,7 +66,7 @@ export function GarageSetupSection({ section }: Props) {
 
           <Text
             style={{
-              ...typography.heading.md,
+              ...typography.body.lg,
               color: colors.textPrimary,
             }}
           >
@@ -79,9 +76,9 @@ export function GarageSetupSection({ section }: Props) {
 
         {/* ICON */}
         {collapsed ? (
-          <ChevronRight size={icons.sm} color={colors.surface} />
+          <ChevronRight size={icons.sm} color={colors.textPrimary} />
         ) : (
-          <ChevronDown size={icons.sm} color={colors.surface} />
+          <ChevronDown size={icons.sm} color={colors.textPrimary} />
         )}
       </TouchableOpacity>
 
@@ -89,7 +86,7 @@ export function GarageSetupSection({ section }: Props) {
       {!collapsed && (
         <View
           style={{
-            marginTop: 6,
+            marginTop: spacing.xs,
           }}
         >
           {section.items.map((item) => (

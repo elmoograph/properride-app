@@ -1,6 +1,6 @@
 import { Image, View } from "react-native";
 
-import { Bolt } from "lucide-react-native";
+import { Bookmark } from "lucide-react-native";
 
 import { colors } from "../../../constants/colors";
 import { radius } from "../../../constants/radius";
@@ -44,12 +44,12 @@ export function FeedPostImage({ image }: Props) {
             right: 14,
             bottom: 14,
 
-            backgroundColor: "rgba(0,0,0,0.7)",
+            backgroundColor: colors.primary,
 
             borderRadius: radius.full,
 
-            paddingHorizontal: 18,
-            paddingVertical: 8,
+            paddingHorizontal: 10,
+            paddingVertical: 10,
 
             flexDirection: "row",
             alignItems: "center",
@@ -58,7 +58,7 @@ export function FeedPostImage({ image }: Props) {
             gap: 8,
           }}
         >
-          <Bolt size={icons.xs} color={colors.primary} />
+          <Bookmark size={icons.md} color={colors.background} />
         </View>
       </View>
     </View>

@@ -22,7 +22,7 @@ export function FeedPostCaption({ caption, hashtags }: Props) {
       <Text
         style={{
           ...typography.body.md,
-          color: colors.textPrimary,
+          color: colors.textSecondary,
 
           lineHeight: spacing.xl,
         }}

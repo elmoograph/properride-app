@@ -24,7 +24,6 @@ function StatusItem({
     <View
       style={{
         alignItems: "center",
-        gap: 2,
       }}
     >
       <View
@@ -38,7 +37,7 @@ function StatusItem({
 
         <Text
           style={{
-            ...typography.heading.md,
+            ...typography.body.lg,
             color: colors.textPrimary,
           }}
         >
@@ -48,8 +47,8 @@ function StatusItem({
 
       <Text
         style={{
-          ...typography.caption.md,
-          color: colors.surface,
+          ...typography.body.sm,
+          color: colors.textSecondary,
         }}
       >
         {label}
@@ -72,10 +71,9 @@ export function GarageProfile({ user }: Props) {
 
         flexDirection: "row",
         alignItems: "center",
-        // justifyContent: "space-between",
         zIndex: 10,
         elevation: 10,
-        marginTop: -20,
+        marginTop: -10,
         gap: spacing.lg,
       }}
     >

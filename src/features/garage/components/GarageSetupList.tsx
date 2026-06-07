@@ -14,7 +14,7 @@ export function GarageSetupList() {
   return (
     <View
       style={{
-        marginTop: 15,
+        marginTop: spacing.md,
 
         paddingHorizontal: spacing.screen,
       }}
@@ -27,8 +27,6 @@ export function GarageSetupList() {
         activeOpacity={0.8}
         style={{
           width: "100%",
-
-          marginTop: 4,
 
           backgroundColor: colors.primary,
 
@@ -43,7 +41,7 @@ export function GarageSetupList() {
       >
         <Text
           style={{
-            ...typography.heading.md,
+            ...typography.button.md,
             color: colors.background,
           }}
         >

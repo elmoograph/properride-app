@@ -16,6 +16,7 @@ export function FeedTopbar() {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
+        paddingTop: spacing.xs,
       }}
     >
       {/* LOGO */}

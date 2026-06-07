@@ -34,7 +34,7 @@ export function GarageStats({ stats }: Props) {
         <Text
           style={{
             ...typography.body.md,
-            color: colors.surface,
+            color: colors.textSecondary,
           }}
         >
           Total Build Cost
@@ -60,7 +60,7 @@ export function GarageStats({ stats }: Props) {
         <Text
           style={{
             ...typography.body.md,
-            color: colors.surface,
+            color: colors.textSecondary,
           }}
         >
           {stats.brand}
@@ -68,7 +68,7 @@ export function GarageStats({ stats }: Props) {
 
         <Text
           style={{
-            ...typography.heading.xl,
+            ...typography.heading.sm,
             color: colors.textPrimary,
           }}
         >

@@ -11,9 +11,7 @@ export const profileData: Profile = {
 
   stats: {
     followers: "1.2k",
-
-    likes: "2.8k",
-
-    garage: "8.9k",
+    following: "342",
+    posts: "28",
   },
 };

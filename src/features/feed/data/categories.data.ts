@@ -1,7 +1,7 @@
 import { FeedCategory } from "../types/feed.types";
 
 export const categories: FeedCategory[] = [
-  "For You",
+  "All",
   "NMAX",
   "Aerox",
   "PCX",

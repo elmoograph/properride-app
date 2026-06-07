@@ -19,15 +19,16 @@ export function GarageIdentity({ user }: Props) {
       style={{
         width: "100%",
 
-        marginTop: 10,
-
         paddingHorizontal: spacing.screen,
+        paddingVertical: spacing.md,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.mute,
       }}
     >
       {/* NAME */}
       <Text
         style={{
-          ...typography.heading.sm,
+          ...typography.heading.md,
           color: colors.textPrimary,
         }}
       >
@@ -37,7 +38,7 @@ export function GarageIdentity({ user }: Props) {
       <Text
         style={{
           ...typography.body.sm,
-          color: colors.surface,
+          color: colors.textSecondary,
 
           marginTop: 4,
         }}

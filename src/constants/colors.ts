@@ -8,4 +8,6 @@ export const colors = {
   background: "#030303",
 
   surface: "#121212",
+
+  mute: "rgba(255,255,255,0.05)",
 };

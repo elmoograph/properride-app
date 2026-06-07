@@ -33,14 +33,11 @@ export function GarageTimelineList() {
       {/* SEARCH */}
       <View
         style={{
-          marginBottom: spacing["2xl"],
+          marginBottom: spacing.xl,
 
-          backgroundColor: "#0A0A0A",
+          backgroundColor: colors.mute,
 
-          borderWidth: 1,
-          borderColor: "#151515",
-
-          borderRadius: radius.lg,
+          borderRadius: radius.sm,
 
           paddingHorizontal: spacing.lg,
           paddingVertical: spacing.xs,
@@ -51,13 +48,13 @@ export function GarageTimelineList() {
           gap: spacing.md,
         }}
       >
-        <Search size={icons.sm} color={colors.surface} />
+        <Search size={icons.sm} color={colors.textSecondary} />
 
         <TextInput
           value={search}
           onChangeText={setSearch}
           placeholder="Search timeline..."
-          placeholderTextColor={colors.surface}
+          placeholderTextColor={colors.textSecondary}
           style={{
             flex: 1,
 
@@ -76,7 +73,7 @@ export function GarageTimelineList() {
         >
           <Text
             style={{
-              color: colors.surface,
+              color: colors.textSecondary,
             }}
           >
             No timeline found

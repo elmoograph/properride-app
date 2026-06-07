@@ -12,8 +12,6 @@ export const postsData: FeedPost[] = [
 
     category: "NMAX",
 
-    badge: "Clean Build",
-
     caption:
       "Finally done with my NMAX build. Full carbon setup with titanium bolts. Took 3 months but worth it.",
 
@@ -64,8 +62,6 @@ export const postsData: FeedPost[] = [
 
     category: "Aerox",
 
-    badge: "Touring",
-
     caption:
       "Street racing inspired Aerox setup with matte titanium finish and clean cockpit layout.",
 
@@ -92,8 +88,6 @@ export const postsData: FeedPost[] = [
     time: "8 jam lalu",
 
     category: "PCX",
-
-    badge: "Daily Ride",
 
     caption:
       "Comfort touring setup for daily ride and weekend escape. Full utility and premium feel.",
@@ -122,8 +116,6 @@ export const postsData: FeedPost[] = [
 
     category: "Vespa",
 
-    badge: "Classic Vibe",
-
     caption:
       "Minimal vintage concept with warm beige palette and classic chrome detail.",
 
@@ -151,8 +143,6 @@ export const postsData: FeedPost[] = [
 
     category: "MT15",
 
-    badge: "Adventure",
-
     caption:
       "Daily streetfighter setup focused on aggressive stance and lightweight appearance.",
 
@@ -179,8 +169,6 @@ export const postsData: FeedPost[] = [
     time: "3 hari lalu",
 
     category: "NMAX",
-
-    badge: "Masculine",
 
     caption:
       "Black monochrome NMAX setup with forged wheel concept and premium carbon detail.",

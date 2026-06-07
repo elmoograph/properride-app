@@ -10,14 +10,8 @@ export type Profile = {
   stats: {
     followers: string;
 
-    likes: string;
+    following: string;
 
-    garage: string;
+    posts: string;
   };
 };
-
-export type Garage = {};
-
-export type Post = {};
-
-export type Setup = {};

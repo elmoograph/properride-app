@@ -21,7 +21,6 @@ export function GarageHero() {
         width: "100%",
         height: hp(28),
 
-        // borderRadius: 24,
         overflow: "hidden",
 
         position: "relative",
@@ -67,7 +66,7 @@ export function GarageHero() {
             style={{
               ...typography.body.sm,
 
-              color: colors.textPrimary,
+              color: colors.background,
             }}
           >
             {bikeData.name}
@@ -82,7 +81,7 @@ export function GarageHero() {
             alignItems: "center",
             gap: 6,
 
-            backgroundColor: "rgba(255,255,255,0.10)",
+            backgroundColor: "rgba(0,0,0,0.75)",
 
             paddingHorizontal: 10,
             paddingVertical: 7,

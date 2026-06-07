@@ -31,7 +31,7 @@ export function FeedPostCTA({ totalPrice }: Props) {
 
           borderRadius: radius.sm,
 
-          paddingVertical: spacing.xs,
+          paddingVertical: spacing.sm,
 
           flexDirection: "row",
           alignItems: "center",
@@ -48,7 +48,7 @@ export function FeedPostCTA({ totalPrice }: Props) {
             color: colors.primary,
           }}
         >
-          Build This Setup — {totalPrice}
+          Build This Setup
         </Text>
       </TouchableOpacity>
     </View>

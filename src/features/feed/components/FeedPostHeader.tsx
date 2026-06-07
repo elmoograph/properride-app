@@ -13,17 +13,9 @@ type Props = {
   time: string;
 
   category: string;
-
-  badge: string;
 };
 
-export function FeedPostHeader({
-  username,
-  handle,
-  time,
-  category,
-  badge,
-}: Props) {
+export function FeedPostHeader({ username, handle, time, category }: Props) {
   return (
     <View
       style={{
@@ -62,7 +54,7 @@ export function FeedPostHeader({
         >
           <Text
             style={{
-              ...typography.caption.md,
+              ...typography.heading.sm,
               color: colors.primary,
             }}
           >
@@ -88,32 +80,12 @@ export function FeedPostHeader({
             >
               {username}
             </Text>
-
-            <View
-              style={{
-                borderRadius: radius.full,
-
-                paddingHorizontal: 8,
-                paddingVertical: 2,
-                borderColor: colors.primary,
-                borderWidth: 1,
-              }}
-            >
-              <Text
-                style={{
-                  ...typography.caption.md,
-                  color: colors.textPrimary,
-                }}
-              >
-                {badge}
-              </Text>
-            </View>
           </View>
 
           <Text
             style={{
               ...typography.caption.md,
-              color: colors.surface,
+              color: colors.textSecondary,
             }}
           >
             {handle} · {time}
@@ -135,7 +107,7 @@ export function FeedPostHeader({
         <Text
           style={{
             ...typography.caption.md,
-            color: colors.surface,
+            color: colors.primary,
           }}
         >
           {category}

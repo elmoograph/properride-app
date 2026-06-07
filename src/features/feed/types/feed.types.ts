@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from "react-native";
+
 export type FeedPart = {
   id: string;
 
@@ -15,9 +17,7 @@ export type FeedPost = {
 
   time: string;
 
-  badge: string;
-
-  category: string;
+  category: Exclude<FeedCategory, "For You">;
 
   caption: string;
 
@@ -29,15 +29,35 @@ export type FeedPost = {
 
   totalPrice: string;
 
-  image: any;
+  image: ImageSourcePropType;
 
   parts: FeedPart[];
 };
 
-export type FeedCategory =
-  | "For You"
-  | "NMAX"
-  | "Aerox"
-  | "PCX"
-  | "Vespa"
-  | "MT15";
+export type FeedCategory = "All" | "NMAX" | "Aerox" | "PCX" | "Vespa" | "MT15";
+
+export type FeaturedBuild = {
+  id: string;
+
+  title: string;
+
+  owner: string;
+
+  image: ImageSourcePropType;
+
+  totalBuildCost: string;
+
+  category: Exclude<FeedCategory, "For You">;
+};
+
+export type TrendingBuild = {
+  id: string;
+
+  title: string;
+
+  image: ImageSourcePropType;
+
+  likes: string;
+
+  category: Exclude<FeedCategory, "For You">;
+};

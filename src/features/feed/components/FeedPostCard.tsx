@@ -35,7 +35,6 @@ export function FeedPostCard({ post }: Props) {
           handle={post.handle}
           time={post.time}
           category={post.category}
-          badge={post.badge}
         />
 
         <FeedPostImage image={post.image} />

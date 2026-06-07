@@ -1,6 +1,6 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
-import { Heart, MapPin, Star, UsersRound } from "lucide-react-native";
+import { MapPin, UsersRound, UserPlus, Grid3x3 } from "lucide-react-native";
 
 import { colors } from "../../../constants/colors";
 import { radius } from "../../../constants/radius";
@@ -236,15 +236,15 @@ export function ProfileHero({ profile }: Props) {
           />
 
           <StatCard
-            icon={<Heart size={icons.xs} color={colors.primary} />}
-            value={profile.stats.likes}
-            label="Likes"
+            icon={<UserPlus size={icons.xs} color={colors.primary} />}
+            value={profile.stats.following}
+            label="Followings"
           />
 
           <StatCard
-            icon={<Star size={icons.xs} color={colors.primary} />}
-            value={profile.stats.garage}
-            label="Garage"
+            icon={<Grid3x3 size={icons.xs} color={colors.primary} />}
+            value={profile.stats.posts}
+            label="Posts"
           />
         </View>
       </View>
