@@ -3,6 +3,11 @@ import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { AuthProvider } from "@/providers/AuthProvider";
+
+import { AuthGate } from "@/components/AuthGate";
+import { ProfileProvider } from "@/providers/ProfileProvider";
+
 export default function RootLayout() {
   const [loaded] = useFonts({
     "PlusJakartaSans-Regular": require("../assets/fonts/PlusJakartaSans-Regular.ttf"),
@@ -24,15 +29,19 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <>
-        <StatusBar hidden />
+      <AuthProvider>
+        <ProfileProvider>
+          <AuthGate />
 
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        />
-      </>
+          <StatusBar hidden />
+
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          />
+        </ProfileProvider>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }

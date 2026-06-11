@@ -7,30 +7,23 @@ import { typography } from "../../../styles/typography";
 import { StatsData } from "../types/garage.types";
 
 type Props = {
-  stats: StatsData;
+  totalCost: string;
+  totalParts: number;
+  brand: string;
 };
 
-export function GarageStats({ stats }: Props) {
+export function GarageStats({ totalCost, totalParts, brand }: Props) {
   return (
     <View
       style={{
         width: "100%",
-
         marginTop: spacing.lg,
-
         paddingHorizontal: spacing.screen,
-
         flexDirection: "row",
-        alignItems: "flex-start",
         justifyContent: "space-between",
       }}
     >
-      {/* LEFT */}
-      <View
-        style={{
-          gap: 3,
-        }}
-      >
+      <View>
         <Text
           style={{
             ...typography.body.md,
@@ -46,15 +39,13 @@ export function GarageStats({ stats }: Props) {
             color: colors.primary,
           }}
         >
-          {stats.totalCost}
+          {totalCost}
         </Text>
       </View>
 
-      {/* RIGHT */}
       <View
         style={{
           alignItems: "flex-end",
-          gap: 3,
         }}
       >
         <Text
@@ -63,7 +54,7 @@ export function GarageStats({ stats }: Props) {
             color: colors.textSecondary,
           }}
         >
-          {stats.brand}
+          {brand}
         </Text>
 
         <Text
@@ -72,7 +63,7 @@ export function GarageStats({ stats }: Props) {
             color: colors.textPrimary,
           }}
         >
-          {stats.totalParts}
+          {totalParts} Parts
         </Text>
       </View>
     </View>

@@ -6,14 +6,21 @@ import { colors } from "../../../constants/colors";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
 import { radius } from "../../../constants/radius";
-import { userData } from "../data/user.data";
 import { UserData } from "../types/garage.types";
 
 type Props = {
-  user: UserData;
+  garageName: string;
+  location: string;
+  motorcycleBrand?: string;
+  motorcycleModel?: string;
 };
 
-export function GarageIdentity({ user }: Props) {
+export function GarageIdentity({
+  garageName,
+  location,
+  motorcycleBrand,
+  motorcycleModel,
+}: Props) {
   return (
     <View
       style={{
@@ -32,7 +39,7 @@ export function GarageIdentity({ user }: Props) {
           color: colors.textPrimary,
         }}
       >
-        {user.name}
+        {garageName}
       </Text>
       {/* USERNAME */}
       <Text
@@ -43,7 +50,7 @@ export function GarageIdentity({ user }: Props) {
           marginTop: 4,
         }}
       >
-        {user.username} · {user.location}
+        {motorcycleBrand} {motorcycleModel} · {location}
       </Text>
     </View>
   );

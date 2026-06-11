@@ -1,6 +1,8 @@
 import { Profile } from "../../../types/database";
 
 export const profileData: Profile = {
+  id: "1",
+
   name: "Ryan Kusuma",
 
   username: "@ryan_nmax2024",
@@ -9,9 +11,9 @@ export const profileData: Profile = {
 
   avatar: "RY",
 
-  stats: {
-    followers: "1.2k",
-    following: "342",
-    posts: "28",
-  },
+  followers: 1200,
+
+  following: 342,
+
+  posts: 28,
 };

@@ -90,12 +90,7 @@ export function GarageSetupSection({ section }: Props) {
           }}
         >
           {section.items.map((item) => (
-            <GarageSetupItem
-              key={item.id}
-              name={item.name}
-              brand={item.brand}
-              price={item.price}
-            />
+            <GarageSetupItem key={item.id} part={item} />
           ))}
         </View>
       )}

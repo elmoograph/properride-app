@@ -1,9 +1,7 @@
-import { View, TextInput, Text } from "react-native";
+import { View, TextInput, Text, TouchableOpacity } from "react-native";
 import { useMemo, useState } from "react";
 
 import { spacing } from "../../../constants/spacing";
-
-import { timelineData } from "../data/timeline.data";
 
 import { GarageTimelineItem } from "./GarageTimelineItem";
 import { Search } from "lucide-react-native";
@@ -11,17 +9,32 @@ import { colors } from "../../../constants/colors";
 import { radius } from "../../../constants/radius";
 import { icons } from "../../../constants/icons";
 
+import { useTimeline } from "@/features/timeline/hooks/useTimeline";
+import { router } from "expo-router";
+
 export function GarageTimelineList() {
   const [search, setSearch] = useState("");
+  const { events, loading } = useTimeline();
 
   const filteredTimeline = useMemo(() => {
-    return timelineData.filter((item) =>
-      `${item.title} ${item.date} ${item.price}`
+    return events.filter((item) =>
+      `${item.title} ${item.description ?? ""} ${item.cost}`
         .toLowerCase()
         .includes(search.toLowerCase()),
     );
-  }, [search]);
-
+  }, [events, search]);
+  if (loading) {
+    return (
+      <View
+        style={{
+          paddingVertical: spacing["4xl"],
+          alignItems: "center",
+        }}
+      >
+        <Text>Loading timeline...</Text>
+      </View>
+    );
+  }
   return (
     <View
       style={{
@@ -84,12 +97,36 @@ export function GarageTimelineList() {
           <GarageTimelineItem
             key={item.id}
             title={item.title}
-            date={item.date}
-            price={item.price}
+            date={new Date(item.event_date).toLocaleDateString("id-ID")}
+            price={`Rp ${item.cost.toLocaleString("id-ID")}`}
             isLast={index === filteredTimeline.length - 1}
+            onPress={() => router.push(`/timeline/${item.id}`)}
           />
         ))
       )}
+      <TouchableOpacity
+        onPress={() => router.push("/timeline/add")}
+        style={{
+          marginTop: spacing.xl,
+
+          backgroundColor: colors.primary,
+
+          paddingVertical: 12,
+
+          borderRadius: radius.sm,
+
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={{
+            color: colors.background,
+            fontWeight: "700",
+          }}
+        >
+          + Add Timeline Event
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }

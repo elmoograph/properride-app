@@ -58,10 +58,16 @@ function StatusItem({
 }
 
 type Props = {
-  user: UserData;
+  totalParts: number;
+  totalMotorcycles: number;
+  totalBuildCost: number;
 };
 
-export function GarageProfile({ user }: Props) {
+export function GarageProfile({
+  totalParts,
+  totalMotorcycles,
+  totalBuildCost,
+}: Props) {
   return (
     <View
       style={{
@@ -114,21 +120,21 @@ export function GarageProfile({ user }: Props) {
         }}
       >
         <StatusItem
+          icon={<Wrench size={icons.xs} color={colors.primary} />}
+          value="0"
+          label="Parts"
+        />
+
+        <StatusItem
           icon={<UsersRound size={icons.xs} color={colors.primary} />}
-          value={user.followers}
-          label="Followers"
+          value="1"
+          label="Motorcycles"
         />
 
         <StatusItem
           icon={<Eye size={icons.xs} color={colors.primary} />}
-          value={user.views}
-          label="Views"
-        />
-
-        <StatusItem
-          icon={<Wrench size={icons.xs} color={colors.primary} />}
-          value={user.parts}
-          label="Parts"
+          value="Rp 0"
+          label="Build Cost"
         />
       </View>
     </View>

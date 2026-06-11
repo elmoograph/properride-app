@@ -228,19 +228,19 @@ export function ProfileHero({ profile }: Props) {
         >
           <StatCard
             icon={<UsersRound size={icons.sm} color={colors.primary} />}
-            value={profile.stats.followers}
+            value={String(profile.followers)}
             label="Followers"
           />
 
           <StatCard
             icon={<UserPlus size={icons.sm} color={colors.primary} />}
-            value={profile.stats.following}
+            value={String(profile.following)}
             label="Followings"
           />
 
           <StatCard
             icon={<Grid3x3 size={icons.sm} color={colors.primary} />}
-            value={profile.stats.posts}
+            value={String(profile.posts)}
             label="Posts"
           />
         </View>

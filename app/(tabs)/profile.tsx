@@ -7,7 +7,7 @@ import { colors } from "@/constants/colors";
 import { ProfileHeader } from "@/features/profile/components/ProfileHeader";
 
 import { ProfileHero } from "@/features/profile/components/ProfileHero";
-import { getProfile } from "@/features/profile/repositories/profile.repository";
+// import { getProfile } from "@/features/profile/repositories/profile.repository";
 
 import { ActivitySection } from "@/features/profile/components/ActivitySection";
 import { ProfileMenuSection } from "@/features/profile/components/ProfileMenuSection";
@@ -16,7 +16,16 @@ import { LogoutButton } from "@/features/profile/components/LogoutButton";
 import { spacing } from "@/constants/spacing";
 
 export default function profileScreen() {
-  const profile = getProfile();
+  const profile = {
+    id: "",
+    name: "Loading...",
+    username: "@loading",
+    location: "",
+    avatar: "PR",
+    followers: 0,
+    following: 0,
+    posts: 0,
+  };
   return (
     <>
       <StatusBar hidden />

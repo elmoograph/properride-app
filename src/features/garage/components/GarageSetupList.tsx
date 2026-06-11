@@ -4,13 +4,34 @@ import { colors } from "../../../constants/colors";
 import { spacing } from "../../../constants/spacing";
 import { typography } from "../../../styles/typography";
 
-import { setupData } from "../data/setup.data";
+import { useParts } from "@/features/parts/hooks/useParts";
+import { groupPartsByCategory } from "@/features/parts/utils/groupParts";
 
 import { TouchableOpacity } from "react-native";
 import { radius } from "../../../constants/radius";
 import { GarageSetupSection } from "./GarageSetupSection";
+import { MotorcyclePart } from "@/features/parts/types/part.types";
 
-export function GarageSetupList() {
+import { router } from "expo-router";
+
+type Props = {
+  parts: MotorcyclePart[];
+  loading: boolean;
+};
+
+export function GarageSetupList({ parts, loading }: Props) {
+  const sections = groupPartsByCategory(parts);
+  if (loading) {
+    return (
+      <Text
+        style={{
+          textAlign: "center",
+        }}
+      >
+        Loading Parts...
+      </Text>
+    );
+  }
   return (
     <View
       style={{
@@ -19,12 +40,13 @@ export function GarageSetupList() {
         paddingHorizontal: spacing.screen,
       }}
     >
-      {setupData.map((section) => (
+      {sections.map((section) => (
         <GarageSetupSection key={section.title} section={section} />
       ))}
       {/* ADD PART BUTTON */}
       <TouchableOpacity
         activeOpacity={0.8}
+        onPress={() => router.push("/parts/add")}
         style={{
           width: "100%",
 

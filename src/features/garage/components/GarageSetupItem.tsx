@@ -7,17 +7,19 @@ import { typography } from "../../../styles/typography";
 import { icons } from "../../../constants/icons";
 import { spacing } from "@/constants/spacing";
 
+import { MotorcyclePart } from "@/features/parts/types/part.types";
+import { TouchableOpacity } from "react-native";
+import { router } from "expo-router";
+
 type Props = {
-  name: string;
-
-  brand: string;
-
-  price: string;
+  part: MotorcyclePart;
 };
 
-export function GarageSetupItem({ name, brand, price }: Props) {
+export function GarageSetupItem({ part }: Props) {
   return (
-    <View
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() => router.push(`/parts/${part.id}`)}
       style={{
         paddingVertical: spacing.lg,
 
@@ -46,7 +48,7 @@ export function GarageSetupItem({ name, brand, price }: Props) {
               color: colors.textPrimary,
             }}
           >
-            {name}
+            {part.name}
           </Text>
 
           <Text
@@ -55,7 +57,7 @@ export function GarageSetupItem({ name, brand, price }: Props) {
               color: colors.textSecondary,
             }}
           >
-            {brand}
+            {part.brand ?? "-"}
           </Text>
         </View>
       </View>
@@ -74,11 +76,11 @@ export function GarageSetupItem({ name, brand, price }: Props) {
             color: colors.textSecondary,
           }}
         >
-          {price}
+          {`Rp ${(part.price ?? 0).toLocaleString("id-ID")}`}
         </Text>
 
         <Tag size={icons.sm} color={colors.primary} />
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }

@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 
 import { Clock3 } from "lucide-react-native";
 
@@ -10,15 +10,19 @@ import { spacing } from "@/constants/spacing";
 
 type Props = {
   title: string;
-
   date: string;
-
   price: string;
-
   isLast?: boolean;
+  onPress?: () => void;
 };
 
-export function GarageTimelineItem({ title, date, price, isLast }: Props) {
+export function GarageTimelineItem({
+  title,
+  date,
+  price,
+  isLast,
+  onPress,
+}: Props) {
   return (
     <View
       style={{
@@ -62,7 +66,9 @@ export function GarageTimelineItem({ title, date, price, isLast }: Props) {
       </View>
 
       {/* CARD */}
-      <View
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={onPress}
         style={{
           flex: 1,
 
@@ -133,7 +139,7 @@ export function GarageTimelineItem({ title, date, price, isLast }: Props) {
             {price}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 }

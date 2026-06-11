@@ -3,19 +3,25 @@ import { Image, TouchableOpacity } from "react-native";
 import { radius } from "../../../constants/radius";
 
 type Props = {
-  image: any;
+  onPress?: () => void;
+  image: string;
 };
 
-export function GarageGalleryItem({ image }: Props) {
+export function GarageGalleryItem({ image, onPress }: Props) {
   return (
     <TouchableOpacity
       activeOpacity={0.9}
+      onPress={onPress}
       style={{
         flex: 1,
       }}
     >
       <Image
-        source={image}
+        source={
+          image
+            ? { uri: image }
+            : require("../../../../assets/images/garage-hero.png")
+        }
         resizeMode="cover"
         style={{
           width: "100%",

@@ -1,3 +1,4 @@
+import { MotorcyclePart } from "@/features/parts/types/part.types";
 export type BikeData = {
   name: string;
 };
@@ -5,17 +6,17 @@ export type BikeData = {
 export type UserData = {
   name: string;
 
-  nickname: string;
+  nickname?: string;
 
   username: string;
 
   location: string;
 
-  followers: string;
+  followers?: string;
 
-  views: string;
+  views?: string;
 
-  parts: string;
+  parts?: string;
 };
 
 export type StatsData = {
@@ -26,20 +27,10 @@ export type StatsData = {
   brand: string;
 };
 
-export type SetupItem = {
-  id: string;
-
-  name: string;
-
-  brand: string;
-
-  price: string;
-};
-
 export type SetupSection = {
   title: string;
 
-  items: SetupItem[];
+  items: MotorcyclePart[];
 };
 
 export type TimelineItem = {
