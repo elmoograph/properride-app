@@ -10,4 +10,8 @@ export const colors = {
   surface: "#121212",
 
   mute: "rgba(255,255,255,0.05)",
+
+  card: "#182235",
+
+  orange: "#FF8A00",
 };

@@ -12,20 +12,32 @@ import { pickMotorcycleImage } from "@/features/motorcycles/services/image-picke
 import { uploadMotorcycleImage } from "@/features/motorcycles/repositories/upload.repository";
 import { updateMotorcycleImage } from "@/features/motorcycles/repositories/motorcycle.repository";
 import { useMotorcycles } from "@/features/motorcycles/hooks/useMotorcycles";
+import { Motorcycle } from "@/features/motorcycles/types/motorcycle.types";
+
+import { setFeaturedMotorcycle } from "@/features/motorcycles/repositories/motorcycle.repository";
+
+import { useGarage } from "@/features/garage/hooks/useGarage";
 
 import { Alert } from "react-native";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { hp } from "../../../utils/responsive";
 import { icons } from "../../../constants/icons";
+import { MotorcycleSelector } from "@/features/motorcycles/components/MotorcycleSelector";
 
 type Props = {
   motorcycleName?: string;
+
+  motorcycles: Motorcycle[];
+
+  featuredMotorcycle: Motorcycle | null;
 };
 
 export function GarageHero({ motorcycleName }: Props) {
   const insets = useSafeAreaInsets();
-  const { featuredMotorcycle, refreshMotorcycles } = useMotorcycles();
+  const { garage } = useGarage();
+  const { motorcycles, featuredMotorcycle, refreshMotorcycles } =
+    useMotorcycles();
 
   async function handleUploadImage() {
     try {
@@ -56,11 +68,19 @@ export function GarageHero({ motorcycleName }: Props) {
       Alert.alert("Upload Failed", error.message);
     }
   }
+
+  async function handleSelectMotorcycle(motorcycleId: string) {
+    if (!garage?.id) return;
+
+    await setFeaturedMotorcycle(garage.id, motorcycleId);
+
+    await refreshMotorcycles();
+  }
   return (
     <View
       style={{
         width: "100%",
-        height: hp(28),
+        height: hp(40),
 
         overflow: "hidden",
 
@@ -87,7 +107,7 @@ export function GarageHero({ motorcycleName }: Props) {
         style={{
           flex: 1,
 
-          paddingTop: 10 + insets.top,
+          paddingTop: spacing.md + insets.top,
           paddingHorizontal: spacing.screen,
 
           flexDirection: "row",
@@ -96,29 +116,14 @@ export function GarageHero({ motorcycleName }: Props) {
         }}
       >
         {/* MOTOR TYPE */}
-        <View
-          style={{
-            backgroundColor: colors.primary,
-
-            paddingHorizontal: 12,
-            paddingVertical: 4,
-
-            borderRadius: radius.full,
-          }}
-        >
-          <Text
-            style={{
-              ...typography.body.sm,
-
-              color: colors.background,
-            }}
-          >
-            {motorcycleName ?? "No Motorcycle"}
-          </Text>
-        </View>
+        <MotorcycleSelector
+          motorcycles={motorcycles}
+          featuredMotorcycle={featuredMotorcycle}
+          onSelect={handleSelectMotorcycle}
+        />
 
         {/* EDIT BUTTON */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => router.push("/motorcycles")}
           style={{
@@ -144,7 +149,7 @@ export function GarageHero({ motorcycleName }: Props) {
           >
             Manage Motorcycles
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );

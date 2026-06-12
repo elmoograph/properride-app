@@ -9,10 +9,16 @@ export function useGarageAnalytics() {
 
   const { images } = useGallery();
 
+  const latestUpgrade = events.length > 0 ? events[0].title : "No upgrades yet";
+
   return {
-    totalCost,
     totalParts,
+    totalCost,
+
     totalEvents: events.length,
+
     totalPhotos: images.length,
+
+    latestUpgrade,
   };
 }

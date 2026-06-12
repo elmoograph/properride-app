@@ -1,6 +1,6 @@
 import { Image, Text, View } from "react-native";
 
-import { Eye, UsersRound, Wrench } from "lucide-react-native";
+import { Wrench, Clock3, Image as ImageIcon } from "lucide-react-native";
 
 import { colors } from "../../../constants/colors";
 import { spacing } from "../../../constants/spacing";
@@ -59,32 +59,24 @@ function StatusItem({
 
 type Props = {
   totalParts: number;
-  totalMotorcycles: number;
-  totalBuildCost: number;
+  totalEvents: number;
+  totalPhotos: number;
 };
 
-export function GarageProfile({
-  totalParts,
-  totalMotorcycles,
-  totalBuildCost,
-}: Props) {
+export function GarageProfile({ totalParts, totalEvents, totalPhotos }: Props) {
   return (
     <View
       style={{
         width: "100%",
-
         paddingHorizontal: spacing.screen,
-
-        flexDirection: "row",
         alignItems: "center",
-        zIndex: 10,
         elevation: 10,
         marginTop: -10,
-        gap: spacing.lg,
+        justifyContent: "space-between",
       }}
     >
       {/* PROFILE PHOTO */}
-      <View
+      {/* <View
         style={{
           padding: 4,
 
@@ -104,7 +96,7 @@ export function GarageProfile({
             borderRadius: radius.full,
           }}
         />
-      </View>
+      </View> */}
 
       {/* STATUS */}
       <View
@@ -114,27 +106,28 @@ export function GarageProfile({
 
           flexShrink: 1,
           flexWrap: "wrap",
-          justifyContent: "space-between",
-          rowGap: spacing.lg,
-          marginLeft: spacing.lg,
+          // marginLeft: spacing.lg,
+          marginTop: spacing["3xl"],
+          // alignContent: "center",
+          gap: spacing["4xl"],
         }}
       >
         <StatusItem
           icon={<Wrench size={icons.xs} color={colors.primary} />}
-          value="0"
+          value={String(totalParts)}
           label="Parts"
         />
 
         <StatusItem
-          icon={<UsersRound size={icons.xs} color={colors.primary} />}
-          value="1"
-          label="Motorcycles"
+          icon={<Clock3 size={icons.xs} color={colors.primary} />}
+          value={String(totalEvents)}
+          label="Timeline"
         />
 
         <StatusItem
-          icon={<Eye size={icons.xs} color={colors.primary} />}
-          value="Rp 0"
-          label="Build Cost"
+          icon={<ImageIcon size={icons.xs} color={colors.primary} />}
+          value={String(totalPhotos)}
+          label="Photos"
         />
       </View>
     </View>

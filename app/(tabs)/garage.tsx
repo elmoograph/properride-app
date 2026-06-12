@@ -19,13 +19,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useMotorcycles } from "@/features/motorcycles/hooks/useMotorcycles";
 import { useParts } from "@/features/parts/hooks/useParts";
+import { useGarageAnalytics } from "@/features/garage/hooks/useGarageAnalytics";
+
+import { GarageSummaryCard } from "@/features/garage/dashboard/GarageSummaryCard";
+import { GarageHeroV2 } from "@/features/garage/dashboard/GarageHeroV2";
 
 export default function GarageScreen() {
   const [activeTab, setActiveTab] = useState("Setup");
   const { garage, loading } = useGarage();
-  const { featuredMotorcycle, loading: motorcycleLoading } = useMotorcycles();
+  const {
+    motorcycles,
+    featuredMotorcycle,
+    loading: motorcycleLoading,
+  } = useMotorcycles();
 
   const { parts, totalParts, totalCost, loading: partsLoading } = useParts();
+  const analytics = useGarageAnalytics();
 
   if (loading || motorcycleLoading) {
     return (
@@ -71,22 +80,38 @@ export default function GarageScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View>
-          <GarageHero motorcycleName={featuredMotorcycle?.name} />
-          <GarageProfile
-            totalParts={totalParts}
-            totalMotorcycles={1}
-            totalBuildCost={totalCost}
+          <GarageHero
+            motorcycleName={featuredMotorcycle?.name}
+            motorcycles={motorcycles}
+            featuredMotorcycle={featuredMotorcycle}
           />
+
+          {/* <GarageHeroV2
+            imageUrl={featuredMotorcycle?.image_url}
+            name={featuredMotorcycle?.name ?? "No Motorcycle"}
+            nickname={featuredMotorcycle?.nickname}
+          />
+
+          <GarageSummaryCard
+            totalCost={0}
+            totalParts={0}
+            totalEvents={0}
+            totalPhotos={0}
+          /> */}
           <GarageIdentity
             garageName={garage?.name ?? "Garage"}
             location={garage?.location ?? "-"}
             motorcycleBrand={featuredMotorcycle?.brand}
             motorcycleModel={featuredMotorcycle?.model}
           />
+          <GarageProfile
+            totalParts={analytics.totalParts}
+            totalEvents={analytics.totalEvents}
+            totalPhotos={analytics.totalPhotos}
+          />
           <GarageStats
-            totalCost={`Rp ${totalCost.toLocaleString("id-ID")}`}
-            totalParts={totalParts}
-            brand={featuredMotorcycle?.brand ?? "-"}
+            totalCost={`Rp ${analytics.totalCost.toLocaleString("id-ID")}`}
+            latestUpgrade={analytics.latestUpgrade}
           />
 
           <GarageTabs activeTab={activeTab} onChangeTab={setActiveTab} />

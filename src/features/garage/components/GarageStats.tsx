@@ -8,18 +8,18 @@ import { StatsData } from "../types/garage.types";
 
 type Props = {
   totalCost: string;
-  totalParts: number;
-  brand: string;
+  latestUpgrade: string;
 };
-
-export function GarageStats({ totalCost, totalParts, brand }: Props) {
+export function GarageStats({ totalCost, latestUpgrade }: Props) {
   return (
     <View
       style={{
         width: "100%",
         marginTop: spacing.lg,
         paddingHorizontal: spacing.screen,
+
         flexDirection: "row",
+
         justifyContent: "space-between",
       }}
     >
@@ -30,7 +30,7 @@ export function GarageStats({ totalCost, totalParts, brand }: Props) {
             color: colors.textSecondary,
           }}
         >
-          Total Build Cost
+          Build Cost
         </Text>
 
         <Text
@@ -46,6 +46,10 @@ export function GarageStats({ totalCost, totalParts, brand }: Props) {
       <View
         style={{
           alignItems: "flex-end",
+
+          flex: 1,
+
+          marginLeft: 24,
         }}
       >
         <Text
@@ -54,16 +58,19 @@ export function GarageStats({ totalCost, totalParts, brand }: Props) {
             color: colors.textSecondary,
           }}
         >
-          {brand}
+          Latest Upgrade
         </Text>
 
         <Text
+          numberOfLines={2}
           style={{
-            ...typography.heading.sm,
+            ...typography.body.md,
             color: colors.textPrimary,
+
+            textAlign: "right",
           }}
         >
-          {totalParts} Parts
+          {latestUpgrade}
         </Text>
       </View>
     </View>
