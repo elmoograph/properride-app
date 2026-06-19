@@ -27,8 +27,13 @@ import {
   getPartById,
 } from "@/src/features/part/repositories/part.repository";
 import type { Part } from "@/src/features/part/types/part.types";
-import { formatCurrency, formatOptionalValue } from "@/src/utils/format";
+import {
+  formatCurrency,
+  formatDate,
+  formatOptionalValue,
+} from "@/src/utils/format";
 import { deleteUploadedImage } from "@/src/utils/uploadImage";
+import { PartInfoGrid } from "@/src/features/part/components/PartInfoGrid";
 
 export default function PartDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -177,6 +182,7 @@ export default function PartDetailScreen() {
           <AppButton
             title={PART_COPY.DETAIL_EDIT_BUTTON}
             onPress={handleEdit}
+            style={styles.actionButton}
           />
 
           <AppButton
@@ -184,8 +190,11 @@ export default function PartDetailScreen() {
             variant="danger"
             loading={deleting}
             onPress={confirmDelete}
+            style={styles.actionButton}
           />
         </View>
+
+        <PartInfoGrid part={part} />
 
         <SectionCard title={PART_COPY.DETAIL_OVERVIEW_TITLE}>
           <InfoRow
@@ -203,11 +212,6 @@ export default function PartDetailScreen() {
             value={formatOptionalValue(
               part.product_name || part.custom_product_name,
             )}
-          />
-
-          <InfoRow
-            label={PART_COPY.LABEL_PRICE}
-            value={formatCurrency(part.price)}
           />
         </SectionCard>
 
@@ -231,11 +235,6 @@ export default function PartDetailScreen() {
             label={PART_COPY.LABEL_LOCATION}
             value={formatOptionalValue(part.location)}
           />
-
-          <InfoRow
-            label={PART_COPY.LABEL_RATING}
-            value={formatOptionalValue(part.rating)}
-          />
         </SectionCard>
 
         <SectionCard title={PART_COPY.DETAIL_DESCRIPTION_TITLE}>
@@ -258,6 +257,7 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   actionGroup: {
+    flexDirection: "row",
     gap: spacing.md,
   },
   description: {
@@ -265,5 +265,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     color: colors.textSecondary,
+  },
+  actionButton: {
+    flex: 1,
   },
 });

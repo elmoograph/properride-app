@@ -1,5 +1,12 @@
 export const PART_TABLE = "parts";
 
+export const PART_SORT_OPTIONS = {
+  NEWEST: "newest",
+  PRICE_HIGH: "price_high",
+  PRICE_LOW: "price_low",
+  INSTALL_DATE: "install_date",
+} as const;
+
 export const PART_CATEGORIES = [
   "Suspension",
   "Wheel",
@@ -46,6 +53,12 @@ export const PART_COPY = {
   DETAIL_SECTION_TITLE: "Installation Details",
   DETAIL_SECTION_DESCRIPTION:
     "Optional information about price, workshop, and installation.",
+
+  INFO_PRICE_TITLE: "Price",
+  INFO_INSTALL_DATE_TITLE: "Installed",
+  INFO_WORKSHOP_TITLE: "Workshop",
+  INFO_RATING_TITLE: "Rating",
+  RATING_NO_VALUE: "No rating",
 
   FIELD_MAIN_IMAGE: "Main Image",
   FIELD_CATEGORY: "Category",
@@ -122,6 +135,30 @@ export const PART_COPY = {
   LABEL_PURCHASE_DATE: "Purchase Date",
   LABEL_LOCATION: "Location",
   LABEL_DESCRIPTION: "Description",
+
+  FILTER_ALL: "All",
+  SEARCH_PLACEHOLDER: "Search parts, brand, category, workshop...",
+  FILTER_EMPTY_TITLE: "No matching parts",
+  FILTER_EMPTY_DESCRIPTION:
+    "Try another keyword or choose a different category.",
+
+  SORT_LABEL: "Sort By",
+  SORT_NEWEST: "Newest",
+  SORT_PRICE_HIGH: "Price High",
+  SORT_PRICE_LOW: "Price Low",
+  SORT_INSTALL_DATE: "Install Date",
+
+  SUMMARY_TITLE: "Build Summary",
+  SUMMARY_TOTAL_PARTS: "Total Parts",
+  SUMMARY_TOTAL_COST: "Estimated Cost",
+  SUMMARY_CATEGORIES: "Categories",
+
+  GROUP_EMPTY_TITLE: "No parts in this category",
+  GROUP_TITLE_SUFFIX: "Parts",
+
+  RATING_EMPTY: "No rating",
+  PRICE_HELPER: "Input number only, example: 2500000",
+  DATE_HELPER: "Use YYYY-MM-DD format, example: 2026-06-19",
 
   EMPTY_VALUE: "-",
 } as const;

@@ -1,7 +1,11 @@
-import type { PART_CATEGORIES } from "@/src/features/part/constants/part.constants";
+import type {
+  PART_CATEGORIES,
+  PART_SORT_OPTIONS,
+} from "@/src/features/part/constants/part.constants";
 
 export type PartCategory = (typeof PART_CATEGORIES)[number];
-
+export type PartSortOption =
+  (typeof PART_SORT_OPTIONS)[keyof typeof PART_SORT_OPTIONS];
 export type Part = {
   id: string;
 

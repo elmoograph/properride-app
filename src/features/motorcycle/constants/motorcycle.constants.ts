@@ -1,5 +1,12 @@
 export const MOTORCYCLE_TABLE = "motorcycles";
 
+export const MOTORCYCLE_SORT_OPTIONS = {
+  NEWEST: "newest",
+  OLDEST: "oldest",
+  BRAND: "brand",
+  YEAR: "year",
+} as const;
+
 export const MOTORCYCLE_VISIBILITY = {
   PUBLIC: "public",
   PRIVATE: "private",
@@ -25,6 +32,21 @@ export const MOTORCYCLE_BRANDS = [
 ] as const;
 
 export const MOTORCYCLE_COPY = {
+  GARAGE_SUMMARY_TITLE: "Garage Summary",
+  GARAGE_SUMMARY_MOTORCYCLES: "Motorcycles",
+  GARAGE_SUMMARY_PARTS: "Total Parts",
+  GARAGE_SUMMARY_BUILD_COST: "Estimated Build Cost",
+
+  GARAGE_SEARCH_PLACEHOLDER: "Search motorcycle, brand, model...",
+  GARAGE_SORT_LABEL: "Sort By",
+  GARAGE_SORT_NEWEST: "Newest",
+  GARAGE_SORT_OLDEST: "Oldest",
+  GARAGE_SORT_BRAND: "Brand",
+  GARAGE_SORT_YEAR: "Year",
+  GARAGE_FILTER_EMPTY_TITLE: "No matching motorcycles",
+  GARAGE_FILTER_EMPTY_DESCRIPTION:
+    "Try another keyword or change the sort option.",
+
   GARAGE_TITLE: "Garage",
   GARAGE_SUBTITLE: "Your motorcycles identity starts here.",
   EMPTY_TITLE: "Your garage is empty",
@@ -83,6 +105,16 @@ export const MOTORCYCLE_COPY = {
   DETAIL_OVERVIEW_TITLE: "Overview",
   DETAIL_SPECIFICATION_TITLE: "Specification",
   DETAIL_DESCRIPTION_TITLE: "Description",
+
+  SUMMARY_TITLE: "Garage Summary",
+  SUMMARY_TOTAL_PARTS: "Total Parts",
+  SUMMARY_GALLERY_PHOTOS: "Gallery Photos",
+  SUMMARY_ESTIMATED_COST: "Estimated Build Cost",
+
+  INFO_YEAR_TITLE: "Year",
+  INFO_ENGINE_TITLE: "Engine",
+  INFO_MILEAGE_TITLE: "Mileage",
+  INFO_STATUS_TITLE: "Status",
 
   LABEL_BRAND: "Brand",
   LABEL_MODEL: "Model",

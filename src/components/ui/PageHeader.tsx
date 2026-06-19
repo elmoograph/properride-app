@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { colors, fontFamily, spacing } from "@/src/theme";
@@ -5,42 +6,42 @@ import { colors, fontFamily, spacing } from "@/src/theme";
 type PageHeaderProps = {
   title: string;
   subtitle?: string;
-  eyebrow?: string;
+  action?: ReactNode;
 };
 
-export function PageHeader({ title, subtitle, eyebrow }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
   return (
     <View style={styles.container}>
-      {eyebrow ? <Text style={styles.eyebrow}>{eyebrow}</Text> : null}
+      <View style={styles.textContent}>
+        <Text style={styles.title}>{title}</Text>
 
-      <Text style={styles.title}>{title}</Text>
+        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+      </View>
 
-      {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+      {action ? <View style={styles.action}>{action}</View> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    gap: spacing.md,
   },
-  eyebrow: {
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.body.semiBold,
-    fontSize: 13,
-    color: colors.primary,
+  textContent: {
+    gap: spacing.xs,
   },
   title: {
-    fontFamily: fontFamily.headline.bold,
+    fontFamily: fontFamily.headline.extraBold,
     fontSize: 28,
-    lineHeight: 34,
     color: colors.textPrimary,
   },
   subtitle: {
-    marginTop: spacing.sm,
     fontFamily: fontFamily.body.regular,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 14,
+    lineHeight: 20,
     color: colors.textSecondary,
+  },
+  action: {
+    alignSelf: "flex-start",
   },
 });

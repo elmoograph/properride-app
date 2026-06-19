@@ -1,7 +1,11 @@
 import type {
+  MOTORCYCLE_SORT_OPTIONS,
   MOTORCYCLE_STATUS,
   MOTORCYCLE_VISIBILITY,
 } from "@/src/features/motorcycle/constants/motorcycle.constants";
+
+export type MotorcycleSortOption =
+  (typeof MOTORCYCLE_SORT_OPTIONS)[keyof typeof MOTORCYCLE_SORT_OPTIONS];
 
 export type MotorcycleVisibility =
   (typeof MOTORCYCLE_VISIBILITY)[keyof typeof MOTORCYCLE_VISIBILITY];

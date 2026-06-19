@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   imageWrapper: {
-    height: 220,
+    height: 260,
     backgroundColor: colors.surface,
   },
   image: {
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   placeholderText: {
     fontFamily: fontFamily.headline.extraBold,
-    fontSize: 64,
+    fontSize: 72,
     color: colors.textMuted,
   },
   content: {
@@ -99,12 +99,12 @@ const styles = StyleSheet.create({
   title: {
     marginTop: spacing.md,
     fontFamily: fontFamily.headline.extraBold,
-    fontSize: 24,
+    fontSize: 26,
     color: colors.textPrimary,
   },
   subtitle: {
     marginTop: spacing.xs,
-    fontFamily: fontFamily.body.regular,
+    fontFamily: fontFamily.body.medium,
     fontSize: 15,
     color: colors.textSecondary,
   },

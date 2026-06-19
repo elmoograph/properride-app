@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text } from "react-native";
 
 import {
   AppButton,
@@ -7,7 +7,6 @@ import {
   ImagePickerBox,
   SelectChipGroup,
 } from "@/src/components/ui";
-import { spacing } from "@/src/theme";
 import {
   PART_CATEGORIES,
   PART_COPY,
@@ -16,6 +15,9 @@ import type {
   PartFormErrors,
   PartFormValues,
 } from "@/src/features/part/utils/partForm";
+import { RatingSelect } from "@/src/features/part/components/RatingSelect";
+import { formatDateInput, onlyNumbers } from "@/src/utils/input";
+import { colors, fontFamily, spacing } from "@/src/theme";
 
 type PartFormProps = {
   values: PartFormValues;
@@ -89,27 +91,39 @@ export function PartForm({
         <AppInput
           label={PART_COPY.FIELD_PRICE}
           value={values.price}
-          onChangeText={(value) => onChange("price", value)}
+          onChangeText={(value) => onChange("price", onlyNumbers(value))}
           placeholder={PART_COPY.PLACEHOLDER_PRICE}
           keyboardType="number-pad"
           error={errors.price}
         />
 
+        <Text style={styles.helperText}>{PART_COPY.PRICE_HELPER}</Text>
+
         <AppInput
           label={PART_COPY.FIELD_PURCHASE_DATE}
           value={values.purchaseDate}
-          onChangeText={(value) => onChange("purchaseDate", value)}
+          onChangeText={(value) =>
+            onChange("purchaseDate", formatDateInput(value))
+          }
           placeholder={PART_COPY.PLACEHOLDER_PURCHASE_DATE}
+          keyboardType="number-pad"
           error={errors.purchaseDate}
         />
+
+        <Text style={styles.helperText}>{PART_COPY.DATE_HELPER}</Text>
 
         <AppInput
           label={PART_COPY.FIELD_INSTALL_DATE}
           value={values.installDate}
-          onChangeText={(value) => onChange("installDate", value)}
+          onChangeText={(value) =>
+            onChange("installDate", formatDateInput(value))
+          }
           placeholder={PART_COPY.PLACEHOLDER_INSTALL_DATE}
+          keyboardType="number-pad"
           error={errors.installDate}
         />
+
+        <Text style={styles.helperText}>{PART_COPY.DATE_HELPER}</Text>
 
         <AppInput
           label={PART_COPY.FIELD_WORKSHOP}
@@ -125,13 +139,11 @@ export function PartForm({
           placeholder={PART_COPY.PLACEHOLDER_LOCATION}
         />
 
-        <AppInput
+        <RatingSelect
           label={PART_COPY.FIELD_RATING}
           value={values.rating}
-          onChangeText={(value) => onChange("rating", value)}
-          placeholder={PART_COPY.PLACEHOLDER_RATING}
-          keyboardType="number-pad"
           error={errors.rating}
+          onChange={(value) => onChange("rating", value)}
         />
 
         <AppInput
@@ -156,5 +168,11 @@ export function PartForm({
 const styles = StyleSheet.create({
   submit: {
     marginTop: spacing.sm,
+  },
+  helperText: {
+    marginTop: -spacing.sm,
+    fontFamily: fontFamily.body.regular,
+    fontSize: 12,
+    color: colors.textMuted,
   },
 });

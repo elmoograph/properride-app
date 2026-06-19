@@ -1,23 +1,31 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Bike, Gauge, Settings } from "lucide-react-native";
 
 import { colors, fontFamily, radius, spacing } from "@/src/theme";
+import { MOTORCYCLE_COPY } from "@/src/features/motorcycle/constants/motorcycle.constants";
 import type { Motorcycle } from "@/src/features/motorcycle/types/motorcycle.types";
+import {
+  formatCc,
+  formatMileage,
+  formatOptionalValue,
+} from "@/src/utils/format";
 
 type MotorcycleCardProps = {
   motorcycle: Motorcycle;
   onPress?: () => void;
 };
 
-export function MotorcycleCard({ motorcycle, onPress }: MotorcycleCardProps) {
-  const title = [motorcycle.brand, motorcycle.model].filter(Boolean).join(" ");
-  const subtitle = [
-    motorcycle.nickname,
-    motorcycle.year ? String(motorcycle.year) : null,
-    motorcycle.color,
-  ]
-    .filter(Boolean)
-    .join(" • ");
+function getMotorcycleTitle(motorcycle: Motorcycle): string {
+  return `${motorcycle.brand} ${motorcycle.model}`;
+}
 
+function getMotorcycleSubtitle(motorcycle: Motorcycle): string {
+  return (
+    motorcycle.nickname || motorcycle.variant || MOTORCYCLE_COPY.EMPTY_VALUE
+  );
+}
+
+export function MotorcycleCard({ motorcycle, onPress }: MotorcycleCardProps) {
   return (
     <Pressable style={styles.card} onPress={onPress}>
       <View style={styles.imageWrapper}>
@@ -29,25 +37,62 @@ export function MotorcycleCard({ motorcycle, onPress }: MotorcycleCardProps) {
           />
         ) : (
           <View style={styles.placeholder}>
-            <Text style={styles.placeholderText}>{motorcycle.brand[0]}</Text>
+            <Bike size={40} color={colors.textMuted} />
           </View>
         )}
+
+        <View style={styles.statusBadge}>
+          <Text style={styles.statusBadgeText}>
+            {formatOptionalValue(motorcycle.status)}
+          </Text>
+        </View>
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title} numberOfLines={1}>
-          {title}
-        </Text>
+        <View style={styles.header}>
+          <View style={styles.titleGroup}>
+            <Text style={styles.title} numberOfLines={1}>
+              {getMotorcycleTitle(motorcycle)}
+            </Text>
 
-        {subtitle ? (
-          <Text style={styles.subtitle} numberOfLines={1}>
-            {subtitle}
+            <Text style={styles.subtitle} numberOfLines={1}>
+              {getMotorcycleSubtitle(motorcycle)}
+            </Text>
+          </View>
+
+          <View style={styles.yearBadge}>
+            <Text style={styles.yearBadgeText}>
+              {formatOptionalValue(motorcycle.year)}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.metaGrid}>
+          <View style={styles.metaItem}>
+            <Settings size={14} color={colors.textSecondary} />
+            <Text style={styles.metaText}>
+              {formatCc(motorcycle.engine_cc)}
+            </Text>
+          </View>
+
+          <View style={styles.metaItem}>
+            <Gauge size={14} color={colors.textSecondary} />
+            <Text style={styles.metaText}>
+              {formatMileage(motorcycle.mileage)}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            {formatOptionalValue(motorcycle.visibility)}
           </Text>
-        ) : null}
 
-        <View style={styles.metaRow}>
-          <Text style={styles.meta}>{motorcycle.status}</Text>
-          <Text style={styles.meta}>{motorcycle.visibility}</Text>
+          <Text style={styles.footerDot}>•</Text>
+
+          <Text style={styles.footerText}>
+            {formatOptionalValue(motorcycle.color)}
+          </Text>
         </View>
       </View>
     </Pressable>
@@ -56,18 +101,14 @@ export function MotorcycleCard({ motorcycle, onPress }: MotorcycleCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: "row",
-    padding: spacing.md,
+    overflow: "hidden",
+    borderRadius: radius["2xl"],
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: radius.lg,
     backgroundColor: colors.white,
   },
   imageWrapper: {
-    width: 92,
-    height: 92,
-    borderRadius: radius.md,
-    overflow: "hidden",
+    height: 190,
     backgroundColor: colors.surface,
   },
   image: {
@@ -80,36 +121,92 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: colors.surface,
   },
-  placeholderText: {
-    fontFamily: fontFamily.headline.extraBold,
-    fontSize: 32,
-    color: colors.textMuted,
+  statusBadge: {
+    position: "absolute",
+    top: spacing.md,
+    right: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.full,
+    backgroundColor: colors.black,
+  },
+  statusBadgeText: {
+    fontFamily: fontFamily.body.semiBold,
+    fontSize: 12,
+    color: colors.white,
+    textTransform: "capitalize",
   },
   content: {
+    padding: spacing.lg,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: spacing.md,
+  },
+  titleGroup: {
     flex: 1,
-    marginLeft: spacing.md,
-    justifyContent: "center",
   },
   title: {
-    fontFamily: fontFamily.headline.bold,
-    fontSize: 17,
+    fontFamily: fontFamily.headline.extraBold,
+    fontSize: 20,
     color: colors.textPrimary,
   },
   subtitle: {
     marginTop: spacing.xs,
-    fontFamily: fontFamily.body.regular,
+    fontFamily: fontFamily.body.medium,
     fontSize: 14,
     color: colors.textSecondary,
   },
-  metaRow: {
+  yearBadge: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  yearBadgeText: {
+    fontFamily: fontFamily.body.semiBold,
+    fontSize: 12,
+    color: colors.textPrimary,
+  },
+  metaGrid: {
     flexDirection: "row",
+    gap: spacing.md,
+    marginTop: spacing.lg,
+  },
+  metaItem: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.surface,
+  },
+  metaText: {
+    flex: 1,
+    fontFamily: fontFamily.body.semiBold,
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.sm,
     marginTop: spacing.md,
   },
-  meta: {
+  footerText: {
     fontFamily: fontFamily.body.medium,
     fontSize: 12,
     color: colors.textMuted,
     textTransform: "capitalize",
+  },
+  footerDot: {
+    fontFamily: fontFamily.body.bold,
+    fontSize: 12,
+    color: colors.textMuted,
   },
 });

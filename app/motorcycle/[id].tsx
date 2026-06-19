@@ -1,7 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  BackHandler,
   ScrollView,
   StyleSheet,
   Text,
@@ -44,10 +45,28 @@ import {
 } from "@/src/utils/format";
 import { pickImageFromLibrary } from "@/src/utils/pickImage";
 import { deleteUploadedImage, uploadImage } from "@/src/utils/uploadImage";
-import { PartCard } from "@/src/features/part/components/PartCard";
 import { PART_COPY } from "@/src/features/part/constants/part.constants";
 import { getPartsByMotorcycleId } from "@/src/features/part/repositories/part.repository";
-import type { Part } from "@/src/features/part/types/part.types";
+import { PartCategoryGroupSection } from "@/src/features/part/components/PartCategoryGroupSection";
+import { PartsSummaryCard } from "@/src/features/part/components/PartsSummaryCard";
+import {
+  calculatePartSummary,
+  groupPartsByCategory,
+} from "@/src/features/part/utils/partSummary";
+import { PartFilterBar } from "@/src/features/part/components/PartFilterBar";
+import {
+  filterParts,
+  getPartFilterCategories,
+} from "@/src/features/part/utils/partFilter";
+import { PART_SORT_OPTIONS } from "@/src/features/part/constants/part.constants";
+import type {
+  Part,
+  PartSortOption,
+} from "@/src/features/part/types/part.types";
+import { sortParts } from "@/src/features/part/utils/partSort";
+import { MotorcycleInfoGrid } from "@/src/features/motorcycle/components/MotorcycleInfoGrid";
+import { MotorcycleSummaryCard } from "@/src/features/motorcycle/components/MotorcycleSummaryCard";
+import { calculateMotorcycleDetailSummary } from "@/src/features/motorcycle/utils/motorcycleSummary";
 
 export default function MotorcycleDetailScreen() {
   const { user } = useAuth();
@@ -58,6 +77,13 @@ export default function MotorcycleDetailScreen() {
   const [motorcycle, setMotorcycle] = useState<Motorcycle | null>(null);
   const [galleryImages, setGalleryImages] = useState<MotorcycleImage[]>([]);
   const [parts, setParts] = useState<Part[]>([]);
+  const [partSearchQuery, setPartSearchQuery] = useState("");
+  const [selectedPartCategory, setSelectedPartCategory] = useState<string>(
+    PART_COPY.FILTER_ALL,
+  );
+  const [partSortOption, setPartSortOption] = useState<PartSortOption>(
+    PART_SORT_OPTIONS.NEWEST,
+  );
   const [selectedGalleryImage, setSelectedGalleryImage] =
     useState<MotorcycleImage | null>(null);
 
@@ -65,6 +91,24 @@ export default function MotorcycleDetailScreen() {
   const [deleting, setDeleting] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [deletingGalleryImage, setDeletingGalleryImage] = useState(false);
+
+  const partFilterCategories = getPartFilterCategories(parts);
+
+  const filteredParts = filterParts({
+    parts,
+    selectedCategory: selectedPartCategory,
+    searchQuery: partSearchQuery,
+  });
+
+  const sortedParts = sortParts(filteredParts, partSortOption);
+
+  const partSummary = calculatePartSummary(sortedParts);
+  const groupedParts = groupPartsByCategory(sortedParts);
+
+  const motorcycleSummary = calculateMotorcycleDetailSummary({
+    parts,
+    galleryImages,
+  });
 
   const loadDetail = useCallback(async () => {
     if (!motorcycleId) {
@@ -107,6 +151,11 @@ export default function MotorcycleDetailScreen() {
       loadDetail();
     }, [loadDetail]),
   );
+
+  function handleChangePartCategory(category: string) {
+    setSelectedPartCategory(category);
+  }
+
   function handleAddPart() {
     if (!motorcycleId) {
       return;
@@ -129,6 +178,17 @@ export default function MotorcycleDetailScreen() {
   function handleBackToGarage() {
     router.replace(ROUTES.TABS.GARAGE);
   }
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        handleBackToGarage();
+        return true;
+      },
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   function confirmDelete() {
     Alert.alert(
@@ -314,12 +374,20 @@ export default function MotorcycleDetailScreen() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
+        <AppButton
+          title={COMMON_COPY.BACK}
+          variant="secondary"
+          onPress={handleBackToGarage}
+          style={styles.backButton}
+        />
+
         <MotorcycleHero motorcycle={motorcycle} />
 
         <View style={styles.actionGroup}>
           <AppButton
             title={MOTORCYCLE_COPY.DETAIL_EDIT_BUTTON}
             onPress={handleEdit}
+            style={styles.actionButton}
           />
 
           <AppButton
@@ -327,8 +395,13 @@ export default function MotorcycleDetailScreen() {
             variant="danger"
             loading={deleting}
             onPress={confirmDelete}
+            style={styles.actionButton}
           />
         </View>
+
+        <MotorcycleSummaryCard summary={motorcycleSummary} />
+
+        <MotorcycleInfoGrid motorcycle={motorcycle} />
 
         <SectionCard title={MOTORCYCLE_IMAGE_COPY.GALLERY_TITLE}>
           {galleryImages.length > 0 ? (
@@ -354,14 +427,38 @@ export default function MotorcycleDetailScreen() {
         </SectionCard>
         <SectionCard title={PART_COPY.SECTION_TITLE}>
           {parts.length > 0 ? (
-            <View style={styles.partsList}>
-              {parts.map((part) => (
-                <PartCard
-                  key={part.id}
-                  part={part}
-                  onPress={() => handleOpenPart(part.id)}
+            <View style={styles.partsContainer}>
+              <PartFilterBar
+                searchQuery={partSearchQuery}
+                selectedCategory={selectedPartCategory}
+                categories={partFilterCategories}
+                sortOption={partSortOption}
+                onChangeSearchQuery={setPartSearchQuery}
+                onChangeCategory={handleChangePartCategory}
+                onChangeSortOption={setPartSortOption}
+              />
+
+              {sortedParts.length > 0 ? (
+                <>
+                  <PartsSummaryCard summary={partSummary} />
+
+                  <View style={styles.partsGroupList}>
+                    {groupedParts.map((group) => (
+                      <PartCategoryGroupSection
+                        key={group.category}
+                        category={group.category}
+                        parts={group.parts}
+                        onPressPart={handleOpenPart}
+                      />
+                    ))}
+                  </View>
+                </>
+              ) : (
+                <EmptyState
+                  title={PART_COPY.FILTER_EMPTY_TITLE}
+                  description={PART_COPY.FILTER_EMPTY_DESCRIPTION}
                 />
-              ))}
+              )}
             </View>
           ) : (
             <EmptyState
@@ -382,11 +479,6 @@ export default function MotorcycleDetailScreen() {
           <InfoRow
             label={MOTORCYCLE_COPY.LABEL_NICKNAME}
             value={formatOptionalValue(motorcycle.nickname)}
-          />
-
-          <InfoRow
-            label={MOTORCYCLE_COPY.LABEL_STATUS}
-            value={formatOptionalValue(motorcycle.status)}
           />
 
           <InfoRow
@@ -412,23 +504,8 @@ export default function MotorcycleDetailScreen() {
           />
 
           <InfoRow
-            label={MOTORCYCLE_COPY.LABEL_YEAR}
-            value={formatOptionalValue(motorcycle.year)}
-          />
-
-          <InfoRow
             label={MOTORCYCLE_COPY.LABEL_COLOR}
             value={formatOptionalValue(motorcycle.color)}
-          />
-
-          <InfoRow
-            label={MOTORCYCLE_COPY.LABEL_ENGINE_CC}
-            value={formatCc(motorcycle.engine_cc)}
-          />
-
-          <InfoRow
-            label={MOTORCYCLE_COPY.LABEL_MILEAGE}
-            value={formatMileage(motorcycle.mileage)}
           />
         </SectionCard>
 
@@ -460,7 +537,11 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   actionGroup: {
+    flexDirection: "row",
     gap: spacing.md,
+  },
+  actionButton: {
+    flex: 1,
   },
   galleryButton: {
     marginTop: spacing.lg,
@@ -471,10 +552,16 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: colors.textSecondary,
   },
-  partsList: {
-    gap: spacing.md,
+  partsContainer: {
+    gap: spacing.lg,
+  },
+  partsGroupList: {
+    gap: spacing.xl,
   },
   partsButton: {
     marginTop: spacing.lg,
+  },
+  backButton: {
+    alignSelf: "flex-start",
   },
 });

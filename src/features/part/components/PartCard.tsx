@@ -3,7 +3,11 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { colors, fontFamily, radius, spacing } from "@/src/theme";
 import { PART_COPY } from "@/src/features/part/constants/part.constants";
 import type { Part } from "@/src/features/part/types/part.types";
-import { formatCurrency, formatOptionalValue } from "@/src/utils/format";
+import {
+  formatCurrency,
+  formatDate,
+  formatOptionalValue,
+} from "@/src/utils/format";
 
 type PartCardProps = {
   part: Part;
@@ -57,9 +61,7 @@ export function PartCard({ part, onPress }: PartCardProps) {
         <View style={styles.metaRow}>
           <Text style={styles.meta}>{formatCurrency(part.price)}</Text>
 
-          <Text style={styles.meta}>
-            {formatOptionalValue(part.install_date)}
-          </Text>
+          <Text style={styles.meta}>{formatDate(part.install_date)}</Text>
         </View>
       </View>
     </Pressable>

@@ -21,6 +21,20 @@ export async function getPartsByMotorcycleId(
   return data ?? [];
 }
 
+export async function getPartsByUserId(userId: string): Promise<Part[]> {
+  const { data, error } = await supabase
+    .from(PART_TABLE)
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data ?? [];
+}
+
 export async function getPartById(partId: string): Promise<Part | null> {
   const { data, error } = await supabase
     .from(PART_TABLE)
