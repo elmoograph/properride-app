@@ -19,6 +19,7 @@ export type PartFormValues = {
   description: string;
   mainImageUrl: string;
   mainImageLocalUri: string;
+  isPublic: boolean;
 };
 
 export type PartFormErrors = Partial<Record<keyof PartFormValues, string>>;
@@ -36,6 +37,7 @@ export const INITIAL_PART_FORM: PartFormValues = {
   description: "",
   mainImageUrl: "",
   mainImageLocalUri: "",
+  isPublic: true,
 };
 
 export function mapPartToForm(part: Part): PartFormValues {
@@ -56,6 +58,7 @@ export function mapPartToForm(part: Part): PartFormValues {
     description: part.description || "",
     mainImageUrl: part.main_image_url || "",
     mainImageLocalUri: "",
+    isPublic: part.is_public,
   };
 }
 

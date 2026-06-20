@@ -170,6 +170,8 @@ export default function EditPartScreen() {
 
         main_image_url: uploadedImage.url,
         main_image_path: uploadedImage.path,
+
+        is_public: form.isPublic,
       });
 
       Alert.alert(

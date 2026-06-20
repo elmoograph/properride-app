@@ -6,6 +6,7 @@ import {
   FormSection,
   ImagePickerBox,
   SelectChipGroup,
+  SwitchRow,
 } from "@/src/components/ui";
 import {
   PART_CATEGORIES,
@@ -144,6 +145,13 @@ export function PartForm({
           value={values.rating}
           error={errors.rating}
           onChange={(value) => onChange("rating", value)}
+        />
+
+        <SwitchRow
+          label="Show in public setup"
+          description="Other riders can see this part when they view this build."
+          value={values.isPublic}
+          onValueChange={(value) => onChange("isPublic", value)}
         />
 
         <AppInput

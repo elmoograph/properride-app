@@ -16,6 +16,7 @@ import {
   EmptyState,
   InfoRow,
   SectionCard,
+  ActionSheetModal,
 } from "@/src/components/ui";
 import { COMMON_COPY } from "@/src/constants/copy";
 import { ROUTES } from "@/src/constants/routes";
@@ -68,7 +69,23 @@ import { MotorcycleInfoGrid } from "@/src/features/motorcycle/components/Motorcy
 import { MotorcycleSummaryCard } from "@/src/features/motorcycle/components/MotorcycleSummaryCard";
 import { calculateMotorcycleDetailSummary } from "@/src/features/motorcycle/utils/motorcycleSummary";
 
+import { BuildShowcaseHero } from "@/src/features/motorcycle/components/BuildShowcaseHero";
+import { BuildShowcaseStats } from "@/src/features/motorcycle/components/BuildShowcaseStats";
+import { BuildShowcaseTabs } from "@/src/features/motorcycle/components/BuildShowcaseTabs";
+import {
+  MOTORCYCLE_SHOWCASE_COLORS,
+  MOTORCYCLE_SHOWCASE_COPY,
+  MOTORCYCLE_SHOWCASE_TABS,
+} from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
+import type { MotorcycleShowcaseTab } from "@/src/features/motorcycle/types/motorcycle.types";
+import { BuildSetupGroupCard } from "@/src/features/part/components/BuildSetupGroupCard";
+import { BuildShowcaseOwnerActions } from "@/src/features/motorcycle/components/BuildShowcaseOwnerActions";
+import { Trash2 } from "lucide-react-native";
+
 export default function MotorcycleDetailScreen() {
+  const [activeShowcaseTab, setActiveShowcaseTab] =
+    useState<MotorcycleShowcaseTab>(MOTORCYCLE_SHOWCASE_TABS.SETUP);
+  const [moreMenuVisible, setMoreMenuVisible] = useState(false);
   const { user } = useAuth();
   const { id } = useLocalSearchParams<{ id: string }>();
 
@@ -117,10 +134,22 @@ export default function MotorcycleDetailScreen() {
     }
 
     try {
-      const [motorcycleData, galleryData, partsData] = await Promise.all([
-        getMotorcycleById(motorcycleId),
+      const motorcycleData = await getMotorcycleById(motorcycleId);
+
+      if (!motorcycleData) {
+        setMotorcycle(null);
+        setGalleryImages([]);
+        setParts([]);
+        return;
+      }
+
+      const isOwner = motorcycleData.user_id === user?.id;
+
+      const [galleryData, partsData] = await Promise.all([
         getMotorcycleImages(motorcycleId),
-        getPartsByMotorcycleId(motorcycleId),
+        getPartsByMotorcycleId(motorcycleId, {
+          includePrivate: isOwner,
+        }),
       ]);
 
       setMotorcycle(motorcycleData);
@@ -134,7 +163,7 @@ export default function MotorcycleDetailScreen() {
     } finally {
       setLoading(false);
     }
-  }, [motorcycleId]);
+  }, [motorcycleId, user?.id]);
 
   async function refreshGallery() {
     if (!motorcycleId) {
@@ -342,6 +371,14 @@ export default function MotorcycleDetailScreen() {
     }
   }
 
+  function handleOpenMoreMenu() {
+    setMoreMenuVisible(true);
+  }
+
+  function handleCloseMoreMenu() {
+    setMoreMenuVisible(false);
+  }
+
   if (loading) {
     return (
       <Screen contentContainerStyle={styles.centerContainer}>
@@ -371,149 +408,95 @@ export default function MotorcycleDetailScreen() {
   return (
     <Screen padded={false}>
       <ScrollView
+        style={styles.scroll}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <AppButton
-          title={COMMON_COPY.BACK}
-          variant="secondary"
-          onPress={handleBackToGarage}
-          style={styles.backButton}
+        <BuildShowcaseHero motorcycle={motorcycle} />
+
+        <BuildShowcaseStats summary={motorcycleSummary} />
+
+        <BuildShowcaseOwnerActions
+          onPressEditBuild={handleEdit}
+          onPressAddPart={handleAddPart}
+          onPressAddGallery={handleAddGalleryImage}
+          onPressMore={handleOpenMoreMenu}
         />
 
-        <MotorcycleHero motorcycle={motorcycle} />
+        <BuildShowcaseTabs
+          activeTab={activeShowcaseTab}
+          onChangeTab={setActiveShowcaseTab}
+        />
 
-        <View style={styles.actionGroup}>
-          <AppButton
-            title={MOTORCYCLE_COPY.DETAIL_EDIT_BUTTON}
-            onPress={handleEdit}
-            style={styles.actionButton}
-          />
-
-          <AppButton
-            title={MOTORCYCLE_COPY.DELETE_BUTTON}
-            variant="danger"
-            loading={deleting}
-            onPress={confirmDelete}
-            style={styles.actionButton}
-          />
-        </View>
-
-        <MotorcycleSummaryCard summary={motorcycleSummary} />
-
-        <MotorcycleInfoGrid motorcycle={motorcycle} />
-
-        <SectionCard title={MOTORCYCLE_IMAGE_COPY.GALLERY_TITLE}>
-          {galleryImages.length > 0 ? (
-            <MotorcycleGalleryGrid
-              images={galleryImages}
-              onPressImage={handleOpenGalleryImage}
-            />
-          ) : (
-            <EmptyState
-              title={MOTORCYCLE_IMAGE_COPY.GALLERY_EMPTY_TITLE}
-              description={MOTORCYCLE_IMAGE_COPY.GALLERY_EMPTY_DESCRIPTION}
-            />
-          )}
-
-          <View style={styles.galleryButton}>
-            <AppButton
-              title={MOTORCYCLE_IMAGE_COPY.ADD_GALLERY_BUTTON}
-              variant="secondary"
-              loading={uploadingGallery}
-              onPress={handleAddGalleryImage}
-            />
-          </View>
-        </SectionCard>
-        <SectionCard title={PART_COPY.SECTION_TITLE}>
-          {parts.length > 0 ? (
-            <View style={styles.partsContainer}>
-              <PartFilterBar
-                searchQuery={partSearchQuery}
-                selectedCategory={selectedPartCategory}
-                categories={partFilterCategories}
-                sortOption={partSortOption}
-                onChangeSearchQuery={setPartSearchQuery}
-                onChangeCategory={handleChangePartCategory}
-                onChangeSortOption={setPartSortOption}
-              />
-
-              {sortedParts.length > 0 ? (
-                <>
-                  <PartsSummaryCard summary={partSummary} />
-
-                  <View style={styles.partsGroupList}>
-                    {groupedParts.map((group) => (
-                      <PartCategoryGroupSection
-                        key={group.category}
-                        category={group.category}
-                        parts={group.parts}
-                        onPressPart={handleOpenPart}
-                      />
-                    ))}
-                  </View>
-                </>
-              ) : (
-                <EmptyState
-                  title={PART_COPY.FILTER_EMPTY_TITLE}
-                  description={PART_COPY.FILTER_EMPTY_DESCRIPTION}
-                />
-              )}
+        {activeShowcaseTab === MOTORCYCLE_SHOWCASE_TABS.SETUP ? (
+          <View style={styles.tabContent}>
+            <View style={styles.publicSetupNotice}>
+              <Text style={styles.publicSetupTitle}>
+                Public setup reference
+              </Text>
+              <Text style={styles.publicSetupDescription}>
+                Parts shown here can be viewed by other riders for modification
+                inspiration.
+              </Text>
             </View>
-          ) : (
-            <EmptyState
-              title={PART_COPY.SECTION_EMPTY_TITLE}
-              description={PART_COPY.SECTION_EMPTY_DESCRIPTION}
-            />
-          )}
 
-          <View style={styles.partsButton}>
-            <AppButton
-              title={PART_COPY.ADD_BUTTON}
-              variant="secondary"
-              onPress={handleAddPart}
-            />
+            {groupedParts.length > 0 ? (
+              groupedParts.map((group) => (
+                <BuildSetupGroupCard
+                  key={group.category}
+                  category={group.category}
+                  parts={group.parts}
+                  onPressPart={handleOpenPart}
+                />
+              ))
+            ) : (
+              <View style={styles.emptyBox}>
+                <Text style={styles.emptyTitle}>
+                  {MOTORCYCLE_SHOWCASE_COPY.NO_PARTS_TITLE}
+                </Text>
+
+                <Text style={styles.emptyDescription}>
+                  {MOTORCYCLE_SHOWCASE_COPY.NO_PARTS_DESCRIPTION}
+                </Text>
+              </View>
+            )}
           </View>
-        </SectionCard>
-        <SectionCard title={MOTORCYCLE_COPY.DETAIL_OVERVIEW_TITLE}>
-          <InfoRow
-            label={MOTORCYCLE_COPY.LABEL_NICKNAME}
-            value={formatOptionalValue(motorcycle.nickname)}
-          />
+        ) : null}
 
-          <InfoRow
-            label={MOTORCYCLE_COPY.LABEL_VISIBILITY}
-            value={formatOptionalValue(motorcycle.visibility)}
-          />
-        </SectionCard>
+        {activeShowcaseTab === MOTORCYCLE_SHOWCASE_TABS.TIMELINE ? (
+          <View style={styles.tabContent}>
+            <View style={styles.emptyBox}>
+              <Text style={styles.emptyTitle}>
+                {MOTORCYCLE_SHOWCASE_COPY.TIMELINE_EMPTY_TITLE}
+              </Text>
 
-        <SectionCard title={MOTORCYCLE_COPY.DETAIL_SPECIFICATION_TITLE}>
-          <InfoRow
-            label={MOTORCYCLE_COPY.LABEL_BRAND}
-            value={formatOptionalValue(motorcycle.brand)}
-          />
+              <Text style={styles.emptyDescription}>
+                {MOTORCYCLE_SHOWCASE_COPY.TIMELINE_EMPTY_DESCRIPTION}
+              </Text>
+            </View>
+          </View>
+        ) : null}
 
-          <InfoRow
-            label={MOTORCYCLE_COPY.LABEL_MODEL}
-            value={formatOptionalValue(motorcycle.model)}
-          />
+        {activeShowcaseTab === MOTORCYCLE_SHOWCASE_TABS.GALLERY ? (
+          <View style={styles.tabContent}>
+            {galleryImages.length > 0 ? (
+              <MotorcycleGalleryGrid
+                images={galleryImages}
+                onPressImage={handleOpenGalleryImage}
+              />
+            ) : (
+              <View style={styles.emptyBox}>
+                <Text style={styles.emptyTitle}>
+                  {MOTORCYCLE_SHOWCASE_COPY.GALLERY_EMPTY_TITLE}
+                </Text>
 
-          <InfoRow
-            label={MOTORCYCLE_COPY.LABEL_VARIANT}
-            value={formatOptionalValue(motorcycle.variant)}
-          />
-
-          <InfoRow
-            label={MOTORCYCLE_COPY.LABEL_COLOR}
-            value={formatOptionalValue(motorcycle.color)}
-          />
-        </SectionCard>
-
-        <SectionCard title={MOTORCYCLE_COPY.DETAIL_DESCRIPTION_TITLE}>
-          <Text style={styles.description}>
-            {formatOptionalValue(motorcycle.description)}
-          </Text>
-        </SectionCard>
+                <Text style={styles.emptyDescription}>
+                  {MOTORCYCLE_SHOWCASE_COPY.GALLERY_EMPTY_DESCRIPTION}
+                </Text>
+              </View>
+            )}
+          </View>
+        ) : null}
       </ScrollView>
 
       <MotorcycleGalleryModal
@@ -523,45 +506,77 @@ export default function MotorcycleDetailScreen() {
         onClose={handleCloseGalleryImage}
         onDelete={confirmDeleteGalleryImage}
       />
+      <ActionSheetModal
+        visible={moreMenuVisible}
+        title={MOTORCYCLE_SHOWCASE_COPY.MORE_MENU_TITLE}
+        description={MOTORCYCLE_SHOWCASE_COPY.MORE_MENU_DESCRIPTION}
+        cancelLabel={MOTORCYCLE_SHOWCASE_COPY.MORE_MENU_CANCEL}
+        onClose={handleCloseMoreMenu}
+        items={[
+          {
+            label: MOTORCYCLE_SHOWCASE_COPY.MORE_MENU_DELETE_BUILD,
+            variant: "danger",
+            icon: <Trash2 size={18} color={colors.danger} />,
+            onPress: confirmDelete,
+          },
+        ]}
+      />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  scroll: {
+    flex: 1,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.background,
+  },
   centerContainer: {
     alignItems: "center",
     justifyContent: "center",
   },
   container: {
+    paddingBottom: spacing["5xl"],
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.background,
+  },
+  tabContent: {
     padding: spacing.xl,
-    gap: spacing.lg,
+    gap: spacing["2xl"],
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.background,
   },
-  actionGroup: {
-    flexDirection: "row",
-    gap: spacing.md,
+  emptyBox: {
+    padding: spacing.xl,
+    borderRadius: 16,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.surface,
   },
-  actionButton: {
-    flex: 1,
+  emptyTitle: {
+    fontFamily: "PlusJakartaSans-Bold",
+    fontSize: 16,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
   },
-  galleryButton: {
-    marginTop: spacing.lg,
+  emptyDescription: {
+    marginTop: spacing.sm,
+    fontFamily: "Inter-Regular",
+    fontSize: 13,
+    lineHeight: 20,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
   },
-  description: {
-    fontFamily: fontFamily.body.regular,
-    fontSize: 15,
-    lineHeight: 22,
-    color: colors.textSecondary,
+  publicSetupNotice: {
+    padding: spacing.md,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: MOTORCYCLE_SHOWCASE_COLORS.accent,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.surface,
   },
-  partsContainer: {
-    gap: spacing.lg,
+  publicSetupTitle: {
+    fontFamily: "PlusJakartaSans-Bold",
+    fontSize: 14,
+    color: MOTORCYCLE_SHOWCASE_COLORS.accent,
   },
-  partsGroupList: {
-    gap: spacing.xl,
-  },
-  partsButton: {
-    marginTop: spacing.lg,
-  },
-  backButton: {
-    alignSelf: "flex-start",
+  publicSetupDescription: {
+    marginTop: spacing.xs,
+    fontFamily: "Inter-Regular",
+    fontSize: 12,
+    lineHeight: 18,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
   },
 });

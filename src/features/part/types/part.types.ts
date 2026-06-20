@@ -30,6 +30,8 @@ export type Part = {
   main_image_url: string | null;
   main_image_path: string | null;
 
+  is_public: boolean;
+
   created_at: string;
   updated_at: string;
 };
@@ -55,4 +57,6 @@ export type CreatePartPayload = {
 
   main_image_url?: string | null;
   main_image_path?: string | null;
+
+  is_public?: boolean;
 };

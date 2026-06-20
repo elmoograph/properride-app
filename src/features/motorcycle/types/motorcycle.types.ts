@@ -4,6 +4,11 @@ import type {
   MOTORCYCLE_VISIBILITY,
 } from "@/src/features/motorcycle/constants/motorcycle.constants";
 
+import type { MOTORCYCLE_SHOWCASE_TABS } from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
+
+export type MotorcycleShowcaseTab =
+  (typeof MOTORCYCLE_SHOWCASE_TABS)[keyof typeof MOTORCYCLE_SHOWCASE_TABS];
+
 export type MotorcycleSortOption =
   (typeof MOTORCYCLE_SORT_OPTIONS)[keyof typeof MOTORCYCLE_SORT_OPTIONS];
 

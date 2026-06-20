@@ -5,14 +5,25 @@ import type {
   Part,
 } from "@/src/features/part/types/part.types";
 
+type GetPartsByMotorcycleIdOptions = {
+  includePrivate?: boolean;
+};
+
 export async function getPartsByMotorcycleId(
   motorcycleId: string,
+  options?: GetPartsByMotorcycleIdOptions,
 ): Promise<Part[]> {
-  const { data, error } = await supabase
+  let query = supabase
     .from(PART_TABLE)
     .select("*")
     .eq("motorcycle_id", motorcycleId)
     .order("created_at", { ascending: false });
+
+  if (!options?.includePrivate) {
+    query = query.eq("is_public", true);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     throw new Error(error.message);
@@ -73,6 +84,7 @@ export async function createPart(payload: CreatePartPayload): Promise<Part> {
 
       main_image_url: payload.main_image_url ?? null,
       main_image_path: payload.main_image_path ?? null,
+      is_public: payload.is_public ?? true,
     })
     .select("*")
     .single();
