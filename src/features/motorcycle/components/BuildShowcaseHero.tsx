@@ -1,22 +1,53 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import { Plus } from "lucide-react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Plus, ChevronDown, ArrowLeft } from "lucide-react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { spacing } from "@/src/theme";
-import {
-  MOTORCYCLE_SHOWCASE_COLORS,
-  MOTORCYCLE_SHOWCASE_COPY,
-} from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
+import { MOTORCYCLE_SHOWCASE_COLORS } from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
 import type { Motorcycle } from "@/src/features/motorcycle/types/motorcycle.types";
 
 type BuildShowcaseHeroProps = {
   motorcycle: Motorcycle;
+  hasMultipleMotorcycles?: boolean;
+  onPressBack?: () => void;
+  onPressAddMotorcycle?: () => void;
+  onPressMotorcyclePicker?: () => void;
 };
 
-function getMotorcycleName(motorcycle: Motorcycle): string {
-  return motorcycle.nickname || motorcycle.model;
+function getDisplayMotorcycleType(motorcycle: Motorcycle): string {
+  const model = motorcycle.model?.trim();
+  const variant = motorcycle.variant?.trim();
+
+  if (model && variant) {
+    return `${model} ${variant}`;
+  }
+
+  if (model) {
+    return model;
+  }
+
+  return "Unknown Type";
 }
 
-export function BuildShowcaseHero({ motorcycle }: BuildShowcaseHeroProps) {
+function getDisplayBrand(motorcycle: Motorcycle): string {
+  return motorcycle.brand || "Unknown Brand";
+}
+
+function getDisplayYear(motorcycle: Motorcycle): string {
+  if (!motorcycle.year) {
+    return "-";
+  }
+
+  return String(motorcycle.year);
+}
+
+export function BuildShowcaseHero({
+  motorcycle,
+  hasMultipleMotorcycles = false,
+  onPressBack,
+  onPressAddMotorcycle,
+  onPressMotorcyclePicker,
+}: BuildShowcaseHeroProps) {
   return (
     <View style={styles.container}>
       {motorcycle.hero_image_url ? (
@@ -27,32 +58,64 @@ export function BuildShowcaseHero({ motorcycle }: BuildShowcaseHeroProps) {
         />
       ) : (
         <View style={styles.placeholder}>
-          <Text style={styles.placeholderText}>{motorcycle.brand}</Text>
+          <Text style={styles.placeholderText}>
+            {getDisplayBrand(motorcycle)}
+          </Text>
         </View>
       )}
 
-      <View style={styles.overlay} />
+      <LinearGradient
+        colors={[
+          "rgba(0,0,0,0.15)",
+          "rgba(0,0,0,0.25)",
+          "rgba(0,0,0,0.55)",
+          "rgba(0,0,0,0.82)",
+        ]}
+        locations={[0, 0.35, 0.7, 1]}
+        style={styles.overlay}
+      />
 
       <View style={styles.topBar}>
-        <Text style={styles.screenTitle}>
-          {MOTORCYCLE_SHOWCASE_COPY.SCREEN_TITLE}
-        </Text>
+        <Pressable style={styles.backButton} onPress={onPressBack}>
+          <ArrowLeft size={22} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
+        </Pressable>
 
-        <View style={styles.addAction}>
-          <Plus size={18} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
-          <Text style={styles.addActionText}>
-            {MOTORCYCLE_SHOWCASE_COPY.ADD_MOTORCYCLE}
-          </Text>
-        </View>
+        <Pressable style={styles.addButton} onPress={onPressAddMotorcycle}>
+          <Plus size={16} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
+          <Text style={styles.addButtonText}>Tambah motor</Text>
+        </Pressable>
       </View>
 
-      <View style={styles.identity}>
-        <Text style={styles.brand}>{motorcycle.brand}</Text>
+      <View style={styles.bottomContent}>
+        <Text style={styles.brandText}>{getDisplayBrand(motorcycle)}</Text>
 
-        <View style={styles.namePill}>
-          <Text style={styles.namePillText}>
-            {getMotorcycleName(motorcycle)}
-          </Text>
+        <View style={styles.bottomRow}>
+          <Pressable
+            style={[
+              styles.namePill,
+              !hasMultipleMotorcycles && styles.namePillDisabled,
+            ]}
+            onPress={
+              hasMultipleMotorcycles ? onPressMotorcyclePicker : undefined
+            }
+            disabled={!hasMultipleMotorcycles}
+          >
+            <Text style={styles.namePillText}>
+              {getDisplayMotorcycleType(motorcycle)}
+            </Text>
+
+            {hasMultipleMotorcycles ? (
+              <ChevronDown
+                size={16}
+                color={MOTORCYCLE_SHOWCASE_COLORS.background}
+              />
+            ) : null}
+          </Pressable>
+
+          <View style={styles.yearGroup}>
+            <View style={styles.yearDot} />
+            <Text style={styles.yearText}>{getDisplayYear(motorcycle)}</Text>
+          </View>
         </View>
       </View>
     </View>
@@ -61,7 +124,7 @@ export function BuildShowcaseHero({ motorcycle }: BuildShowcaseHeroProps) {
 
 const styles = StyleSheet.create({
   container: {
-    height: 360,
+    height: 372,
     overflow: "hidden",
     backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.background,
   },
@@ -77,7 +140,7 @@ const styles = StyleSheet.create({
   },
   placeholderText: {
     fontFamily: "PlusJakartaSans-ExtraBold",
-    fontSize: 42,
+    fontSize: 36,
     color: MOTORCYCLE_SHOWCASE_COLORS.textMuted,
   },
   overlay: {
@@ -86,53 +149,88 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.blackOverlay,
   },
   topBar: {
     position: "absolute",
-    top: spacing["2xl"],
-    left: spacing.xl,
-    right: spacing.xl,
+    top: spacing.xl,
+    left: spacing.lg,
+    right: spacing.lg,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  screenTitle: {
-    fontFamily: "PlusJakartaSans-Bold",
-    fontSize: 16,
-    color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
+
+  backButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(0, 0, 0, 0.38)",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  addAction: {
+  addButton: {
+    minHeight: 34,
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.sm,
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    borderRadius: 999,
+    backgroundColor: "rgba(0, 0, 0, 0.38)",
   },
-  addActionText: {
+  addButtonText: {
     fontFamily: "Inter-SemiBold",
     fontSize: 14,
     color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
   },
-  identity: {
+  bottomContent: {
     position: "absolute",
-    left: spacing.xl,
-    bottom: spacing["2xl"],
+    right: spacing.lg,
+    bottom: spacing.xl,
+    left: spacing.lg,
   },
-  brand: {
+  brandText: {
     marginBottom: spacing.sm,
     fontFamily: "PlusJakartaSans-Bold",
     fontSize: 18,
     color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
   },
+  bottomRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.md,
+  },
   namePill: {
-    alignSelf: "flex-start",
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.sm,
+    minHeight: 42,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    paddingHorizontal: spacing.lg,
     borderRadius: 999,
     backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.accent,
   },
   namePillText: {
     fontFamily: "PlusJakartaSans-Bold",
-    fontSize: 13,
+    fontSize: 14,
     color: MOTORCYCLE_SHOWCASE_COLORS.background,
+  },
+  yearGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+  },
+  yearDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.accent,
+  },
+  yearText: {
+    fontFamily: "Inter-Medium",
+    fontSize: 16,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
+  },
+  namePillDisabled: {
+    paddingRight: spacing.lg,
   },
 });

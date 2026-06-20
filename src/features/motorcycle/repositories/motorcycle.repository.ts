@@ -102,3 +102,18 @@ export async function deleteMotorcycle(motorcycleId: string): Promise<void> {
     throw new Error(error.message);
   }
 }
+export async function getMotorcyclesByUserId(
+  userId: string,
+): Promise<Motorcycle[]> {
+  const { data, error } = await supabase
+    .from(MOTORCYCLE_TABLE)
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data ?? [];
+}

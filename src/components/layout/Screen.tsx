@@ -7,7 +7,7 @@ import {
   View,
   type ViewStyle,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, type Edge } from "react-native-safe-area-context";
 
 import { colors, spacing } from "@/src/theme";
 
@@ -17,6 +17,8 @@ type ScreenProps = {
   padded?: boolean;
   keyboardAvoiding?: boolean;
   contentContainerStyle?: ViewStyle;
+  backgroundColor?: string;
+  safeAreaEdges?: Edge[];
 };
 
 export function Screen({
@@ -25,15 +27,28 @@ export function Screen({
   padded = true,
   keyboardAvoiding = false,
   contentContainerStyle,
+  backgroundColor = colors.background,
+  safeAreaEdges = ["top", "right", "bottom", "left"],
 }: ScreenProps) {
+  const containerStyle = [
+    styles.safeArea,
+    {
+      backgroundColor,
+    },
+  ];
+
   const contentStyle = [
     styles.content,
-    padded && styles.padded,
+    {
+      backgroundColor,
+    },
+    padded ? styles.padded : null,
     contentContainerStyle,
   ];
 
   const content = scroll ? (
     <ScrollView
+      style={{ backgroundColor }}
       contentContainerStyle={contentStyle}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
@@ -46,7 +61,7 @@ export function Screen({
 
   if (keyboardAvoiding) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={containerStyle} edges={safeAreaEdges}>
         <KeyboardAvoidingView
           style={styles.keyboardView}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -57,13 +72,16 @@ export function Screen({
     );
   }
 
-  return <SafeAreaView style={styles.safeArea}>{content}</SafeAreaView>;
+  return (
+    <SafeAreaView style={containerStyle} edges={safeAreaEdges}>
+      {content}
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   keyboardView: {
     flex: 1,

@@ -9,6 +9,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/src/lib/queryClient";
 import { AuthProvider } from "@/src/features/auth/context/AuthProvider";
 import { AuthGate } from "@/src/features/auth/components/AuthGate";
+import { View, StyleSheet } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -40,11 +41,20 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <SafeAreaProvider>
-          <StatusBar style="dark" />
-          <AuthGate />
-          <Stack screenOptions={{ headerShown: false }} />
+          <View style={styles.root}>
+            <StatusBar style="dark" />
+            <AuthGate />
+            <Stack screenOptions={{ headerShown: false }} />
+          </View>
         </SafeAreaProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: "#05090C",
+  },
+});

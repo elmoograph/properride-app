@@ -28,6 +28,7 @@ import { MOTORCYCLE_COPY } from "@/src/features/motorcycle/constants/motorcycle.
 import {
   deleteMotorcycle,
   getMotorcycleById,
+  getMotorcyclesByUserId,
 } from "@/src/features/motorcycle/repositories/motorcycle.repository";
 import type { Motorcycle } from "@/src/features/motorcycle/types/motorcycle.types";
 import { MotorcycleGalleryGrid } from "@/src/features/motorcycleImage/components/MotorcycleGalleryGrid";
@@ -80,7 +81,13 @@ import {
 import type { MotorcycleShowcaseTab } from "@/src/features/motorcycle/types/motorcycle.types";
 import { BuildSetupGroupCard } from "@/src/features/part/components/BuildSetupGroupCard";
 import { BuildShowcaseOwnerActions } from "@/src/features/motorcycle/components/BuildShowcaseOwnerActions";
+
 import { Trash2 } from "lucide-react-native";
+import {
+  enableImmersiveMode,
+  disableImmersiveMode,
+} from "@/src/utils/systemBars";
+import { MotorcycleSwitcherModal } from "@/src/features/motorcycle/components/MotorcycleSwitcherModal";
 
 export default function MotorcycleDetailScreen() {
   const [activeShowcaseTab, setActiveShowcaseTab] =
@@ -88,9 +95,10 @@ export default function MotorcycleDetailScreen() {
   const [moreMenuVisible, setMoreMenuVisible] = useState(false);
   const { user } = useAuth();
   const { id } = useLocalSearchParams<{ id: string }>();
-
+  const [ownerMotorcycles, setOwnerMotorcycles] = useState<Motorcycle[]>([]);
+  const [motorcycleSwitcherVisible, setMotorcycleSwitcherVisible] =
+    useState(false);
   const motorcycleId = Array.isArray(id) ? id[0] : id;
-
   const [motorcycle, setMotorcycle] = useState<Motorcycle | null>(null);
   const [galleryImages, setGalleryImages] = useState<MotorcycleImage[]>([]);
   const [parts, setParts] = useState<Part[]>([]);
@@ -140,21 +148,25 @@ export default function MotorcycleDetailScreen() {
         setMotorcycle(null);
         setGalleryImages([]);
         setParts([]);
+        setOwnerMotorcycles([]);
+
         return;
       }
 
       const isOwner = motorcycleData.user_id === user?.id;
 
-      const [galleryData, partsData] = await Promise.all([
+      const [galleryData, partsData, ownerMotorcyclesData] = await Promise.all([
         getMotorcycleImages(motorcycleId),
         getPartsByMotorcycleId(motorcycleId, {
           includePrivate: isOwner,
         }),
+        getMotorcyclesByUserId(motorcycleData.user_id),
       ]);
 
       setMotorcycle(motorcycleData);
       setGalleryImages(galleryData);
       setParts(partsData);
+      setOwnerMotorcycles(ownerMotorcyclesData);
     } catch (error) {
       Alert.alert(
         MOTORCYCLE_COPY.DETAIL_LOAD_FAILED_TITLE,
@@ -180,7 +192,13 @@ export default function MotorcycleDetailScreen() {
       loadDetail();
     }, [loadDetail]),
   );
+  useEffect(() => {
+    enableImmersiveMode();
 
+    return () => {
+      disableImmersiveMode();
+    };
+  }, []);
   function handleChangePartCategory(category: string) {
     setSelectedPartCategory(category);
   }
@@ -196,6 +214,7 @@ export default function MotorcycleDetailScreen() {
   function handleOpenPart(partId: string) {
     router.push(ROUTES.PART.DETAIL(partId));
   }
+
   function handleEdit() {
     if (!motorcycleId) {
       return;
@@ -206,6 +225,30 @@ export default function MotorcycleDetailScreen() {
 
   function handleBackToGarage() {
     router.replace(ROUTES.TABS.GARAGE);
+  }
+  function handleOpenMotorcyclePicker() {
+    if (ownerMotorcycles.length <= 1) {
+      return;
+    }
+
+    setMotorcycleSwitcherVisible(true);
+  }
+
+  function handleCloseMotorcyclePicker() {
+    setMotorcycleSwitcherVisible(false);
+  }
+
+  function handleSelectMotorcycle(nextMotorcycleId: string) {
+    setMotorcycleSwitcherVisible(false);
+
+    if (nextMotorcycleId === motorcycleId) {
+      return;
+    }
+
+    router.replace(ROUTES.MOTORCYCLE.DETAIL(nextMotorcycleId));
+  }
+  function handleAddMotorcycle() {
+    router.push(ROUTES.MOTORCYCLE.ADD);
   }
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -406,13 +449,23 @@ export default function MotorcycleDetailScreen() {
   }
 
   return (
-    <Screen padded={false}>
+    <Screen
+      padded={false}
+      backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+      safeAreaEdges={["right", "bottom", "left"]}
+    >
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <BuildShowcaseHero motorcycle={motorcycle} />
+        <BuildShowcaseHero
+          motorcycle={motorcycle}
+          hasMultipleMotorcycles={ownerMotorcycles.length > 1}
+          onPressBack={handleBackToGarage}
+          onPressAddMotorcycle={handleAddMotorcycle}
+          onPressMotorcyclePicker={handleOpenMotorcyclePicker}
+        />
 
         <BuildShowcaseStats summary={motorcycleSummary} />
 
@@ -505,6 +558,13 @@ export default function MotorcycleDetailScreen() {
         deleting={deletingGalleryImage}
         onClose={handleCloseGalleryImage}
         onDelete={confirmDeleteGalleryImage}
+      />
+      <MotorcycleSwitcherModal
+        visible={motorcycleSwitcherVisible}
+        motorcycles={ownerMotorcycles}
+        activeMotorcycleId={motorcycle.id}
+        onClose={handleCloseMotorcyclePicker}
+        onSelectMotorcycle={handleSelectMotorcycle}
       />
       <ActionSheetModal
         visible={moreMenuVisible}
