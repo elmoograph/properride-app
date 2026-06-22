@@ -1,13 +1,21 @@
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Alert, StyleSheet } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { ArrowLeft } from "lucide-react-native";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 
 import { Screen } from "@/src/components/layout";
-import { AppButton, EmptyState, PageHeader } from "@/src/components/ui";
+import { AppButton, EmptyState } from "@/src/components/ui";
 import { COMMON_COPY } from "@/src/constants/copy";
 import { ROUTES } from "@/src/constants/routes";
 import { STORAGE_BUCKETS, STORAGE_FOLDERS } from "@/src/constants/storage";
-import { colors, spacing } from "@/src/theme";
+import { spacing } from "@/src/theme";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { MotorcycleForm } from "@/src/features/motorcycle/components/MotorcycleForm";
 import { MOTORCYCLE_COPY } from "@/src/features/motorcycle/constants/motorcycle.constants";
@@ -26,6 +34,7 @@ import {
 import { parseOptionalNumber } from "@/src/utils/number";
 import { pickImageFromLibrary } from "@/src/utils/pickImage";
 import { uploadImage } from "@/src/utils/uploadImage";
+import { MOTORCYCLE_SHOWCASE_COLORS } from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
 
 export default function EditMotorcycleScreen() {
   const { user } = useAuth();
@@ -147,6 +156,8 @@ export default function EditMotorcycleScreen() {
         mileage: parseOptionalNumber(form.mileage) ?? 0,
         description: form.description.trim() || null,
         hero_image_url: heroImageUrl,
+        status: form.status,
+        visibility: form.visibility,
       });
 
       Alert.alert(
@@ -174,11 +185,42 @@ export default function EditMotorcycleScreen() {
   function handleBackToGarage() {
     router.replace(ROUTES.TABS.GARAGE);
   }
-
-  if (loading) {
+  function handleCancel() {
+    Alert.alert(
+      "Discard changes?",
+      "Changes you made to this build will not be saved.",
+      [
+        {
+          text: "Keep Editing",
+          style: "cancel",
+        },
+        {
+          text: "Discard",
+          style: "destructive",
+          onPress: () => router.back(),
+        },
+      ],
+    );
+  }
+  if (!motorcycle) {
     return (
-      <Screen contentContainerStyle={styles.centerContainer}>
-        <ActivityIndicator color={colors.primary} />
+      <Screen
+        backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+        contentContainerStyle={styles.centerContainer}
+      >
+        <EmptyState
+          variant="dark"
+          title={MOTORCYCLE_COPY.DETAIL_NOT_FOUND_TITLE}
+          description={MOTORCYCLE_COPY.DETAIL_NOT_FOUND_DESCRIPTION}
+          action={
+            <AppButton
+              theme="dark"
+              title={COMMON_COPY.BACK}
+              variant="secondary"
+              onPress={handleBackToGarage}
+            />
+          }
+        />
       </Screen>
     );
   }
@@ -187,6 +229,7 @@ export default function EditMotorcycleScreen() {
     return (
       <Screen contentContainerStyle={styles.centerContainer}>
         <EmptyState
+          variant="dark"
           title={MOTORCYCLE_COPY.DETAIL_NOT_FOUND_TITLE}
           description={MOTORCYCLE_COPY.DETAIL_NOT_FOUND_DESCRIPTION}
           action={
@@ -202,13 +245,29 @@ export default function EditMotorcycleScreen() {
   }
 
   return (
-    <Screen scroll keyboardAvoiding contentContainerStyle={styles.container}>
-      <PageHeader
-        title={MOTORCYCLE_COPY.EDIT_SCREEN_TITLE}
-        subtitle={MOTORCYCLE_COPY.EDIT_SCREEN_SUBTITLE}
-      />
+    <Screen
+      scroll
+      keyboardAvoiding
+      backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+      contentContainerStyle={styles.container}
+    >
+      <View style={styles.header}>
+        <Pressable style={styles.backButton} onPress={handleCancel}>
+          <ArrowLeft size={22} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
+        </Pressable>
+
+        <View style={styles.headerContent}>
+          <Text style={styles.eyebrow}>ProperRide Garage</Text>
+          <Text style={styles.title}>Edit Build</Text>
+          <Text style={styles.subtitle}>
+            Update your motorcycle identity, setup details, and build
+            visibility.
+          </Text>
+        </View>
+      </View>
 
       <MotorcycleForm
+        variant="dark"
         values={form}
         errors={errors}
         submitting={submitting}
@@ -216,6 +275,7 @@ export default function EditMotorcycleScreen() {
         onChange={updateField}
         onPickImage={handlePickImage}
         onSubmit={handleSubmit}
+        onCancel={handleCancel}
       />
     </Screen>
   );
@@ -224,9 +284,52 @@ export default function EditMotorcycleScreen() {
 const styles = StyleSheet.create({
   container: {
     gap: spacing["2xl"],
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing["5xl"],
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.background,
   },
   centerContainer: {
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.background,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing.md,
+  },
+  backButton: {
+    width: 42,
+    height: 42,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 21,
+    borderWidth: 1,
+    borderColor: MOTORCYCLE_SHOWCASE_COLORS.border,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.surface,
+  },
+  headerContent: {
+    flex: 1,
+  },
+  eyebrow: {
+    fontFamily: "Inter-SemiBold",
+    fontSize: 12,
+    color: MOTORCYCLE_SHOWCASE_COLORS.accent,
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+  },
+  title: {
+    marginTop: spacing.xs,
+    fontFamily: "PlusJakartaSans-ExtraBold",
+    fontSize: 28,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
+  },
+  subtitle: {
+    marginTop: spacing.xs,
+    fontFamily: "Inter-Regular",
+    fontSize: 13,
+    lineHeight: 20,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
   },
 });

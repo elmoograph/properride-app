@@ -1,164 +1,251 @@
 export const PART_TABLE = "parts";
 
+/**
+ * Nilai kategori disimpan ke database.
+ * Jangan mengubah value kategori lama tanpa melakukan migrasi data.
+ */
+export const PART_CATEGORIES = [
+  "Engine",
+  "Exhaust",
+  "Suspension",
+  "Brake",
+  "Wheel",
+  "Tire",
+  "Body",
+  "Lighting",
+  "Electrical",
+  "Performance",
+  "Accessories",
+  "Other",
+] as const;
+
+export type PartCategory = (typeof PART_CATEGORIES)[number];
+
 export const PART_SORT_OPTIONS = {
   NEWEST: "newest",
+  OLDEST: "oldest",
   PRICE_HIGH: "price_high",
   PRICE_LOW: "price_low",
+  RATING_HIGH: "rating_high",
   INSTALL_DATE: "install_date",
 } as const;
 
-export const PART_CATEGORIES = [
-  "Suspension",
-  "Wheel",
-  "Brake",
-  "Handlebar",
-  "Engine",
-  "Exhaust",
-  "Lighting",
-  "Transmission",
-  "CVT",
-  "Accessories",
-  "Body",
-  "Frame",
-  "Electrical",
-  "Oil",
-  "Others",
-] as const;
+export type PartSortOption =
+  (typeof PART_SORT_OPTIONS)[keyof typeof PART_SORT_OPTIONS];
+
+export const PART_SORT_LABELS: Record<PartSortOption, string> = {
+  [PART_SORT_OPTIONS.NEWEST]: "Terbaru",
+  [PART_SORT_OPTIONS.OLDEST]: "Terlama",
+  [PART_SORT_OPTIONS.PRICE_HIGH]: "Harga Tertinggi",
+  [PART_SORT_OPTIONS.PRICE_LOW]: "Harga Terendah",
+  [PART_SORT_OPTIONS.RATING_HIGH]: "Rating Tertinggi",
+  [PART_SORT_OPTIONS.INSTALL_DATE]: "Tanggal Pemasangan",
+};
 
 export const PART_COPY = {
-  SECTION_TITLE: "Parts",
-  SECTION_EMPTY_TITLE: "No parts added yet",
-  SECTION_EMPTY_DESCRIPTION:
-    "Add parts to document your motorcycle modification journey.",
-  ADD_BUTTON: "Add Part",
+  // General
+  EMPTY_VALUE: "-",
+  FILTER_ALL: "Semua",
 
-  LOAD_FAILED_TITLE: "Unable to load parts",
-  LOAD_FAILED_MESSAGE: "Please try again.",
-
-  DETAIL_TITLE: "Part Detail",
-  DETAIL_SUBTITLE: "Part information will be shown here.",
-
+  // Add Part
   ADD_SCREEN_TITLE: "Add Part",
-  ADD_SCREEN_SUBTITLE: "Document a new part installed on this motorcycle.",
+  ADD_SCREEN_SUBTITLE:
+    "Tambahkan detail part yang digunakan pada build motor Anda.",
 
+  // Edit Part
   EDIT_SCREEN_TITLE: "Edit Part",
-  EDIT_SCREEN_SUBTITLE: "Update part information.",
+  EDIT_SCREEN_SUBTITLE:
+    "Perbarui informasi, pemasangan, dan visibilitas part ini.",
 
+  // Form sections
   IMAGE_SECTION_TITLE: "Part Photo",
   IMAGE_SECTION_DESCRIPTION:
-    "Upload a main photo for this part or modification.",
-  BASIC_SECTION_TITLE: "Part Information",
+    "Tambahkan foto part agar setup build lebih mudah dikenali.",
+
+  BASIC_SECTION_TITLE: "Part Identity",
   BASIC_SECTION_DESCRIPTION:
-    "Add the main information about the installed part.",
-  DETAIL_SECTION_TITLE: "Installation Details",
+    "Pilih kategori dan lengkapi identitas utama part.",
+
+  DETAIL_SECTION_TITLE: "Part Details",
   DETAIL_SECTION_DESCRIPTION:
-    "Optional information about price, workshop, and installation.",
+    "Lengkapi informasi pembelian, pemasangan, dan pengalaman penggunaan.",
 
-  INFO_PRICE_TITLE: "Price",
-  INFO_INSTALL_DATE_TITLE: "Installed",
-  INFO_WORKSHOP_TITLE: "Workshop",
-  INFO_RATING_TITLE: "Rating",
-  RATING_NO_VALUE: "No rating",
-
-  FIELD_MAIN_IMAGE: "Main Image",
-  FIELD_CATEGORY: "Category",
-  FIELD_BRAND: "Brand",
-  FIELD_PRODUCT_NAME: "Product Name",
-  FIELD_PRICE: "Price",
-  FIELD_PURCHASE_DATE: "Purchase Date",
-  FIELD_INSTALL_DATE: "Install Date",
-  FIELD_WORKSHOP: "Workshop",
-  FIELD_LOCATION: "Location",
+  // Form fields
+  FIELD_MAIN_IMAGE: "Foto Part",
+  FIELD_CATEGORY: "Kategori",
+  FIELD_BRAND: "Merek",
+  FIELD_PRODUCT_NAME: "Nama Produk",
+  FIELD_PRICE: "Harga",
+  FIELD_PURCHASE_DATE: "Tanggal Pembelian",
+  FIELD_INSTALL_DATE: "Tanggal Pemasangan",
+  FIELD_WORKSHOP: "Bengkel",
+  FIELD_LOCATION: "Lokasi",
   FIELD_RATING: "Rating",
-  FIELD_DESCRIPTION: "Description",
+  FIELD_DESCRIPTION: "Keterangan",
 
-  PLACEHOLDER_MAIN_IMAGE: "Tap to choose part photo",
-  PLACEHOLDER_CATEGORY: "Example: Suspension",
-  PLACEHOLDER_BRAND: "Example: Ohlins",
-  PLACEHOLDER_PRODUCT_NAME: "Example: Rear Shock",
-  PLACEHOLDER_PRICE: "Example: 2500000",
-  PLACEHOLDER_PURCHASE_DATE: "YYYY-MM-DD",
-  PLACEHOLDER_INSTALL_DATE: "YYYY-MM-DD",
-  PLACEHOLDER_WORKSHOP: "Example: Proper Garage",
-  PLACEHOLDER_LOCATION: "Example: Bandung",
-  PLACEHOLDER_RATING: "1 - 5",
-  PLACEHOLDER_DESCRIPTION: "Tell the story of this part",
+  // Form placeholders
+  PLACEHOLDER_MAIN_IMAGE: "Pilih foto part",
+  PLACEHOLDER_BRAND: "Contoh: RCB",
+  PLACEHOLDER_PRODUCT_NAME: "Contoh: Rear Shock VD Series",
+  PLACEHOLDER_PRICE: "Contoh: 1500000",
+  PLACEHOLDER_PURCHASE_DATE: "DD/MM/YYYY",
+  PLACEHOLDER_INSTALL_DATE: "DD/MM/YYYY",
+  PLACEHOLDER_WORKSHOP: "Masukkan nama bengkel",
+  PLACEHOLDER_LOCATION: "Masukkan kota atau lokasi bengkel",
+  PLACEHOLDER_DESCRIPTION:
+    "Ceritakan fungsi, pengalaman penggunaan, atau alasan memilih part ini...",
 
-  SAVE_BUTTON: "Save Part",
-  SAVE_SUCCESS_TITLE: "Part added",
-  SAVE_SUCCESS_MESSAGE: "Part has been added to your motorcycle.",
-  SAVE_FAILED_TITLE: "Unable to save part",
-  SAVE_FAILED_MESSAGE: "Please try again.",
+  // Form helper
+  PRICE_HELPER: "Masukkan angka tanpa titik atau simbol mata uang.",
+  DATE_HELPER: "Gunakan format DD/MM/YYYY.",
+  RATING_EMPTY: "Belum Dinilai",
 
-  UPDATE_BUTTON: "Update Part",
-  UPDATE_SUCCESS_TITLE: "Part updated",
-  UPDATE_SUCCESS_MESSAGE: "Part has been updated.",
-  UPDATE_FAILED_TITLE: "Unable to update part",
-  UPDATE_FAILED_MESSAGE: "Please try again.",
+  // Visibility
+  PUBLIC_SETUP_LABEL: "Tampilkan di Public Setup",
+  PUBLIC_SETUP_DESCRIPTION:
+    "Rider lain dapat melihat part ini saat membuka build Anda.",
 
-  IMAGE_PICK_FAILED_TITLE: "Unable to choose image",
-  IMAGE_UPLOAD_FAILED_TITLE: "Unable to upload image",
+  // Buttons
+  SAVE_BUTTON: "Tambahkan Part",
+  UPDATE_BUTTON: "Simpan Perubahan",
+  DELETE_BUTTON: "Hapus Part",
+  CANCEL_BUTTON: "Batal",
 
-  VALIDATION_CATEGORY_REQUIRED: "Category is required.",
-  VALIDATION_PRICE_INVALID: "Price must be a valid number.",
-  VALIDATION_RATING_INVALID: "Rating must be between 1 and 5.",
-  VALIDATION_DATE_INVALID: "Date must use YYYY-MM-DD format.",
+  // Add success/error
+  SAVE_SUCCESS_TITLE: "Part Berhasil Ditambahkan",
+  SAVE_SUCCESS_MESSAGE: "Part telah ditambahkan ke setup build motor Anda.",
 
-  LABEL_CATEGORY: "Category",
-  LABEL_BRAND: "Brand",
-  LABEL_PRODUCT_NAME: "Product Name",
-  LABEL_PRICE: "Price",
-  LABEL_INSTALL_DATE: "Install Date",
-  LABEL_WORKSHOP: "Workshop",
-  LABEL_RATING: "Rating",
+  SAVE_FAILED_TITLE: "Gagal Menambahkan Part",
+  SAVE_FAILED_MESSAGE: "Part tidak dapat disimpan. Silakan coba kembali.",
 
-  DETAIL_LOAD_FAILED_TITLE: "Unable to load part",
-  DETAIL_LOAD_FAILED_MESSAGE: "Please try again.",
-  DETAIL_NOT_FOUND_TITLE: "Part not found",
+  // Update success/error
+  UPDATE_SUCCESS_TITLE: "Part Berhasil Diperbarui",
+  UPDATE_SUCCESS_MESSAGE: "Perubahan informasi part telah berhasil disimpan.",
+
+  UPDATE_FAILED_TITLE: "Gagal Memperbarui Part",
+  UPDATE_FAILED_MESSAGE:
+    "Perubahan part tidak dapat disimpan. Silakan coba kembali.",
+
+  // Image
+  IMAGE_PICK_FAILED_TITLE: "Gagal Memilih Foto",
+  IMAGE_PICK_FAILED_MESSAGE:
+    "Foto part tidak dapat dipilih. Silakan coba kembali.",
+
+  IMAGE_UPLOAD_FAILED_TITLE: "Gagal Mengunggah Foto",
+  IMAGE_UPLOAD_FAILED_MESSAGE:
+    "Foto part tidak dapat diunggah. Silakan coba kembali.",
+
+  // Loading
+  LOAD_FAILED_TITLE: "Gagal Memuat Part",
+  LOAD_FAILED_MESSAGE: "Data part tidak dapat dimuat. Silakan coba kembali.",
+
+  // Detail loading
+  DETAIL_LOAD_FAILED_TITLE: "Gagal Memuat Part",
+  DETAIL_LOAD_FAILED_MESSAGE:
+    "Detail part tidak dapat dimuat. Silakan coba kembali.",
+
+  // Detail not found
+  DETAIL_NOT_FOUND_TITLE: "Part Tidak Ditemukan",
   DETAIL_NOT_FOUND_DESCRIPTION:
-    "This part may have been deleted or is no longer available.",
+    "Part ini mungkin sudah dihapus atau tidak lagi tersedia.",
+
+  // Detail screen
+  DETAIL_SCREEN_TITLE: "Part Details",
+  DETAIL_SCREEN_SUBTITLE:
+    "Informasi lengkap part yang digunakan pada build ini.",
 
   DETAIL_EDIT_BUTTON: "Edit Part",
-  DELETE_BUTTON: "Delete Part",
-  DELETE_CONFIRM_TITLE: "Delete Part",
-  DELETE_CONFIRM_MESSAGE:
-    "Are you sure you want to delete this part? This action cannot be undone.",
-  DELETE_FAILED_TITLE: "Unable to delete part",
-  DELETE_FAILED_MESSAGE: "Please try again.",
-  DELETE_SUCCESS_TITLE: "Part deleted",
-  DELETE_SUCCESS_MESSAGE: "Part has been deleted from this motorcycle.",
 
-  DETAIL_OVERVIEW_TITLE: "Overview",
-  DETAIL_INSTALLATION_TITLE: "Installation",
+  DETAIL_OVERVIEW_TITLE: "Part Overview",
+  DETAIL_OVERVIEW_DESCRIPTION: "Identitas utama dari part yang digunakan.",
+
+  DETAIL_INSTALLATION_TITLE: "Purchase & Installation",
+  DETAIL_INSTALLATION_DESCRIPTION:
+    "Informasi pembelian dan proses pemasangan part.",
+
   DETAIL_DESCRIPTION_TITLE: "Description",
+  DETAIL_DESCRIPTION_DESCRIPTION: "Catatan dan pengalaman penggunaan part.",
 
-  LABEL_PURCHASE_DATE: "Purchase Date",
-  LABEL_LOCATION: "Location",
-  LABEL_DESCRIPTION: "Description",
+  // Detail labels
+  LABEL_CATEGORY: "Kategori",
+  LABEL_BRAND: "Merek",
+  LABEL_PRODUCT_NAME: "Nama Produk",
+  LABEL_PRICE: "Harga",
+  LABEL_PURCHASE_DATE: "Tanggal Pembelian",
+  LABEL_INSTALL_DATE: "Tanggal Pemasangan",
+  LABEL_WORKSHOP: "Bengkel",
+  LABEL_LOCATION: "Lokasi",
+  LABEL_RATING: "Rating",
+  LABEL_VISIBILITY: "Visibilitas",
 
-  FILTER_ALL: "All",
-  SEARCH_PLACEHOLDER: "Search parts, brand, category, workshop...",
-  FILTER_EMPTY_TITLE: "No matching parts",
-  FILTER_EMPTY_DESCRIPTION:
-    "Try another keyword or choose a different category.",
+  // Quick information cards
+  INFO_PRICE_TITLE: "Harga",
+  INFO_INSTALL_DATE_TITLE: "Dipasang",
+  INFO_WORKSHOP_TITLE: "Bengkel",
+  INFO_RATING_TITLE: "Rating",
 
-  SORT_LABEL: "Sort By",
-  SORT_NEWEST: "Newest",
-  SORT_PRICE_HIGH: "Price High",
-  SORT_PRICE_LOW: "Price Low",
-  SORT_INSTALL_DATE: "Install Date",
+  // Delete
+  DELETE_CONFIRM_TITLE: "Hapus part ini?",
+  DELETE_CONFIRM_MESSAGE:
+    "Part akan dihapus secara permanen dari setup build Anda.",
 
+  DELETE_SUCCESS_TITLE: "Part Berhasil Dihapus",
+  DELETE_SUCCESS_MESSAGE: "Part telah dihapus dari setup build motor Anda.",
+
+  DELETE_FAILED_TITLE: "Gagal Menghapus Part",
+  DELETE_FAILED_MESSAGE: "Part tidak dapat dihapus. Silakan coba kembali.",
+
+  // Cancel Add/Edit
+  CANCEL_ADD_TITLE: "Batalkan penambahan part?",
+  CANCEL_ADD_MESSAGE: "Informasi part yang sudah Anda isi tidak akan disimpan.",
+
+  CANCEL_EDIT_TITLE: "Batalkan perubahan?",
+  CANCEL_EDIT_MESSAGE: "Perubahan pada informasi part tidak akan disimpan.",
+
+  KEEP_EDITING_BUTTON: "Lanjut Mengedit",
+  DISCARD_CHANGES_BUTTON: "Buang Perubahan",
+
+  // Validation
+  VALIDATION_CATEGORY_REQUIRED: "Silakan pilih kategori part.",
+  VALIDATION_PRICE_INVALID: "Harga harus berupa angka yang valid.",
+  VALIDATION_PURCHASE_DATE_INVALID:
+    "Tanggal pembelian harus menggunakan format DD/MM/YYYY.",
+  VALIDATION_INSTALL_DATE_INVALID:
+    "Tanggal pemasangan harus menggunakan format DD/MM/YYYY.",
+  VALIDATION_RATING_INVALID: "Rating harus berada di antara 1 sampai 5.",
+
+  // Search and filter
+  SEARCH_PLACEHOLDER: "Cari merek, produk, atau kategori part...",
+  FILTER_CATEGORY_LABEL: "Kategori",
+  SORT_LABEL: "Urutkan",
+
+  // Empty states
+  EMPTY_LIST_TITLE: "Belum Ada Part",
+  EMPTY_LIST_DESCRIPTION:
+    "Tambahkan part yang digunakan untuk melengkapi setup build ini.",
+
+  EMPTY_FILTER_TITLE: "Part Tidak Ditemukan",
+  EMPTY_FILTER_DESCRIPTION:
+    "Coba ubah pencarian, kategori, atau urutan yang digunakan.",
+
+  // Compatibility: category group
+  GROUP_TITLE_SUFFIX: "part",
+
+  // Compatibility: summary card
   SUMMARY_TITLE: "Build Summary",
-  SUMMARY_TOTAL_PARTS: "Total Parts",
-  SUMMARY_TOTAL_COST: "Estimated Cost",
-  SUMMARY_CATEGORIES: "Categories",
+  SUMMARY_TOTAL_PARTS: "Total Part",
+  SUMMARY_CATEGORIES: "Kategori",
+  SUMMARY_TOTAL_COST: "Total Estimasi",
 
-  GROUP_EMPTY_TITLE: "No parts in this category",
-  GROUP_TITLE_SUFFIX: "Parts",
+  // Compatibility: rating
+  RATING_NO_VALUE: "Belum Dinilai",
 
-  RATING_EMPTY: "No rating",
-  PRICE_HELPER: "Input number only, example: 2500000",
-  DATE_HELPER: "Use YYYY-MM-DD format, example: 2026-06-19",
+  // Compatibility: date validation
+  VALIDATION_DATE_INVALID: "Tanggal harus menggunakan format DD/MM/YYYY.",
 
-  EMPTY_VALUE: "-",
+  // Compatibility: sorting
+  SORT_NEWEST: "Terbaru",
+  SORT_PRICE_HIGH: "Harga Tertinggi",
+  SORT_PRICE_LOW: "Harga Terendah",
+  SORT_INSTALL_DATE: "Tanggal Pemasangan",
 } as const;

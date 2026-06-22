@@ -20,6 +20,19 @@ export async function getMotorcycleImages(
 
   return data ?? [];
 }
+export async function getMotorcycleImagesByUserId(userId: string) {
+  const { data, error } = await supabase
+    .from(MOTORCYCLE_IMAGE_TABLE)
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data ?? [];
+}
 
 export async function createMotorcycleImage(
   payload: CreateMotorcycleImagePayload,

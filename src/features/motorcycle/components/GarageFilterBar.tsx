@@ -1,8 +1,9 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { AppInput, SelectChipGroup } from "@/src/components/ui";
 import { spacing } from "@/src/theme";
 import { MOTORCYCLE_COPY } from "@/src/features/motorcycle/constants/motorcycle.constants";
+import { MOTORCYCLE_SHOWCASE_COLORS } from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
 import type { MotorcycleSortOption } from "@/src/features/motorcycle/types/motorcycle.types";
 import {
   getMotorcycleSortLabelByValue,
@@ -29,13 +30,22 @@ export function GarageFilterBar({
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Find Your Build</Text>
+        <Text style={styles.description}>
+          Search and organize your motorcycles.
+        </Text>
+      </View>
+
       <AppInput
+        variant="dark"
         value={searchQuery}
         onChangeText={onChangeSearchQuery}
         placeholder={MOTORCYCLE_COPY.GARAGE_SEARCH_PLACEHOLDER}
       />
 
       <SelectChipGroup
+        variant="dark"
         label={MOTORCYCLE_COPY.GARAGE_SORT_LABEL}
         value={getMotorcycleSortLabelByValue(sortOption)}
         options={getMotorcycleSortOptionLabels()}
@@ -48,5 +58,19 @@ export function GarageFilterBar({
 const styles = StyleSheet.create({
   container: {
     gap: spacing.md,
+  },
+  header: {
+    gap: spacing.xs,
+  },
+  title: {
+    fontFamily: "PlusJakartaSans-Bold",
+    fontSize: 15,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
+  },
+  description: {
+    fontFamily: "Inter-Regular",
+    fontSize: 12,
+    lineHeight: 18,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
   },
 });

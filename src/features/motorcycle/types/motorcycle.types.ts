@@ -44,6 +44,7 @@ export type Motorcycle = {
 
 export type CreateMotorcyclePayload = {
   user_id: string;
+
   brand: string;
   model: string;
   variant?: string | null;
@@ -53,9 +54,10 @@ export type CreateMotorcyclePayload = {
   nickname?: string | null;
   plate_number?: string | null;
   purchase_date?: string | null;
-  mileage?: number;
+  mileage?: number | null;
   description?: string | null;
   hero_image_url?: string | null;
-  visibility?: MotorcycleVisibility;
-  status?: MotorcycleStatus;
+
+  visibility?: string;
+  status?: string;
 };

@@ -1,13 +1,22 @@
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Alert, StyleSheet } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { ArrowLeft } from "lucide-react-native";
 
 import { Screen } from "@/src/components/layout";
-import { AppButton, EmptyState, PageHeader } from "@/src/components/ui";
+import { AppButton, EmptyState } from "@/src/components/ui";
 import { COMMON_COPY } from "@/src/constants/copy";
 import { ROUTES } from "@/src/constants/routes";
 import { STORAGE_BUCKETS, STORAGE_FOLDERS } from "@/src/constants/storage";
-import { colors, spacing } from "@/src/theme";
+import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { MOTORCYCLE_SHOWCASE_COLORS } from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
 import { PartForm } from "@/src/features/part/components/PartForm";
 import { PART_COPY } from "@/src/features/part/constants/part.constants";
 import {
@@ -22,7 +31,7 @@ import {
   type PartFormErrors,
   type PartFormValues,
 } from "@/src/features/part/utils/partForm";
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { spacing } from "@/src/theme";
 import { parseOptionalDate } from "@/src/utils/date";
 import { parseOptionalNumber } from "@/src/utils/number";
 import { pickImageFromLibrary } from "@/src/utils/pickImage";
@@ -54,7 +63,7 @@ export default function EditPartScreen() {
       if (data) {
         setForm(mapPartToForm(data));
       }
-    } catch (error) {
+    } catch {
       Alert.alert(
         PART_COPY.DETAIL_LOAD_FAILED_TITLE,
         PART_COPY.DETAIL_LOAD_FAILED_MESSAGE,
@@ -95,10 +104,10 @@ export default function EditPartScreen() {
       }
 
       updateField("mainImageLocalUri", imageUri);
-    } catch (error) {
+    } catch {
       Alert.alert(
         PART_COPY.IMAGE_PICK_FAILED_TITLE,
-        PART_COPY.LOAD_FAILED_MESSAGE,
+        PART_COPY.IMAGE_PICK_FAILED_MESSAGE,
       );
     }
   }
@@ -106,11 +115,13 @@ export default function EditPartScreen() {
   async function uploadMainImageIfNeeded(): Promise<{
     url: string | null;
     path: string | null;
+    previousPathToDelete: string | null;
   }> {
     if (!user || !form.mainImageLocalUri) {
       return {
         url: form.mainImageUrl || null,
         path: part?.main_image_path || null,
+        previousPathToDelete: null,
       };
     }
 
@@ -121,21 +132,38 @@ export default function EditPartScreen() {
       uri: form.mainImageLocalUri,
     });
 
-    if (part?.main_image_path) {
-      await deleteUploadedImage({
-        bucket: STORAGE_BUCKETS.MOTORCYCLE_IMAGES,
-        path: part.main_image_path,
-      });
-    }
-
     return {
       url: uploadedImage.publicUrl,
       path: uploadedImage.path,
+      previousPathToDelete: part?.main_image_path || null,
     };
   }
 
+  function navigateToPartDetail() {
+    if (part?.id) {
+      router.replace(ROUTES.PART.DETAIL(part.id));
+      return;
+    }
+
+    router.replace(ROUTES.TABS.GARAGE);
+  }
+
+  function handleCancel() {
+    Alert.alert(PART_COPY.CANCEL_EDIT_TITLE, PART_COPY.CANCEL_EDIT_MESSAGE, [
+      {
+        text: PART_COPY.KEEP_EDITING_BUTTON,
+        style: "cancel",
+      },
+      {
+        text: PART_COPY.DISCARD_CHANGES_BUTTON,
+        style: "destructive",
+        onPress: navigateToPartDetail,
+      },
+    ]);
+  }
+
   async function handleSubmit() {
-    if (!partId || !part) {
+    if (!partId || !part || submitting) {
       return;
     }
 
@@ -174,13 +202,28 @@ export default function EditPartScreen() {
         is_public: form.isPublic,
       });
 
+      /*
+       * Hapus gambar lama setelah update database berhasil.
+       * Ini mencegah gambar lama hilang jika proses update gagal.
+       */
+      if (uploadedImage.previousPathToDelete) {
+        try {
+          await deleteUploadedImage({
+            bucket: STORAGE_BUCKETS.MOTORCYCLE_IMAGES,
+            path: uploadedImage.previousPathToDelete,
+          });
+        } catch (error) {
+          console.warn("Gagal menghapus gambar part lama:", error);
+        }
+      }
+
       Alert.alert(
         PART_COPY.UPDATE_SUCCESS_TITLE,
         PART_COPY.UPDATE_SUCCESS_MESSAGE,
         [
           {
             text: COMMON_COPY.OK,
-            onPress: handleBackToPartDetail,
+            onPress: navigateToPartDetail,
           },
         ],
       );
@@ -196,34 +239,32 @@ export default function EditPartScreen() {
     }
   }
 
-  function handleBack() {
-    if (part) {
-      router.replace(ROUTES.PART.DETAIL(part.id));
-      return;
-    }
-
-    router.replace(ROUTES.TABS.GARAGE);
-  }
-
   if (loading) {
     return (
-      <Screen contentContainerStyle={styles.centerContainer}>
-        <ActivityIndicator color={colors.primary} />
+      <Screen
+        backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+        contentContainerStyle={styles.centerContainer}
+      >
+        <ActivityIndicator color={MOTORCYCLE_SHOWCASE_COLORS.accent} />
       </Screen>
     );
   }
 
   if (!part) {
     return (
-      <Screen contentContainerStyle={styles.centerContainer}>
+      <Screen
+        backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+        contentContainerStyle={styles.centerContainer}
+      >
         <EmptyState
+          variant="dark"
           title={PART_COPY.DETAIL_NOT_FOUND_TITLE}
           description={PART_COPY.DETAIL_NOT_FOUND_DESCRIPTION}
           action={
             <AppButton
               title={COMMON_COPY.BACK}
               variant="secondary"
-              onPress={handleBack}
+              onPress={navigateToPartDetail}
             />
           }
         />
@@ -231,18 +272,39 @@ export default function EditPartScreen() {
     );
   }
 
-  function handleBackToPartDetail() {
-    router.back();
-  }
-
   return (
-    <Screen scroll keyboardAvoiding contentContainerStyle={styles.container}>
-      <PageHeader
-        title={PART_COPY.EDIT_SCREEN_TITLE}
-        subtitle={PART_COPY.EDIT_SCREEN_SUBTITLE}
-      />
+    <Screen
+      scroll
+      keyboardAvoiding
+      backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+      contentContainerStyle={styles.container}
+    >
+      <View style={styles.header}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Kembali ke detail part"
+          disabled={submitting}
+          onPress={handleCancel}
+          style={({ pressed }) => [
+            styles.backButton,
+            pressed && !submitting ? styles.pressed : null,
+            submitting ? styles.disabled : null,
+          ]}
+        >
+          <ArrowLeft size={22} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
+        </Pressable>
+
+        <View style={styles.headerContent}>
+          <Text style={styles.eyebrow}>Build Setup</Text>
+
+          <Text style={styles.title}>{PART_COPY.EDIT_SCREEN_TITLE}</Text>
+
+          <Text style={styles.subtitle}>{PART_COPY.EDIT_SCREEN_SUBTITLE}</Text>
+        </View>
+      </View>
 
       <PartForm
+        variant="dark"
         values={form}
         errors={errors}
         submitting={submitting}
@@ -250,6 +312,7 @@ export default function EditPartScreen() {
         onChange={updateField}
         onPickImage={handlePickImage}
         onSubmit={handleSubmit}
+        onCancel={handleCancel}
       />
     </Screen>
   );
@@ -258,9 +321,58 @@ export default function EditPartScreen() {
 const styles = StyleSheet.create({
   container: {
     gap: spacing["2xl"],
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing["5xl"],
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.background,
   },
   centerContainer: {
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.background,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing.md,
+  },
+  backButton: {
+    width: 42,
+    height: 42,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 21,
+    borderWidth: 1,
+    borderColor: MOTORCYCLE_SHOWCASE_COLORS.border,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.surface,
+  },
+  headerContent: {
+    flex: 1,
+  },
+  eyebrow: {
+    fontFamily: "Inter-SemiBold",
+    fontSize: 12,
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    color: MOTORCYCLE_SHOWCASE_COLORS.accent,
+  },
+  title: {
+    marginTop: spacing.xs,
+    fontFamily: "PlusJakartaSans-ExtraBold",
+    fontSize: 28,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
+  },
+  subtitle: {
+    marginTop: spacing.xs,
+    fontFamily: "Inter-Regular",
+    fontSize: 13,
+    lineHeight: 20,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
+  },
+  pressed: {
+    opacity: 0.72,
+  },
+  disabled: {
+    opacity: 0.5,
   },
 });

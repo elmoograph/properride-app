@@ -46,20 +46,22 @@ export async function createMotorcycle(
     .from(MOTORCYCLE_TABLE)
     .insert({
       user_id: payload.user_id,
-      brand: payload.brand.trim(),
-      model: payload.model.trim(),
-      variant: payload.variant?.trim() || null,
+
+      brand: payload.brand,
+      model: payload.model,
+      variant: payload.variant ?? null,
       year: payload.year ?? null,
-      color: payload.color?.trim() || null,
+      color: payload.color ?? null,
       engine_cc: payload.engine_cc ?? null,
-      nickname: payload.nickname?.trim() || null,
-      plate_number: payload.plate_number?.trim() || null,
+      nickname: payload.nickname ?? null,
+      plate_number: payload.plate_number ?? null,
       purchase_date: payload.purchase_date ?? null,
       mileage: payload.mileage ?? 0,
-      description: payload.description?.trim() || null,
+      description: payload.description ?? null,
       hero_image_url: payload.hero_image_url ?? null,
-      visibility: payload.visibility ?? MOTORCYCLE_VISIBILITY.PUBLIC,
-      status: payload.status ?? MOTORCYCLE_STATUS.ACTIVE,
+
+      visibility: payload.visibility ?? "public",
+      status: payload.status ?? "in_progress",
     })
     .select("*")
     .single();

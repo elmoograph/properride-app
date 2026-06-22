@@ -1,26 +1,47 @@
 import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-import { colors, fontFamily, spacing } from "@/src/theme";
+import { colors, fontFamily, radius, spacing } from "@/src/theme";
+import { MOTORCYCLE_SHOWCASE_COLORS } from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
+
+type FormSectionVariant = "default" | "dark";
 
 type FormSectionProps = {
-  title?: string;
+  title: string;
+  subtitle?: string;
   description?: string;
   children: ReactNode;
+  variant?: FormSectionVariant;
 };
 
 export function FormSection({
   title,
+  subtitle,
   description,
   children,
+  variant = "default",
 }: FormSectionProps) {
-  return (
-    <View style={styles.container}>
-      {title ? <Text style={styles.title}>{title}</Text> : null}
+  const sectionDescription = subtitle || description;
+  const isDark = variant === "dark";
 
-      {description ? (
-        <Text style={styles.description}>{description}</Text>
-      ) : null}
+  return (
+    <View
+      style={[
+        styles.container,
+        isDark ? styles.containerDark : styles.containerDefault,
+      ]}
+    >
+      <View style={styles.header}>
+        <Text style={[styles.title, isDark ? styles.titleDark : null]}>
+          {title}
+        </Text>
+
+        {sectionDescription ? (
+          <Text style={[styles.subtitle, isDark ? styles.subtitleDark : null]}>
+            {sectionDescription}
+          </Text>
+        ) : null}
+      </View>
 
       <View style={styles.content}>{children}</View>
     </View>
@@ -29,22 +50,40 @@ export function FormSection({
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    gap: spacing.lg,
+    padding: spacing.lg,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+  },
+  containerDefault: {
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  containerDark: {
+    borderColor: MOTORCYCLE_SHOWCASE_COLORS.border,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.surface,
+  },
+  header: {
+    gap: spacing.xs,
   },
   title: {
-    fontFamily: fontFamily.headline.bold,
-    fontSize: 18,
+    fontFamily: "PlusJakartaSans-Bold",
+    fontSize: 16,
     color: colors.textPrimary,
   },
-  description: {
-    marginTop: spacing.xs,
+  titleDark: {
+    color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
+  },
+  subtitle: {
     fontFamily: fontFamily.body.regular,
-    fontSize: 14,
+    fontSize: 13,
     lineHeight: 20,
     color: colors.textSecondary,
   },
+  subtitleDark: {
+    color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
+  },
   content: {
-    marginTop: spacing.lg,
-    gap: spacing.lg,
+    gap: spacing.md,
   },
 });

@@ -15,6 +15,6 @@ module.exports = {
       },
       package: "com.properride.app",
     },
-    plugins: ["expo-router", "expo-status-bar"],
+    plugins: ["expo-router", "expo-status-bar", "expo-video"],
   },
 };

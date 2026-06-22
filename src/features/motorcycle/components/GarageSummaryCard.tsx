@@ -1,101 +1,97 @@
 import { StyleSheet, Text, View } from "react-native";
+import { Bike, CircleDollarSign, Wrench } from "lucide-react-native";
 
-import { colors, fontFamily, radius, spacing } from "@/src/theme";
-import { MOTORCYCLE_COPY } from "@/src/features/motorcycle/constants/motorcycle.constants";
-import type { GarageSummary } from "@/src/features/motorcycle/utils/garageSummary";
+import { spacing } from "@/src/theme";
+import { MOTORCYCLE_SHOWCASE_COLORS } from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
 import { formatCurrency } from "@/src/utils/format";
 
 type GarageSummaryCardProps = {
-  summary: GarageSummary;
+  motorcycleCount: number;
+  partCount: number;
+  buildValue: number;
 };
 
-export function GarageSummaryCard({ summary }: GarageSummaryCardProps) {
+export function GarageSummaryCard({
+  motorcycleCount,
+  partCount,
+  buildValue,
+}: GarageSummaryCardProps) {
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>{MOTORCYCLE_COPY.GARAGE_SUMMARY_TITLE}</Text>
-
-      <View style={styles.grid}>
-        <View style={styles.item}>
-          <Text style={styles.value}>{summary.totalMotorcycles}</Text>
-          <Text style={styles.label}>
-            {MOTORCYCLE_COPY.GARAGE_SUMMARY_MOTORCYCLES}
-          </Text>
+    <View style={styles.container}>
+      <View style={styles.item}>
+        <View style={styles.iconBox}>
+          <Bike size={18} color={MOTORCYCLE_SHOWCASE_COLORS.background} />
         </View>
-
-        <View style={styles.item}>
-          <Text style={styles.value}>{summary.totalParts}</Text>
-          <Text style={styles.label}>
-            {MOTORCYCLE_COPY.GARAGE_SUMMARY_PARTS}
-          </Text>
-        </View>
+        <Text style={styles.value}>{motorcycleCount}</Text>
+        <Text style={styles.label}>Motorcycles</Text>
       </View>
 
-      <View style={styles.costBox}>
-        <Text style={styles.costLabel}>
-          {MOTORCYCLE_COPY.GARAGE_SUMMARY_BUILD_COST}
-        </Text>
+      <View style={styles.divider} />
 
-        <Text style={styles.costValue}>
-          {formatCurrency(summary.estimatedBuildCost)}
+      <View style={styles.item}>
+        <View style={styles.iconBox}>
+          <Wrench size={18} color={MOTORCYCLE_SHOWCASE_COLORS.background} />
+        </View>
+        <Text style={styles.value}>{partCount}</Text>
+        <Text style={styles.label}>Parts</Text>
+      </View>
+
+      <View style={styles.divider} />
+
+      <View style={styles.item}>
+        <View style={styles.iconBox}>
+          <CircleDollarSign
+            size={18}
+            color={MOTORCYCLE_SHOWCASE_COLORS.background}
+          />
+        </View>
+        <Text style={styles.value} numberOfLines={1}>
+          {formatCurrency(buildValue)}
         </Text>
+        <Text style={styles.label}>Build Value</Text>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    padding: spacing.lg,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  title: {
-    fontFamily: fontFamily.headline.bold,
-    fontSize: 16,
-    color: colors.textPrimary,
-  },
-  grid: {
+  container: {
+    minHeight: 112,
     flexDirection: "row",
-    gap: spacing.md,
-    marginTop: spacing.lg,
+    alignItems: "center",
+    padding: spacing.lg,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: MOTORCYCLE_SHOWCASE_COLORS.border,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.surface,
   },
   item: {
     flex: 1,
-    padding: spacing.md,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.borderSoft,
-    backgroundColor: colors.white,
+    alignItems: "center",
+  },
+  iconBox: {
+    width: 34,
+    height: 34,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 17,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.accent,
   },
   value: {
-    fontFamily: fontFamily.headline.extraBold,
-    fontSize: 22,
-    color: colors.textPrimary,
+    marginTop: spacing.sm,
+    fontFamily: "PlusJakartaSans-Bold",
+    fontSize: 14,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
   },
   label: {
-    marginTop: spacing.xs,
-    fontFamily: fontFamily.body.medium,
-    fontSize: 12,
-    color: colors.textSecondary,
+    marginTop: 2,
+    fontFamily: "Inter-Regular",
+    fontSize: 11,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
   },
-  costBox: {
-    marginTop: spacing.md,
-    padding: spacing.md,
-    borderRadius: radius.md,
-    backgroundColor: colors.primary,
-  },
-  costLabel: {
-    fontFamily: fontFamily.body.medium,
-    fontSize: 12,
-    color: colors.white,
-    opacity: 0.85,
-  },
-  costValue: {
-    marginTop: spacing.xs,
-    fontFamily: fontFamily.headline.extraBold,
-    fontSize: 20,
-    color: colors.white,
+  divider: {
+    width: 1,
+    height: 58,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.border,
   },
 });

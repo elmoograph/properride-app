@@ -32,4 +32,8 @@ export const ROUTES = {
     DETAIL: (id: string) => `/part/${id}` as const,
     EDIT: (id: string) => `/part/edit/${id}` as const,
   },
+
+  GALLERY: {
+    ADD: (motorcycleId: string) => `/gallery/add/${motorcycleId}` as const,
+  },
 } as const;

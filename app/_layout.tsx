@@ -11,9 +11,12 @@ import { AuthProvider } from "@/src/features/auth/context/AuthProvider";
 import { AuthGate } from "@/src/features/auth/components/AuthGate";
 import { View, StyleSheet } from "react-native";
 
+import { useImmersiveMode } from "@/src/hooks/useImmersiveMode";
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  useImmersiveMode();
   const [fontsLoaded, fontError] = useFonts({
     "PlusJakartaSans-Regular": require("../assets/fonts/PlusJakartaSans-Regular.ttf"),
     "PlusJakartaSans-Medium": require("../assets/fonts/PlusJakartaSans-Medium.ttf"),

@@ -14,6 +14,8 @@ export type MotorcycleFormValues = {
   description: string;
   heroImageUrl: string;
   heroImageLocalUri: string;
+  status: string;
+  visibility: string;
 };
 
 export type MotorcycleFormErrors = Partial<
@@ -32,6 +34,8 @@ export const INITIAL_MOTORCYCLE_FORM: MotorcycleFormValues = {
   description: "",
   heroImageUrl: "",
   heroImageLocalUri: "",
+  status: "in_progress",
+  visibility: "public",
 };
 
 export function mapMotorcycleToForm(
@@ -52,6 +56,8 @@ export function mapMotorcycleToForm(
     description: motorcycle.description ?? "",
     heroImageUrl: motorcycle.hero_image_url ?? "",
     heroImageLocalUri: "",
+    status: motorcycle.status || "in_progress",
+    visibility: motorcycle.visibility || "public",
   };
 }
 

@@ -70,7 +70,7 @@ export default function ProfileSetupScreen() {
         subtitle="This profile will become your digital identity inside ProperRide."
       />
 
-      <FormSection>
+      <FormSection title="Setup Profile">
         <AppInput
           label="Username"
           value={username}

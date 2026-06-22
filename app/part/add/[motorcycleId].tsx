@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Alert, StyleSheet } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { ArrowLeft } from "lucide-react-native";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { Screen } from "@/src/components/layout";
-import { PageHeader } from "@/src/components/ui";
 import { COMMON_COPY } from "@/src/constants/copy";
 import { ROUTES } from "@/src/constants/routes";
 import { STORAGE_BUCKETS, STORAGE_FOLDERS } from "@/src/constants/storage";
@@ -22,6 +22,7 @@ import { parseOptionalDate } from "@/src/utils/date";
 import { parseOptionalNumber } from "@/src/utils/number";
 import { pickImageFromLibrary } from "@/src/utils/pickImage";
 import { uploadImage } from "@/src/utils/uploadImage";
+import { MOTORCYCLE_SHOWCASE_COLORS } from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
 
 export default function AddPartScreen() {
   const { user } = useAuth();
@@ -90,7 +91,32 @@ export default function AddPartScreen() {
       path: uploadedImage.path,
     };
   }
+  function handleCancel() {
+    Alert.alert(
+      "Batalkan penambahan part?",
+      "Informasi part yang sudah Anda isi tidak akan disimpan.",
+      [
+        {
+          text: "Lanjut Mengedit",
+          style: "cancel",
+        },
+        {
+          text: "Buang Perubahan",
+          style: "destructive",
+          onPress: () => {
+            if (router.canGoBack()) {
+              router.back();
+              return;
+            }
 
+            if (resolvedMotorcycleId) {
+              router.replace(ROUTES.MOTORCYCLE.DETAIL(resolvedMotorcycleId));
+            }
+          },
+        },
+      ],
+    );
+  }
   async function handleSubmit() {
     if (!user || !resolvedMotorcycleId) {
       return;
@@ -153,13 +179,32 @@ export default function AddPartScreen() {
   }
 
   return (
-    <Screen scroll keyboardAvoiding contentContainerStyle={styles.container}>
-      <PageHeader
-        title={PART_COPY.ADD_SCREEN_TITLE}
-        subtitle={PART_COPY.ADD_SCREEN_SUBTITLE}
-      />
+    <Screen
+      scroll
+      keyboardAvoiding
+      backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+      contentContainerStyle={styles.container}
+    >
+      <View style={styles.header}>
+        <Pressable
+          style={styles.backButton}
+          onPress={handleCancel}
+          disabled={submitting}
+        >
+          <ArrowLeft size={22} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
+        </Pressable>
+
+        <View style={styles.headerContent}>
+          <Text style={styles.eyebrow}>Build Setup</Text>
+
+          <Text style={styles.title}>{PART_COPY.ADD_SCREEN_TITLE}</Text>
+
+          <Text style={styles.subtitle}>{PART_COPY.ADD_SCREEN_SUBTITLE}</Text>
+        </View>
+      </View>
 
       <PartForm
+        variant="dark"
         values={form}
         errors={errors}
         submitting={submitting}
@@ -167,6 +212,7 @@ export default function AddPartScreen() {
         onChange={updateField}
         onPickImage={handlePickImage}
         onSubmit={handleSubmit}
+        onCancel={handleCancel}
       />
     </Screen>
   );
@@ -175,5 +221,47 @@ export default function AddPartScreen() {
 const styles = StyleSheet.create({
   container: {
     gap: spacing["2xl"],
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing["5xl"],
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.background,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing.md,
+  },
+  backButton: {
+    width: 42,
+    height: 42,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 21,
+    borderWidth: 1,
+    borderColor: MOTORCYCLE_SHOWCASE_COLORS.border,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.surface,
+  },
+  headerContent: {
+    flex: 1,
+  },
+  eyebrow: {
+    fontFamily: "Inter-SemiBold",
+    fontSize: 12,
+    color: MOTORCYCLE_SHOWCASE_COLORS.accent,
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+  },
+  title: {
+    marginTop: spacing.xs,
+    fontFamily: "PlusJakartaSans-ExtraBold",
+    fontSize: 28,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
+  },
+  subtitle: {
+    marginTop: spacing.xs,
+    fontFamily: "Inter-Regular",
+    fontSize: 13,
+    lineHeight: 20,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
   },
 });

@@ -7,32 +7,46 @@ import {
 } from "react-native";
 
 import { colors, fontFamily, radius, spacing } from "@/src/theme";
+import { MOTORCYCLE_SHOWCASE_COLORS } from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
+
+type AppInputVariant = "default" | "dark";
 
 type AppInputProps = TextInputProps & {
   label?: string;
   error?: string;
+  variant?: AppInputVariant;
 };
 
 export function AppInput({
+  variant = "default",
   label,
   error,
   style,
   multiline,
   ...props
 }: AppInputProps) {
+  const isDark = variant === "dark";
+
   return (
     <View style={styles.wrapper}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? (
+        <Text style={[styles.label, isDark ? styles.labelDark : null]}>
+          {label}
+        </Text>
+      ) : null}
 
       <TextInput
         {...props}
         multiline={multiline}
-        placeholderTextColor={colors.textMuted}
         textAlignVertical={multiline ? "top" : "center"}
+        placeholderTextColor={
+          isDark ? MOTORCYCLE_SHOWCASE_COLORS.textMuted : colors.textMuted
+        }
         style={[
           styles.input,
-          multiline && styles.textArea,
-          error && styles.inputError,
+          isDark ? styles.inputDark : null,
+          multiline ? styles.inputMultiline : null,
+          error ? styles.inputError : null,
           style,
         ]}
       />
@@ -52,6 +66,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textPrimary,
   },
+  labelDark: {
+    color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
+  },
   input: {
     minHeight: 52,
     borderWidth: 1,
@@ -63,8 +80,13 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     backgroundColor: colors.surface,
   },
-  textArea: {
-    height: 120,
+  inputDark: {
+    borderColor: MOTORCYCLE_SHOWCASE_COLORS.border,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.surfaceSoft,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
+  },
+  inputMultiline: {
+    minHeight: 120,
     paddingTop: spacing.md,
     paddingBottom: spacing.md,
   },
