@@ -9,7 +9,6 @@ import type {
   GalleryPostWithMediaRow,
   MotorcycleGalleryMedia,
   MotorcycleGalleryPost,
-  UpdateMotorcycleGalleryPostInput,
 } from "@/src/features/motorcycleImage/types/motorcycleImage.types";
 
 type CreateGalleryMediaWithoutPostId = Omit<
@@ -61,7 +60,7 @@ export async function getMotorcycleGalleryPosts(
 
   const rows = (data ?? []) as GalleryPostWithMediaRow[];
 
-  return rows.map(normalizeGalleryPost);
+  return (data ?? []).map(normalizeGalleryPost);
 }
 
 /**
@@ -89,7 +88,7 @@ export async function getMotorcycleGalleryPostById(
     return null;
   }
 
-  return normalizeGalleryPost(data as GalleryPostWithMediaRow);
+  return data ? normalizeGalleryPost(data) : null;
 }
 
 /**
@@ -243,38 +242,38 @@ export async function createMotorcycleGalleryPostWithMedia({
 /**
  * Memperbarui caption atau visibility Gallery Post.
  */
-export async function updateMotorcycleGalleryPost(
-  postId: string,
-  input: UpdateMotorcycleGalleryPostInput,
-): Promise<MotorcycleGalleryPost> {
-  const updatePayload: UpdateMotorcycleGalleryPostInput = {};
+// export async function updateMotorcycleGalleryPost(
+//   postId: string,
+//   input: UpdateMotorcycleGalleryPostInput,
+// ): Promise<MotorcycleGalleryPost> {
+//   const updatePayload: UpdateMotorcycleGalleryPostInput = {};
 
-  if (input.caption !== undefined) {
-    updatePayload.caption = input.caption?.trim() || null;
-  }
+//   if (input.caption !== undefined) {
+//     updatePayload.caption = input.caption?.trim() || null;
+//   }
 
-  if (input.visibility !== undefined) {
-    updatePayload.visibility = input.visibility;
-  }
+//   if (input.visibility !== undefined) {
+//     updatePayload.visibility = input.visibility;
+//   }
 
-  const { data, error } = await supabase
-    .from(MOTORCYCLE_GALLERY_POST_TABLE)
-    .update(updatePayload)
-    .eq("id", postId)
-    .select(
-      `
-      *,
-      media:${MOTORCYCLE_GALLERY_MEDIA_TABLE} (*)
-    `,
-    )
-    .single();
+//   const { data, error } = await supabase
+//     .from(MOTORCYCLE_GALLERY_POST_TABLE)
+//     .update(updatePayload)
+//     .eq("id", postId)
+//     .select(
+//       `
+//       *,
+//       media:${MOTORCYCLE_GALLERY_MEDIA_TABLE} (*)
+//     `,
+//     )
+//     .single();
 
-  if (error) {
-    throw new Error(error.message);
-  }
+//   if (error) {
+//     throw new Error(error.message);
+//   }
 
-  return normalizeGalleryPost(data as GalleryPostWithMediaRow);
-}
+//   return normalizeGalleryPost(data as GalleryPostWithMediaRow);
+// }
 
 /**
  * Menghapus satu media dari Gallery Post.
@@ -312,4 +311,35 @@ export async function deleteMotorcycleGalleryPost(
   if (error) {
     throw new Error(error.message);
   }
+}
+
+export async function getMotorcycleGalleryPostsByUserId(
+  userId: string,
+): Promise<MotorcycleGalleryPost[]> {
+  console.log("Memuat Gallery Post Garage untuk user:", userId);
+
+  const { data, error } = await supabase
+    .from(MOTORCYCLE_GALLERY_POST_TABLE)
+    .select(
+      `
+      *,
+      media:${MOTORCYCLE_GALLERY_MEDIA_TABLE} (*)
+    `,
+    )
+    .eq("user_id", userId)
+    .order("created_at", {
+      ascending: false,
+    });
+
+  if (error) {
+    console.error("Gallery Post Garage query error:", error);
+
+    throw error;
+  }
+
+  console.log("Gallery Post Garage berhasil:", data?.length ?? 0);
+
+  return (data ?? []).map((post) =>
+    normalizeGalleryPost(post as GalleryPostWithMediaRow),
+  );
 }

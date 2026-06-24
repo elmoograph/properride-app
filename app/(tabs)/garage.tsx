@@ -33,18 +33,19 @@ import { calculateGarageSummary } from "@/src/features/motorcycle/utils/garageSu
 import { sortMotorcycles } from "@/src/features/motorcycle/utils/motorcycleSort";
 import { getPartsByUserId } from "@/src/features/part/repositories/part.repository";
 import type { Part } from "@/src/features/part/types/part.types";
-import { getMotorcycleImagesByUserId } from "@/src/features/motorcycleImage/repositories/motorcycleImage.repository";
-import type { MotorcycleImage } from "@/src/features/motorcycleImage/types/motorcycleImage.types";
-
+import { getMotorcycleGalleryPostsByUserId } from "@/src/features/motorcycleImage/repositories/motorcycleGallery.repository";
+import type { MotorcycleGalleryPost } from "@/src/features/motorcycleImage/types/motorcycleImage.types";
 function getPartCountByMotorcycle(parts: Part[], motorcycleId: string): number {
   return parts.filter((part) => part.motorcycle_id === motorcycleId).length;
 }
 
-function getPhotoCountByMotorcycle(
-  images: MotorcycleImage[],
+function getMediaCountByMotorcycle(
+  posts: MotorcycleGalleryPost[],
   motorcycleId: string,
 ): number {
-  return images.filter((image) => image.motorcycle_id === motorcycleId).length;
+  return posts
+    .filter((post) => post.motorcycle_id === motorcycleId)
+    .reduce((total, post) => total + post.media.length, 0);
 }
 
 function getBuildValueByMotorcycle(
@@ -58,9 +59,10 @@ function getBuildValueByMotorcycle(
 
 export default function GarageScreen() {
   const { user } = useAuth();
-
+  const userId = user?.id;
   const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);
   const [parts, setParts] = useState<Part[]>([]);
+  const [galleryPosts, setGalleryPosts] = useState<MotorcycleGalleryPost[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState<MotorcycleSortOption>(
     MOTORCYCLE_SORT_OPTIONS.NEWEST,
@@ -71,9 +73,7 @@ export default function GarageScreen() {
     motorcycles,
     searchQuery,
   });
-  const [motorcycleImages, setMotorcycleImages] = useState<MotorcycleImage[]>(
-    [],
-  );
+
   const sortedMotorcycles = sortMotorcycles(filteredMotorcycles, sortOption);
 
   const garageSummary = calculateGarageSummary({
@@ -82,35 +82,44 @@ export default function GarageScreen() {
   });
 
   const loadGarage = useCallback(async () => {
-    if (!user) {
+    if (!userId) {
+      setMotorcycles([]);
+      setParts([]);
+      setGalleryPosts([]);
       setLoading(false);
       return;
     }
 
+    setLoading(true);
+
     try {
-      const [motorcycleData, partsData, imageData] = await Promise.all([
-        getMyMotorcycles(user.id),
-        getPartsByUserId(user.id),
-        getMotorcycleImagesByUserId(user.id),
+      const [motorcycleData, partsData, galleryPostData] = await Promise.all([
+        getMyMotorcycles(userId),
+        getPartsByUserId(userId),
+        getMotorcycleGalleryPostsByUserId(userId),
       ]);
 
       setMotorcycles(motorcycleData);
       setParts(partsData);
-      setMotorcycleImages(imageData);
+
+      setGalleryPosts(galleryPostData.filter((post) => post.media.length > 0));
     } catch (error) {
-      Alert.alert(
-        MOTORCYCLE_COPY.LOAD_FAILED_TITLE,
-        MOTORCYCLE_COPY.LOAD_FAILED_MESSAGE,
-      );
+      console.error("Gagal memuat Garage:", error);
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : MOTORCYCLE_COPY.LOAD_FAILED_MESSAGE;
+
+      Alert.alert(MOTORCYCLE_COPY.LOAD_FAILED_TITLE, message);
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [userId]);
 
   useFocusEffect(
     useCallback(() => {
-      setLoading(true);
-      loadGarage();
+      void loadGarage();
     }, [loadGarage]),
   );
 
@@ -177,8 +186,8 @@ export default function GarageScreen() {
                   key={motorcycle.id}
                   motorcycle={motorcycle}
                   partCount={getPartCountByMotorcycle(parts, motorcycle.id)}
-                  photoCount={getPhotoCountByMotorcycle(
-                    motorcycleImages,
+                  photoCount={getMediaCountByMotorcycle(
+                    galleryPosts,
                     motorcycle.id,
                   )}
                   buildValue={getBuildValueByMotorcycle(parts, motorcycle.id)}

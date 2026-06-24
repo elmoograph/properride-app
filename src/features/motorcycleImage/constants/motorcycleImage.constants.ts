@@ -1,5 +1,3 @@
-export const MOTORCYCLE_IMAGE_TABLE = "motorcycle_images";
-
 export const MOTORCYCLE_IMAGE_COPY = {
   // Add Gallery screen
   ADD_EYEBROW: "Galeri Build",

@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
-  Image,
   Pressable,
   StyleSheet,
   Text,
   View,
-  useWindowDimensions,
+  type LayoutChangeEvent,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from "react-native";
@@ -20,6 +19,7 @@ import type {
 } from "@/src/features/motorcycleImage/types/motorcycleImage.types";
 import { radius, spacing } from "@/src/theme";
 import { MOTORCYCLE_IMAGE_COPY } from "@/src/features/motorcycleImage/constants/motorcycleImage.constants";
+import { ZoomableGalleryImage } from "@/src/features/motorcycleImage/components/ZoomableGalleryImage";
 
 type MotorcycleGalleryPostViewerProps = {
   visible: boolean;
@@ -40,8 +40,13 @@ export function MotorcycleGalleryPostViewer({
   onClose,
   onDeletePost,
 }: MotorcycleGalleryPostViewerProps) {
-  const { width, height } = useWindowDimensions();
+  const [viewport, setViewport] = useState({
+    width: 0,
+    height: 0,
+  });
 
+  const width = viewport.width;
+  const height = viewport.height;
   const verticalListRef = useRef<FlatList<MotorcycleGalleryPost>>(null);
 
   const initialPostIndex = useMemo(() => {
@@ -55,23 +60,33 @@ export function MotorcycleGalleryPostViewer({
   }, [initialPostId, posts]);
 
   const [activePostIndex, setActivePostIndex] = useState(initialPostIndex);
-
+  const [activeImageZoomed, setActiveImageZoomed] = useState(false);
   useEffect(() => {
-    if (!visible) {
+    if (!visible || width <= 0 || height <= 0) {
       return;
     }
 
     setActivePostIndex(initialPostIndex);
 
     const timeout = setTimeout(() => {
-      verticalListRef.current?.scrollToIndex({
-        index: initialPostIndex,
+      verticalListRef.current?.scrollToOffset({
+        offset: initialPostIndex * height,
         animated: false,
       });
-    }, 50);
+    }, 100);
 
     return () => clearTimeout(timeout);
-  }, [initialPostIndex, visible]);
+  }, [height, initialPostIndex, visible, width]);
+  useEffect(() => {
+    if (visible) {
+      return;
+    }
+
+    setViewport({
+      width: 0,
+      height: 0,
+    });
+  }, [visible]);
 
   function handleVerticalScrollEnd(
     event: NativeSyntheticEvent<NativeScrollEvent>,
@@ -83,6 +98,20 @@ export function MotorcycleGalleryPostViewer({
     }
 
     setActivePostIndex(nextIndex);
+  }
+  function handleOverlayLayout(event: LayoutChangeEvent) {
+    const { width: nextWidth, height: nextHeight } = event.nativeEvent.layout;
+
+    setViewport((current) => {
+      if (current.width === nextWidth && current.height === nextHeight) {
+        return current;
+      }
+
+      return {
+        width: nextWidth,
+        height: nextHeight,
+      };
+    });
   }
 
   function getPostLayout(
@@ -101,30 +130,36 @@ export function MotorcycleGalleryPostViewer({
   }
 
   return (
-    <View style={styles.overlay}>
-      <FlatList
-        ref={verticalListRef}
-        data={posts}
-        keyExtractor={(post) => post.id}
-        pagingEnabled
-        bounces={false}
-        showsVerticalScrollIndicator={false}
-        initialScrollIndex={initialPostIndex}
-        getItemLayout={getPostLayout}
-        onMomentumScrollEnd={handleVerticalScrollEnd}
-        renderItem={({ item, index }) => (
-          <GalleryPostSlide
-            post={item}
-            width={width}
-            height={height}
-            active={index === activePostIndex}
-            canDelete={canDelete}
-            deleting={deleting}
-            onClose={onClose}
-            onDeletePost={onDeletePost}
-          />
-        )}
-      />
+    <View style={styles.overlay} onLayout={handleOverlayLayout}>
+      {width > 0 && height > 0 ? (
+        <FlatList
+          style={styles.verticalList}
+          ref={verticalListRef}
+          scrollEnabled={!activeImageZoomed && !deleting}
+          data={posts}
+          key={`${width}-${height}-${initialPostIndex}`}
+          keyExtractor={(post) => post.id}
+          pagingEnabled
+          bounces={false}
+          showsVerticalScrollIndicator={false}
+          initialScrollIndex={initialPostIndex}
+          getItemLayout={getPostLayout}
+          onMomentumScrollEnd={handleVerticalScrollEnd}
+          renderItem={({ item, index }) => (
+            <GalleryPostSlide
+              post={item}
+              width={width}
+              height={height}
+              active={index === activePostIndex}
+              canDelete={canDelete}
+              deleting={deleting}
+              onClose={onClose}
+              onDeletePost={onDeletePost}
+              onZoomChange={setActiveImageZoomed}
+            />
+          )}
+        />
+      ) : null}
 
       {deleting ? (
         <View style={styles.deletingOverlay}>
@@ -146,6 +181,7 @@ type GalleryPostSlideProps = {
   deleting: boolean;
   onClose: () => void;
   onDeletePost?: (post: MotorcycleGalleryPost) => void;
+  onZoomChange: (zoomed: boolean) => void;
 };
 
 function GalleryPostSlide({
@@ -157,10 +193,21 @@ function GalleryPostSlide({
   deleting,
   onClose,
   onDeletePost,
+  onZoomChange,
 }: GalleryPostSlideProps) {
   const horizontalListRef = useRef<FlatList<MotorcycleGalleryMedia>>(null);
 
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
+
+  const [imageZoomed, setImageZoomed] = useState(false);
+
+  function handleImageZoomChange(zoomed: boolean) {
+    setImageZoomed(zoomed);
+
+    if (active) {
+      onZoomChange(zoomed);
+    }
+  }
 
   useEffect(() => {
     if (active) {
@@ -168,12 +215,14 @@ function GalleryPostSlide({
     }
 
     setActiveMediaIndex(0);
+    setImageZoomed(false);
+    onZoomChange(false);
 
     horizontalListRef.current?.scrollToOffset({
       offset: 0,
       animated: false,
     });
-  }, [active]);
+  }, [active, onZoomChange]);
 
   function handleHorizontalScrollEnd(
     event: NativeSyntheticEvent<NativeScrollEvent>,
@@ -185,6 +234,7 @@ function GalleryPostSlide({
     }
 
     setActiveMediaIndex(nextIndex);
+    setImageZoomed(false);
   }
 
   function getMediaLayout(
@@ -209,10 +259,12 @@ function GalleryPostSlide({
       ]}
     >
       <FlatList
+        style={styles.verticalList}
         ref={horizontalListRef}
         data={post.media}
         horizontal
-        pagingEnabled
+        pagingEnabled={!imageZoomed}
+        scrollEnabled={!imageZoomed}
         bounces={false}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(media) => media.id}
@@ -234,10 +286,10 @@ function GalleryPostSlide({
                 active={active && index === activeMediaIndex}
               />
             ) : (
-              <Image
-                source={{ uri: item.media_url }}
-                style={styles.image}
-                resizeMode="cover"
+              <ZoomableGalleryImage
+                uri={item.media_url}
+                active={active && index === activeMediaIndex}
+                onZoomChange={handleImageZoomChange}
               />
             )}
           </View>
@@ -330,14 +382,20 @@ function GalleryPostSlide({
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFill,
-    zIndex: 999,
-    elevation: 999,
+    zIndex: 9999,
+    elevation: 9999,
+    overflow: "hidden",
     backgroundColor: "#000000",
   },
+  verticalList: {
+    flex: 1,
+  },
   postSlide: {
+    overflow: "hidden",
     backgroundColor: "#000000",
   },
   mediaSlide: {
+    overflow: "hidden",
     backgroundColor: "#000000",
   },
   image: {
@@ -346,7 +404,7 @@ const styles = StyleSheet.create({
   },
   topOverlay: {
     position: "absolute",
-    top: spacing.xl,
+    top: spacing.lg,
     right: spacing.lg,
     left: spacing.lg,
     zIndex: 20,

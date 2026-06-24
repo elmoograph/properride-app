@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import { Pause, Play, Volume2, VolumeX } from "lucide-react-native";
+import { Play, Volume2, VolumeX } from "lucide-react-native";
+import { useEvent } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
 
 import { MOTORCYCLE_SHOWCASE_COLORS } from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
@@ -12,7 +13,6 @@ type GalleryVideoMediaProps = {
 };
 
 export function GalleryVideoMedia({ uri, active }: GalleryVideoMediaProps) {
-  const [pausedByUser, setPausedByUser] = useState(false);
   const [muted, setMuted] = useState(false);
 
   const player = useVideoPlayer(
@@ -26,31 +26,34 @@ export function GalleryVideoMedia({ uri, active }: GalleryVideoMediaProps) {
     },
   );
 
+  const { isPlaying } = useEvent(player, "playingChange", {
+    isPlaying: player.playing,
+  });
+
   useEffect(() => {
     player.muted = muted;
   }, [muted, player]);
 
   useEffect(() => {
-    if (active && !pausedByUser) {
+    if (active) {
       player.play();
       return;
     }
 
     player.pause();
-  }, [active, pausedByUser, player]);
-
-  useEffect(() => {
-    if (!active) {
-      setPausedByUser(false);
-    }
-  }, [active]);
+  }, [active, player]);
 
   function togglePlayback() {
     if (!active) {
       return;
     }
 
-    setPausedByUser((current) => !current);
+    if (player.playing) {
+      player.pause();
+      return;
+    }
+
+    player.play();
   }
 
   function toggleMuted() {
@@ -59,29 +62,28 @@ export function GalleryVideoMedia({ uri, active }: GalleryVideoMediaProps) {
 
   return (
     <View style={styles.container}>
+      <VideoView
+        player={player}
+        style={styles.video}
+        nativeControls={false}
+        contentFit="cover"
+        surfaceType="textureView"
+        pointerEvents="none"
+      />
+
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={pausedByUser ? "Putar video" : "Jeda video"}
+        accessibilityLabel={isPlaying ? "Jeda video" : "Putar video"}
         onPress={togglePlayback}
-        style={styles.videoPressable}
+        style={styles.playbackLayer}
       >
-        <VideoView
-          player={player}
-          style={styles.video}
-          nativeControls={false}
-          contentFit="cover"
-          surfaceType="textureView"
-        />
-
-        {pausedByUser ? (
-          <View style={styles.centerControl}>
-            <View style={styles.playCircle}>
-              <Play
-                size={30}
-                fill={MOTORCYCLE_SHOWCASE_COLORS.textPrimary}
-                color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary}
-              />
-            </View>
+        {!isPlaying ? (
+          <View style={styles.centerPlayButton}>
+            <Play
+              size={32}
+              fill={MOTORCYCLE_SHOWCASE_COLORS.textPrimary}
+              color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary}
+            />
           </View>
         ) : null}
       </Pressable>
@@ -96,17 +98,11 @@ export function GalleryVideoMedia({ uri, active }: GalleryVideoMediaProps) {
         ]}
       >
         {muted ? (
-          <VolumeX size={19} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
+          <VolumeX size={20} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
         ) : (
-          <Volume2 size={19} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
+          <Volume2 size={20} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
         )}
       </Pressable>
-
-      {!pausedByUser && active ? (
-        <View style={styles.playingIndicator}>
-          <Pause size={11} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
-        </View>
-      ) : null}
     </View>
   );
 }
@@ -114,23 +110,26 @@ export function GalleryVideoMedia({ uri, active }: GalleryVideoMediaProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
-  },
-  videoPressable: {
-    flex: 1,
-  },
-  video: {
     width: "100%",
     height: "100%",
+    overflow: "hidden",
+    backgroundColor: "#000000",
   },
-  centerControl: {
+  video: {
     ...StyleSheet.absoluteFill,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#000000",
+  },
+  playbackLayer: {
+    ...StyleSheet.absoluteFill,
+    zIndex: 2,
     alignItems: "center",
     justifyContent: "center",
   },
-  playCircle: {
-    width: 68,
-    height: 68,
+  centerPlayButton: {
+    width: 72,
+    height: 72,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: radius.full,
@@ -139,24 +138,15 @@ const styles = StyleSheet.create({
   soundButton: {
     position: "absolute",
     right: spacing.lg,
-    bottom: 150,
-    width: 42,
-    height: 42,
+    top: "50%",
+    zIndex: 3,
+    width: 44,
+    height: 44,
+    marginTop: -22,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: radius.full,
     backgroundColor: "rgba(0,0,0,0.58)",
-  },
-  playingIndicator: {
-    position: "absolute",
-    top: spacing.lg,
-    left: spacing.lg,
-    width: 28,
-    height: 28,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: radius.full,
-    backgroundColor: "rgba(0,0,0,0.42)",
   },
   pressed: {
     opacity: 0.72,

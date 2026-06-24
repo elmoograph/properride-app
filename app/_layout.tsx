@@ -12,6 +12,7 @@ import { AuthGate } from "@/src/features/auth/components/AuthGate";
 import { View, StyleSheet } from "react-native";
 
 import { useImmersiveMode } from "@/src/hooks/useImmersiveMode";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -41,17 +42,19 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SafeAreaProvider>
-          <View style={styles.root}>
-            <StatusBar style="dark" />
-            <AuthGate />
-            <Stack screenOptions={{ headerShown: false }} />
-          </View>
-        </SafeAreaProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <SafeAreaProvider>
+            <View style={styles.root}>
+              <StatusBar style="dark" />
+              <AuthGate />
+              <Stack screenOptions={{ headerShown: false }} />
+            </View>
+          </SafeAreaProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }
 

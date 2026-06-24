@@ -1,16 +1,3 @@
-export type MotorcycleImage = {
-  id: string;
-  motorcycle_id: string;
-  user_id: string;
-
-  image_url: string;
-  image_path: string | null;
-  caption: string | null;
-  is_hero: boolean;
-
-  created_at: string;
-};
-
 export type GalleryVisibility = "public" | "private";
 
 export type GalleryMediaType = "image" | "video";
@@ -56,11 +43,6 @@ export type CreateMotorcycleGalleryPostInput = {
   visibility?: GalleryVisibility;
 };
 
-export type UpdateMotorcycleGalleryPostInput = {
-  caption?: string | null;
-  visibility?: GalleryVisibility;
-};
-
 export type CreateMotorcycleGalleryMediaInput = {
   post_id: string;
 
@@ -81,15 +63,6 @@ export type CreateMotorcycleGalleryMediaInput = {
 
 export type GalleryPostWithMediaRow = Omit<MotorcycleGalleryPost, "media"> & {
   media: MotorcycleGalleryMedia[] | null;
-};
-
-export type CreateMotorcycleImagePayload = {
-  motorcycle_id: string;
-  user_id: string;
-  image_url: string;
-  image_path?: string | null;
-  caption?: string | null;
-  is_hero?: boolean;
 };
 
 export type PickedGalleryMedia = {
