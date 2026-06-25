@@ -116,4 +116,69 @@ export const PROFILE_COPY = {
     REMOVE_CANCEL: "Batal",
     REMOVE_CONFIRM: "Hapus",
   },
+  PUBLIC: {
+    SCREEN_EYEBROW: "Rider Profile",
+    SCREEN_SUBTITLE:
+      "Lihat identitas rider, statistik komunitas, dan koleksi Build.",
+
+    FOLLOW_BUTTON: "Follow",
+    FOLLOWING_BUTTON: "Following",
+    EDIT_PROFILE_BUTTON: "Edit Profile",
+
+    LOAD_FAILED_TITLE: "Gagal Memuat Profile",
+    LOAD_FAILED_MESSAGE:
+      "Profile rider tidak dapat dimuat. Silakan coba kembali.",
+
+    NOT_FOUND_TITLE: "Profile Tidak Ditemukan",
+    NOT_FOUND_MESSAGE: "Profile rider ini tidak tersedia atau sudah dihapus.",
+
+    FOLLOW_FAILED_TITLE: "Aksi Gagal",
+    UNFOLLOW_TITLE: "Unfollow Rider?",
+    UNFOLLOW_MESSAGE:
+      "Anda tidak akan lagi melihat update rider ini dalam daftar Following.",
+    UNFOLLOW_CANCEL: "Batal",
+    UNFOLLOW_CONFIRM: "Unfollow",
+
+    BUILDS_SECTION_TITLE: "Builds",
+    BUILDS_SECTION_SUBTITLE:
+      "Koleksi motorcycle dan setup yang dibagikan rider ini.",
+
+    BUILDS_EMPTY_TITLE: "Belum Ada Build",
+    BUILDS_EMPTY_MESSAGE: "Rider ini belum membagikan Build ke ProperRide.",
+
+    RETRY_BUTTON: "Coba Lagi",
+    BUILD_STATUS_ACTIVE: "Active",
+    BUILD_STATUS_SOLD: "Sold",
+    BUILD_STATUS_ARCHIVED: "Archived",
+
+    BUILD_YEAR_EMPTY: "Tahun belum tersedia",
+    OPEN_BUILD: "Lihat Build",
+  } as const,
+  FOLLOW_LIST: {
+    FOLLOWERS_TITLE: "Followers",
+    FOLLOWING_TITLE: "Following",
+
+    FOLLOWERS_SUBTITLE: "Rider yang mengikuti Profile ini.",
+    FOLLOWING_SUBTITLE: "Rider yang diikuti oleh Profile ini.",
+
+    EMPTY_FOLLOWERS_TITLE: "Belum Ada Followers",
+    EMPTY_FOLLOWERS_MESSAGE: "Belum ada rider yang mengikuti Profile ini.",
+
+    EMPTY_FOLLOWING_TITLE: "Belum Mengikuti Rider",
+    EMPTY_FOLLOWING_MESSAGE: "Profile ini belum mengikuti rider lain.",
+
+    LOAD_FAILED_TITLE: "Gagal Memuat Rider",
+    LOAD_FAILED_MESSAGE:
+      "Daftar rider tidak dapat dimuat. Silakan coba kembali.",
+
+    FOLLOW_BUTTON: "Follow",
+    FOLLOWING_BUTTON: "Following",
+    VIEW_PROFILE: "Lihat Profile",
+    RETRY_BUTTON: "Coba Lagi",
+
+    UNFOLLOW_TITLE: "Unfollow Rider?",
+    UNFOLLOW_MESSAGE: "Anda tidak akan lagi mengikuti rider ini.",
+    UNFOLLOW_CANCEL: "Batal",
+    UNFOLLOW_CONFIRM: "Unfollow",
+  },
 } as const;

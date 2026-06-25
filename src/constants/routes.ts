@@ -15,6 +15,13 @@ export const ROUTES = {
   PROFILE_SETUP: "/profile-setup",
   PROFILE: {
     EDIT: "/profile/edit",
+    PUBLIC_PATTERN: "/profile/[userId]",
+    FOLLOWERS_PATTERN: "/profile/[userId]/followers",
+    FOLLOWING_PATTERN: "/profile/[userId]/following",
+
+    PUBLIC: (userId: string) => `/profile/${userId}` as const,
+    FOLLOWERS: (userId: string) => `/profile/${userId}/followers` as const,
+    FOLLOWING: (userId: string) => `/profile/${userId}/following` as const,
   },
 
   MOTORCYCLE: {

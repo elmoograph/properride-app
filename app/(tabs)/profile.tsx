@@ -1,8 +1,11 @@
 import { useCallback, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
 import { router, useFocusEffect } from "expo-router";
-import { Mail, Settings } from "lucide-react-native";
+
 import { ROUTES } from "@/src/constants/routes";
+import { getFollowStats } from "@/src/features/profile/repositories/follow.repository";
+import type { FollowStats } from "@/src/features/profile/types/follow.types";
+import { Mail, Settings } from "lucide-react-native";
 
 import { Screen } from "@/src/components/layout";
 import { AppButton, EmptyState, PageHeader } from "@/src/components/ui";
@@ -15,6 +18,11 @@ import { PROFILE_COPY } from "@/src/features/profile/constants/profile.constants
 import { getProfile } from "@/src/features/profile/repositories/profile.repository";
 import type { Profile } from "@/src/features/profile/types/profile.types";
 import { radius, spacing } from "@/src/theme";
+
+const INITIAL_FOLLOW_STATS: FollowStats = {
+  followerCount: 0,
+  followingCount: 0,
+};
 
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
@@ -29,11 +37,14 @@ export default function ProfileScreen() {
   const [loadFailed, setLoadFailed] = useState(false);
 
   const [loggingOut, setLoggingOut] = useState(false);
+  const [followStats, setFollowStats] =
+    useState<FollowStats>(INITIAL_FOLLOW_STATS);
 
   const loadProfile = useCallback(async () => {
     if (!userId) {
       setProfile(null);
       setBuildCount(0);
+      setFollowStats(INITIAL_FOLLOW_STATS);
       setLoading(false);
       return;
     }
@@ -42,13 +53,15 @@ export default function ProfileScreen() {
     setLoadFailed(false);
 
     try {
-      const [profileData, motorcycleData] = await Promise.all([
+      const [profileData, motorcycleData, followStatsData] = await Promise.all([
         getProfile(userId),
         getMyMotorcycles(userId),
+        getFollowStats(userId),
       ]);
 
       setProfile(profileData);
       setBuildCount(motorcycleData.length);
+      setFollowStats(followStatsData);
     } catch (error) {
       console.error("Gagal memuat Profile:", error);
 
@@ -66,6 +79,7 @@ export default function ProfileScreen() {
 
   function handleEditProfile() {
     router.push(ROUTES.PROFILE.EDIT);
+    // router.push(ROUTES.PROFILE.PUBLIC("b690114e-5130-4a27-af91-625e00878dc8"));
   }
 
   function handleOpenSettings() {
@@ -73,6 +87,26 @@ export default function ProfileScreen() {
       PROFILE_COPY.SETTINGS_BUTTON,
       "Settings akan dibuat pada phase berikutnya.",
     );
+  }
+
+  function handleOpenFollowers() {
+    if (!userId) {
+      return;
+    }
+
+    router.push(ROUTES.PROFILE.FOLLOWERS(userId));
+  }
+
+  function handleOpenFollowing() {
+    if (!userId) {
+      return;
+    }
+
+    router.push(ROUTES.PROFILE.FOLLOWING(userId));
+  }
+
+  function handleOpenBuilds() {
+    router.push(ROUTES.TABS.GARAGE);
   }
 
   function confirmLogout() {
@@ -168,8 +202,11 @@ export default function ProfileScreen() {
 
       <ProfileStats
         buildCount={buildCount}
-        followerCount={0}
-        followingCount={0}
+        followerCount={followStats.followerCount}
+        followingCount={followStats.followingCount}
+        onPressBuilds={handleOpenBuilds}
+        onPressFollowers={handleOpenFollowers}
+        onPressFollowing={handleOpenFollowing}
       />
 
       <View style={styles.primaryActions}>

@@ -119,3 +119,22 @@ export async function getMotorcyclesByUserId(
 
   return data ?? [];
 }
+
+export async function getPublicMotorcyclesByUserId(
+  userId: string,
+): Promise<Motorcycle[]> {
+  const { data, error } = await supabase
+    .from("motorcycles")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("visibility", "public")
+    .order("created_at", {
+      ascending: false,
+    });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data ?? [];
+}

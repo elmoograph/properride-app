@@ -186,9 +186,14 @@ export default function MotorcycleDetailScreen() {
     router.push(ROUTES.MOTORCYCLE.EDIT(motorcycleId));
   }
 
-  function handleBackToGarage() {
+  const handleBack = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
     router.replace(ROUTES.TABS.GARAGE);
-  }
+  }, []);
   function handleOpenMotorcyclePicker() {
     if (ownerMotorcycles.length <= 1) {
       return;
@@ -215,40 +220,18 @@ export default function MotorcycleDetailScreen() {
   }
 
   useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
+    const subscription = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
-        if (deletingGalleryPost) {
-          return true;
-        }
-
-        if (selectedGalleryPost) {
-          setSelectedGalleryPost(null);
-          return true;
-        }
-
-        if (motorcycleSwitcherVisible) {
-          setMotorcycleSwitcherVisible(false);
-          return true;
-        }
-
-        if (moreMenuVisible) {
-          setMoreMenuVisible(false);
-          return true;
-        }
-
-        handleBackToGarage();
+        handleBack();
         return true;
       },
     );
 
-    return () => backHandler.remove();
-  }, [
-    deletingGalleryPost,
-    moreMenuVisible,
-    motorcycleSwitcherVisible,
-    selectedGalleryPost,
-  ]);
+    return () => {
+      subscription.remove();
+    };
+  }, [handleBack]);
 
   function confirmDelete() {
     Alert.alert(
@@ -445,7 +428,7 @@ export default function MotorcycleDetailScreen() {
             <AppButton
               title={COMMON_COPY.BACK}
               variant="secondary"
-              onPress={handleBackToGarage}
+              onPress={handleBack}
             />
           }
         />
@@ -468,7 +451,7 @@ export default function MotorcycleDetailScreen() {
           <BuildShowcaseHero
             motorcycle={motorcycle}
             hasMultipleMotorcycles={ownerMotorcycles.length > 1}
-            onPressBack={handleBackToGarage}
+            onPressBack={handleBack}
             onPressAddMotorcycle={handleAddMotorcycle}
             onPressMotorcyclePicker={handleOpenMotorcyclePicker}
           />
