@@ -13,6 +13,9 @@ export const ROUTES = {
   },
 
   PROFILE_SETUP: "/profile-setup",
+  PROFILE: {
+    EDIT: "/profile/edit",
+  },
 
   MOTORCYCLE: {
     ADD: "/motorcycle/add",

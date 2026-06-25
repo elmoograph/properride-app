@@ -316,8 +316,6 @@ export async function deleteMotorcycleGalleryPost(
 export async function getMotorcycleGalleryPostsByUserId(
   userId: string,
 ): Promise<MotorcycleGalleryPost[]> {
-  console.log("Memuat Gallery Post Garage untuk user:", userId);
-
   const { data, error } = await supabase
     .from(MOTORCYCLE_GALLERY_POST_TABLE)
     .select(
@@ -336,8 +334,6 @@ export async function getMotorcycleGalleryPostsByUserId(
 
     throw error;
   }
-
-  console.log("Gallery Post Garage berhasil:", data?.length ?? 0);
 
   return (data ?? []).map((post) =>
     normalizeGalleryPost(post as GalleryPostWithMediaRow),

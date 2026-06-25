@@ -16,13 +16,31 @@ type UploadImageResult = {
 };
 
 function getFileExtension(uri: string): string {
-  const extension = uri.split(".").pop();
+  const uriWithoutQuery = uri.split("?")[0];
+  const extension = uriWithoutQuery.split(".").pop()?.toLowerCase();
 
   if (!extension) {
     return "jpg";
   }
 
-  return extension.toLowerCase();
+  const supportedExtensions = ["jpg", "jpeg", "png", "webp"];
+
+  return supportedExtensions.includes(extension) ? extension : "jpg";
+}
+
+function getImageContentType(extension: string): string {
+  switch (extension) {
+    case "png":
+      return "image/png";
+
+    case "webp":
+      return "image/webp";
+
+    case "jpeg":
+    case "jpg":
+    default:
+      return "image/jpeg";
+  }
 }
 
 function createImagePath(params: {
@@ -53,7 +71,7 @@ export async function uploadImage({
     extension,
   });
 
-  const contentType = `image/${extension === "jpg" ? "jpeg" : extension}`;
+  const contentType = getImageContentType(extension);
 
   const { error: uploadError } = await supabase.storage
     .from(bucket)
