@@ -60,8 +60,9 @@ export async function createMotorcycle(
       description: payload.description ?? null,
       hero_image_url: payload.hero_image_url ?? null,
 
-      visibility: payload.visibility ?? "public",
-      status: payload.status ?? "in_progress",
+      visibility: payload.visibility ?? MOTORCYCLE_VISIBILITY.PUBLIC,
+
+      status: payload.status ?? MOTORCYCLE_STATUS.ACTIVE,
     })
     .select("*")
     .single();

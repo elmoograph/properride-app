@@ -35,8 +35,8 @@ export type Motorcycle = {
   description: string | null;
 
   hero_image_url: string | null;
-  visibility: MotorcycleVisibility;
-  status: MotorcycleStatus;
+  visibility?: MotorcycleVisibility;
+  status?: MotorcycleStatus;
 
   created_at: string;
   updated_at: string;

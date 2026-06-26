@@ -5,6 +5,8 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  type ScrollViewProps,
+  type StyleProp,
   type ViewStyle,
 } from "react-native";
 import { SafeAreaView, type Edge } from "react-native-safe-area-context";
@@ -16,9 +18,11 @@ type ScreenProps = {
   scroll?: boolean;
   padded?: boolean;
   keyboardAvoiding?: boolean;
-  contentContainerStyle?: ViewStyle;
+  contentContainerStyle?: StyleProp<ViewStyle>;
   backgroundColor?: string;
   safeAreaEdges?: Edge[];
+
+  refreshControl?: ScrollViewProps["refreshControl"];
 };
 
 export function Screen({
@@ -29,15 +33,16 @@ export function Screen({
   contentContainerStyle,
   backgroundColor = colors.background,
   safeAreaEdges = ["top", "right", "bottom", "left"],
+  refreshControl,
 }: ScreenProps) {
-  const containerStyle = [
+  const containerStyle: StyleProp<ViewStyle> = [
     styles.safeArea,
     {
       backgroundColor,
     },
   ];
 
-  const contentStyle = [
+  const contentStyle: StyleProp<ViewStyle> = [
     styles.content,
     {
       backgroundColor,
@@ -52,6 +57,7 @@ export function Screen({
       contentContainerStyle={contentStyle}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
+      refreshControl={refreshControl}
     >
       {children}
     </ScrollView>
