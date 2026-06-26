@@ -10,15 +10,23 @@ type GetFeedBuildsParams = {
   pageSize?: number;
 };
 
+export type FeedBuildPage = {
+  items: FeedBuild[];
+  hasMore: boolean;
+  nextPage: number | null;
+};
+
 export async function getFeedBuilds({
   page = 0,
   pageSize = FEED_PAGE_SIZE,
-}: GetFeedBuildsParams = {}): Promise<FeedBuild[]> {
+}: GetFeedBuildsParams = {}): Promise<FeedBuildPage> {
   const normalizedPage = Math.max(0, page);
   const normalizedPageSize = Math.max(1, pageSize);
 
   const from = normalizedPage * normalizedPageSize;
-  const to = from + normalizedPageSize - 1;
+
+  // Ambil satu item tambahan untuk mendeteksi halaman berikutnya.
+  const to = from + normalizedPageSize;
 
   const { data, error } = await supabase
     .from(FEED_VIEW)
@@ -33,7 +41,14 @@ export async function getFeedBuilds({
     throw new Error(error.message);
   }
 
-  return (data ?? []) as FeedBuild[];
+  const rows = (data ?? []) as FeedBuild[];
+  const hasMore = rows.length > normalizedPageSize;
+
+  return {
+    items: hasMore ? rows.slice(0, normalizedPageSize) : rows,
+    hasMore,
+    nextPage: hasMore ? normalizedPage + 1 : null,
+  };
 }
 
 export function getFeedErrorMessage(error: unknown): string {

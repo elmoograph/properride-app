@@ -20,4 +20,7 @@ export const FEED_COPY = {
   PARTS_LABEL: "Part",
   GALLERY_LABEL: "Gallery",
   BUILD_BY_LABEL: "Build oleh",
+  LOAD_MORE_FAILED: "Build berikutnya tidak dapat dimuat.",
+
+  END_OF_FEED: "Semua Build terbaru sudah ditampilkan.",
 } as const;
