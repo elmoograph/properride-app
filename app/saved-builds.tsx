@@ -161,7 +161,10 @@ export default function SavedBuildsScreen() {
       <FeedBuildCard
         build={item}
         saved
+        liked={false}
         saving={savingBuildIds.has(item.id)}
+        liking={false}
+        likeCount={item.like_count}
         onPressBuild={() => {
           handleOpenBuild(item.id);
         }}
@@ -171,6 +174,7 @@ export default function SavedBuildsScreen() {
         onPressSave={() => {
           void handleUnsaveBuild(item.id);
         }}
+        onPressLike={() => {}}
       />
     );
   }

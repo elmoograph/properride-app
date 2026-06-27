@@ -30,6 +30,7 @@ export type FeedBuild = {
   part_count: number;
   gallery_post_count: number;
   gallery_media_count: number;
+  like_count: number;
 };
 
 export type FeedFilterKey = "all" | "nmax" | "aerox" | "pcx" | "vespa" | "mt15";

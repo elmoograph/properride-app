@@ -37,6 +37,13 @@ import {
   saveBuild,
   unsaveBuild,
 } from "@/src/features/savedBuild/repositories/savedBuild.repository";
+import { BUILD_LIKE_COPY } from "@/src/features/buildLike/constants/buildLike.constants";
+import {
+  getBuildLikeErrorMessage,
+  getLikedBuildIds,
+  likeBuild,
+  unlikeBuild,
+} from "@/src/features/buildLike/repositories/buildLike.repository";
 
 export default function HomeScreen() {
   const { user } = useAuth();
@@ -65,10 +72,25 @@ export default function HomeScreen() {
 
   const [savingBuildIds, setSavingBuildIds] = useState<Set<string>>(new Set());
 
+  const [likedBuildIds, setLikedBuildIds] = useState<Set<string>>(new Set());
+
+  const [likingBuildIds, setLikingBuildIds] = useState<Set<string>>(new Set());
+
+  const [likeCountByBuildId, setLikeCountByBuildId] = useState<
+    Record<string, number>
+  >({});
+
   const activeRequestIdRef = useRef(0);
   const loadingMoreRef = useRef(false);
 
   const activeFilterRef = useRef<FeedFilterKey>("all");
+
+  function buildLikeCountMap(buildItems: FeedBuild[]) {
+    return buildItems.reduce<Record<string, number>>((counts, build) => {
+      counts[build.id] = build.like_count;
+      return counts;
+    }, {});
+  }
 
   const loadInitialFeed = useCallback(
     async (filter: FeedFilterKey) => {
@@ -84,12 +106,18 @@ export default function HomeScreen() {
           filter,
         });
         let nextSavedBuildIds = new Set<string>();
+        let nextLikedBuildIds = new Set<string>();
+
+        const buildIds = result.items.map((build) => build.id);
 
         if (user?.id) {
-          nextSavedBuildIds = await getSavedBuildIds(
-            user.id,
-            result.items.map((build) => build.id),
-          );
+          const [savedIds, likedIds] = await Promise.all([
+            getSavedBuildIds(user.id, buildIds),
+            getLikedBuildIds(user.id, buildIds),
+          ]);
+
+          nextSavedBuildIds = savedIds;
+          nextLikedBuildIds = likedIds;
         }
 
         if (requestId !== activeRequestIdRef.current) {
@@ -100,6 +128,8 @@ export default function HomeScreen() {
         setSavedBuildIds(nextSavedBuildIds);
         setHasMore(result.hasMore);
         setNextPage(result.nextPage);
+        setLikedBuildIds(nextLikedBuildIds);
+        setLikeCountByBuildId(buildLikeCountMap(result.items));
       } catch (error) {
         if (requestId !== activeRequestIdRef.current) {
           return;
@@ -142,12 +172,18 @@ export default function HomeScreen() {
         filter: filterToLoad,
       });
       let nextSavedBuildIds = new Set<string>();
+      let nextLikedBuildIds = new Set<string>();
+
+      const buildIds = result.items.map((build) => build.id);
 
       if (user?.id) {
-        nextSavedBuildIds = await getSavedBuildIds(
-          user.id,
-          result.items.map((build) => build.id),
-        );
+        const [savedIds, likedIds] = await Promise.all([
+          getSavedBuildIds(user.id, buildIds),
+          getLikedBuildIds(user.id, buildIds),
+        ]);
+
+        nextSavedBuildIds = savedIds;
+        nextLikedBuildIds = likedIds;
       }
       /*
        * Abaikan hasil pagination jika filter sudah berubah
@@ -175,6 +211,21 @@ export default function HomeScreen() {
 
         return nextIds;
       });
+
+      setLikedBuildIds((currentIds) => {
+        const nextIds = new Set(currentIds);
+
+        nextLikedBuildIds.forEach((id) => {
+          nextIds.add(id);
+        });
+
+        return nextIds;
+      });
+
+      setLikeCountByBuildId((currentCounts) => ({
+        ...currentCounts,
+        ...buildLikeCountMap(result.items),
+      }));
 
       setHasMore(result.hasMore);
       setNextPage(result.nextPage);
@@ -256,6 +307,31 @@ export default function HomeScreen() {
     });
   }
 
+  function setBuildLiking(buildId: string, isLiking: boolean) {
+    setLikingBuildIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+
+      if (isLiking) {
+        nextIds.add(buildId);
+      } else {
+        nextIds.delete(buildId);
+      }
+
+      return nextIds;
+    });
+  }
+
+  function updateLikeCount(buildId: string, delta: number) {
+    setLikeCountByBuildId((currentCounts) => {
+      const currentCount = currentCounts[buildId] ?? 0;
+
+      return {
+        ...currentCounts,
+        [buildId]: Math.max(0, currentCount + delta),
+      };
+    });
+  }
+
   async function handleToggleSave(buildId: string) {
     if (!user?.id || savingBuildIds.has(buildId)) {
       return;
@@ -334,12 +410,97 @@ export default function HomeScreen() {
     }
   }
 
+  async function handleToggleLike(buildId: string) {
+    if (!user?.id || likingBuildIds.has(buildId)) {
+      return;
+    }
+
+    const currentlyLiked = likedBuildIds.has(buildId);
+
+    setBuildLiking(buildId, true);
+
+    setLikedBuildIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+
+      if (currentlyLiked) {
+        nextIds.delete(buildId);
+      } else {
+        nextIds.add(buildId);
+      }
+
+      return nextIds;
+    });
+
+    updateLikeCount(buildId, currentlyLiked ? -1 : 1);
+
+    try {
+      if (currentlyLiked) {
+        await unlikeBuild({
+          userId: user.id,
+          motorcycleId: buildId,
+        });
+      } else {
+        await likeBuild({
+          userId: user.id,
+          motorcycleId: buildId,
+        });
+      }
+    } catch (error) {
+      console.error(getBuildLikeErrorMessage(error));
+
+      const message = error instanceof Error ? error.message.toLowerCase() : "";
+
+      const alreadyLiked =
+        !currentlyLiked &&
+        (message.includes("duplicate key") ||
+          message.includes("build_likes_unique_user_motorcycle"));
+
+      if (alreadyLiked) {
+        setLikedBuildIds((currentIds) => {
+          const nextIds = new Set(currentIds);
+          nextIds.add(buildId);
+          return nextIds;
+        });
+
+        return;
+      }
+
+      setLikedBuildIds((currentIds) => {
+        const nextIds = new Set(currentIds);
+
+        if (currentlyLiked) {
+          nextIds.add(buildId);
+        } else {
+          nextIds.delete(buildId);
+        }
+
+        return nextIds;
+      });
+
+      updateLikeCount(buildId, currentlyLiked ? 1 : -1);
+
+      Alert.alert(
+        currentlyLiked
+          ? BUILD_LIKE_COPY.UNLIKE_FAILED_TITLE
+          : BUILD_LIKE_COPY.LIKE_FAILED_TITLE,
+        currentlyLiked
+          ? BUILD_LIKE_COPY.UNLIKE_FAILED_MESSAGE
+          : BUILD_LIKE_COPY.LIKE_FAILED_MESSAGE,
+      );
+    } finally {
+      setBuildLiking(buildId, false);
+    }
+  }
+
   function renderBuild({ item }: { item: FeedBuild }) {
     return (
       <FeedBuildCard
         build={item}
         saved={savedBuildIds.has(item.id)}
+        liked={likedBuildIds.has(item.id)}
         saving={savingBuildIds.has(item.id)}
+        liking={likingBuildIds.has(item.id)}
+        likeCount={likeCountByBuildId[item.id] ?? item.like_count}
         onPressBuild={() => {
           handleOpenBuild(item.id);
         }}
@@ -348,6 +509,9 @@ export default function HomeScreen() {
         }}
         onPressSave={() => {
           void handleToggleSave(item.id);
+        }}
+        onPressLike={() => {
+          void handleToggleLike(item.id);
         }}
       />
     );
@@ -369,7 +533,8 @@ export default function HomeScreen() {
             filterLoading ||
             refreshing ||
             loadingMore ||
-            savingBuildIds.size > 0
+            savingBuildIds.size > 0 ||
+            likingBuildIds.size > 0
           }
           onChangeFilter={handleChangeFilter}
         />

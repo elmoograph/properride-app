@@ -1,10 +1,11 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import {
+  Bookmark,
   ChevronRight,
+  Heart,
   ImageIcon,
   Package,
   UserRound,
-  Bookmark,
 } from "lucide-react-native";
 
 import { FEED_COPY } from "@/src/features/feed/constants/feed.constants";
@@ -16,10 +17,14 @@ import { radius, spacing } from "@/src/theme";
 type FeedBuildCardProps = {
   build: FeedBuild;
   saved: boolean;
+  liked: boolean;
   saving?: boolean;
+  liking?: boolean;
+  likeCount?: number;
   onPressBuild: () => void;
   onPressOwner: () => void;
   onPressSave: () => void;
+  onPressLike: () => void;
 };
 
 function getBuildTitle(build: FeedBuild): string {
@@ -63,10 +68,14 @@ function getStatusLabel(status: FeedBuild["status"]): string {
 export function FeedBuildCard({
   build,
   saved,
+  liked,
   saving = false,
+  liking = false,
+  likeCount = build.like_count,
   onPressBuild,
   onPressOwner,
   onPressSave,
+  onPressLike,
 }: FeedBuildCardProps) {
   const title = getBuildTitle(build);
   const subtitle = getBuildSubtitle(build);
@@ -214,6 +223,39 @@ export function FeedBuildCard({
 
               <Text style={styles.statLabel}>{FEED_COPY.GALLERY_LABEL}</Text>
             </View>
+
+            <View style={styles.statDivider} />
+
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={liked ? "Hapus Like Build" : "Like Build"}
+              disabled={liking}
+              onPress={onPressLike}
+              style={({ pressed }) => [
+                styles.likeButton,
+                liked ? styles.likeButtonActive : null,
+                pressed && !liking ? styles.pressed : null,
+                liking ? styles.likeButtonDisabled : null,
+              ]}
+            >
+              <Heart
+                size={16}
+                color={
+                  liked
+                    ? MOTORCYCLE_SHOWCASE_COLORS.background
+                    : MOTORCYCLE_SHOWCASE_COLORS.accent
+                }
+                fill={
+                  liked ? MOTORCYCLE_SHOWCASE_COLORS.background : "transparent"
+                }
+              />
+
+              <Text
+                style={[styles.likeText, liked ? styles.likeTextActive : null]}
+              >
+                {likeCount}
+              </Text>
+            </Pressable>
 
             <View style={styles.openBuild}>
               <Text style={styles.openBuildText}>Lihat Build</Text>
@@ -429,5 +471,30 @@ const styles = StyleSheet.create({
   },
   saveButtonDisabled: {
     opacity: 0.55,
+  },
+  likeButton: {
+    minHeight: 34,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: MOTORCYCLE_SHOWCASE_COLORS.accent,
+    backgroundColor: "transparent",
+  },
+  likeButtonActive: {
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.accent,
+  },
+  likeButtonDisabled: {
+    opacity: 0.55,
+  },
+  likeText: {
+    fontFamily: "Inter-SemiBold",
+    fontSize: 11,
+    color: MOTORCYCLE_SHOWCASE_COLORS.accent,
+  },
+  likeTextActive: {
+    color: MOTORCYCLE_SHOWCASE_COLORS.background,
   },
 });
