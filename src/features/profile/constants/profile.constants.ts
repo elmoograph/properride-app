@@ -28,6 +28,10 @@ export const PROFILE_COPY = {
   LOGOUT_CONFIRM: "Logout",
   LOGOUT_FAILED_TITLE: "Logout Gagal",
   LOGOUT_FAILED_MESSAGE: "Tidak dapat keluar dari akun. Silakan coba kembali.",
+  SAVED_BUILDS_TITLE: "Saved Builds",
+  SAVED_BUILDS_DESCRIPTION: "Build disimpan sebagai referensi modifikasi.",
+  SAVED_BUILDS_EMPTY_DESCRIPTION: "Belum ada Build yang disimpan.",
+  SAVED_BUILDS_OPEN_BUTTON: "Buka",
 
   EDIT: {
     SCREEN_TITLE: "Edit Profile",

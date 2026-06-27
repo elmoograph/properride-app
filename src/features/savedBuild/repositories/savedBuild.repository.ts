@@ -113,3 +113,19 @@ export function getSavedBuildErrorMessage(error: unknown): string {
 
   return "Status simpan Build tidak dapat diperbarui.";
 }
+
+export async function getSavedBuildCount(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from(SAVED_BUILDS_TABLE)
+    .select("*", {
+      count: "exact",
+      head: true,
+    })
+    .eq("user_id", userId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return count ?? 0;
+}

@@ -18,6 +18,7 @@ import { PROFILE_COPY } from "@/src/features/profile/constants/profile.constants
 import { getProfile } from "@/src/features/profile/repositories/profile.repository";
 import type { Profile } from "@/src/features/profile/types/profile.types";
 import { radius, spacing } from "@/src/theme";
+import { getSavedBuildCount } from "@/src/features/savedBuild/repositories/savedBuild.repository";
 
 const INITIAL_FOLLOW_STATS: FollowStats = {
   followerCount: 0,
@@ -33,7 +34,7 @@ export default function ProfileScreen() {
   const [buildCount, setBuildCount] = useState(0);
 
   const [loading, setLoading] = useState(true);
-
+  const [savedBuildCount, setSavedBuildCount] = useState(0);
   const [loadFailed, setLoadFailed] = useState(false);
 
   const [loggingOut, setLoggingOut] = useState(false);
@@ -44,6 +45,7 @@ export default function ProfileScreen() {
     if (!userId) {
       setProfile(null);
       setBuildCount(0);
+      setSavedBuildCount(0);
       setFollowStats(INITIAL_FOLLOW_STATS);
       setLoading(false);
       return;
@@ -53,15 +55,22 @@ export default function ProfileScreen() {
     setLoadFailed(false);
 
     try {
-      const [profileData, motorcycleData, followStatsData] = await Promise.all([
+      const [
+        profileData,
+        motorcycleData,
+        followStatsData,
+        savedBuildCountData,
+      ] = await Promise.all([
         getProfile(userId),
         getMyMotorcycles(userId),
         getFollowStats(userId),
+        getSavedBuildCount(userId),
       ]);
 
       setProfile(profileData);
       setBuildCount(motorcycleData.length);
       setFollowStats(followStatsData);
+      setSavedBuildCount(savedBuildCountData);
     } catch (error) {
       console.error("Gagal memuat Profile:", error);
 
@@ -233,16 +242,20 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.savedContent}>
-          <Text style={styles.savedTitle}>Saved Builds</Text>
+          <Text style={styles.savedTitle}>
+            {PROFILE_COPY.SAVED_BUILDS_TITLE}
+          </Text>
 
           <Text style={styles.savedDescription}>
-            Lihat Build yang Anda simpan sebagai referensi modifikasi.
+            {savedBuildCount > 0
+              ? `${savedBuildCount} ${PROFILE_COPY.SAVED_BUILDS_DESCRIPTION}`
+              : PROFILE_COPY.SAVED_BUILDS_EMPTY_DESCRIPTION}
           </Text>
         </View>
 
         <AppButton
           theme="dark"
-          title="Buka"
+          title={PROFILE_COPY.SAVED_BUILDS_OPEN_BUTTON}
           variant="secondary"
           onPress={handleOpenSavedBuilds}
           style={styles.savedButton}
