@@ -58,8 +58,6 @@ export async function getMotorcycleGalleryPosts(
     throw new Error(error.message);
   }
 
-  const rows = (data ?? []) as GalleryPostWithMediaRow[];
-
   return (data ?? []).map(normalizeGalleryPost);
 }
 

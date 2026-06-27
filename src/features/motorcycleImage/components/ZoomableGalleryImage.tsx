@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { StyleSheet, View, Dimensions } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   clamp,
@@ -90,7 +90,7 @@ export function ZoomableGalleryImage({
 
   const panGesture = Gesture.Pan()
     .manualActivation(true)
-    .onTouchesMove((event, stateManager) => {
+    .onTouchesMove((_, stateManager) => {
       if (scale.value > MIN_SCALE) {
         stateManager.activate();
         return;

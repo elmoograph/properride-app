@@ -1,5 +1,4 @@
 import { Tabs } from "expo-router";
-import { useEffect } from "react";
 import { StyleSheet, View, type ColorValue } from "react-native";
 import {
   Home,

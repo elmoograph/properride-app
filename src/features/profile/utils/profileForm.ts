@@ -156,11 +156,10 @@ export function normalizeInstagramUsername(value: string): string {
     "",
   );
 
-  return withoutInstagramUrl
-    .split(/[/?#]/)[0]
-    .replace(/^@+/, "")
-    .trim()
-    .toLowerCase();
+  return (
+    withoutInstagramUrl.split(/[/?#]/)[0] ??
+    "".replace(/^@+/, "").trim().toLowerCase()
+  );
 }
 
 export function normalizeWebsite(value: string): string | null {

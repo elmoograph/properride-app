@@ -6,7 +6,7 @@ import { Screen } from "@/src/components/layout";
 import { COMMON_COPY } from "@/src/constants/copy";
 import { ROUTES } from "@/src/constants/routes";
 import { STORAGE_BUCKETS, STORAGE_FOLDERS } from "@/src/constants/storage";
-import { colors, fontFamily, radius, spacing } from "@/src/theme";
+import { radius, spacing } from "@/src/theme";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { MOTORCYCLE_COPY } from "@/src/features/motorcycle/constants/motorcycle.constants";
 import { createMotorcycle } from "@/src/features/motorcycle/repositories/motorcycle.repository";

@@ -27,10 +27,9 @@ export type UploadedGalleryMedia = {
 };
 
 function sanitizeExtension(extension: string): string {
-  return extension
-    .toLowerCase()
-    .split("?")[0]
-    .replace(/[^a-z0-9]/g, "");
+  const normalizedExtension = extension.toLowerCase().split(/[?#]/)[0] ?? "";
+
+  return normalizedExtension.replace(/[^a-z0-9]/g, "");
 }
 
 function getExtensionFromFileName(fileName: string | null): string | null {
@@ -74,10 +73,10 @@ function getExtensionFromMimeType(mimeType: string | null): string | null {
 }
 
 function getExtensionFromUri(uri: string): string | null {
-  const cleanUri = uri.split("?")[0];
+  const cleanUri = uri.split("?")[0]?.split("#")[0] ?? uri;
 
   if (!cleanUri.includes(".")) {
-    return null;
+    return "jpg";
   }
 
   const extension = cleanUri.split(".").pop();

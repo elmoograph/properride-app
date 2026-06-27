@@ -238,10 +238,10 @@ export default function AddGalleryScreen() {
       total: selectedMedia.length,
     });
 
-    for (let index = 0; index < selectedMedia.length; index += 1) {
+    for (const [index, media] of selectedMedia.entries()) {
       const uploadedItem = await uploadGalleryMedia({
         userId: user.id,
-        media: selectedMedia[index],
+        media,
       });
 
       uploadedItems.push(uploadedItem);

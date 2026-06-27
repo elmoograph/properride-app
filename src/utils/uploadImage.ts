@@ -16,8 +16,8 @@ type UploadImageResult = {
 };
 
 function getFileExtension(uri: string): string {
-  const uriWithoutQuery = uri.split("?")[0];
-  const extension = uriWithoutQuery.split(".").pop()?.toLowerCase();
+  const uriWithoutQuery = uri.split("?")[0]?.split("#")[0] ?? uri;
+  const extension = uriWithoutQuery.split(".").pop()?.toLowerCase() || "jpg";
 
   if (!extension) {
     return "jpg";

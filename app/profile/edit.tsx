@@ -339,8 +339,17 @@ export default function EditProfileScreen() {
     try {
       const usernameAvailable = await isUsernameAvailable(
         normalizedUsername,
-        userId,
+        user.id,
       );
+
+      if (!usernameAvailable) {
+        setErrors((currentErrors) => ({
+          ...currentErrors,
+          username: PROFILE_COPY.EDIT.USERNAME_TAKEN,
+        }));
+
+        return;
+      }
 
       if (usernameChanged) {
         const usernameAvailable = await isUsernameAvailable(

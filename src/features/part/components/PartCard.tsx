@@ -3,11 +3,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { colors, fontFamily, radius, spacing } from "@/src/theme";
 import { PART_COPY } from "@/src/features/part/constants/part.constants";
 import type { Part } from "@/src/features/part/types/part.types";
-import {
-  formatCurrency,
-  formatDate,
-  formatOptionalValue,
-} from "@/src/utils/format";
+import { formatCurrency, formatDate } from "@/src/utils/format";
 
 type PartCardProps = {
   part: Part;

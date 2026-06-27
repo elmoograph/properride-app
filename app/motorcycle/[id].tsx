@@ -378,7 +378,9 @@ export default function MotorcycleDetailScreen() {
             remainingPosts.length - 1,
           );
 
-          setSelectedGalleryPost(remainingPosts[nextIndex]);
+          const nextPost = remainingPosts.at(nextIndex) ?? null;
+
+          setSelectedGalleryPost(nextPost);
         }
       }
 

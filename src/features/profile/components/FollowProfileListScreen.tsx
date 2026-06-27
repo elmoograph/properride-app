@@ -9,7 +9,6 @@ import { MOTORCYCLE_SHOWCASE_COLORS } from "@/src/features/motorcycle/constants/
 import { PROFILE_COPY } from "@/src/features/profile/constants/profile.constants";
 import { RiderListItem } from "@/src/features/profile/components/RiderListItem";
 import {
-  followUser,
   getFollowErrorMessage,
   getFollowerProfiles,
   getFollowingProfiles,

@@ -7,7 +7,7 @@ import {
   type ViewStyle,
 } from "react-native";
 
-import { colors, radius, spacing } from "@/src/shared/theme";
+import { colors } from "@/src/shared/theme";
 
 type AppIconButtonVariant = "default" | "soft" | "brand";
 
