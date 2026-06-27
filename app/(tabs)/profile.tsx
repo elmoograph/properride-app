@@ -5,7 +5,7 @@ import { router, useFocusEffect } from "expo-router";
 import { ROUTES } from "@/src/constants/routes";
 import { getFollowStats } from "@/src/features/profile/repositories/follow.repository";
 import type { FollowStats } from "@/src/features/profile/types/follow.types";
-import { Mail, Settings } from "lucide-react-native";
+import { Bookmark, Mail, Settings } from "lucide-react-native";
 
 import { Screen } from "@/src/components/layout";
 import { AppButton, EmptyState, PageHeader } from "@/src/components/ui";
@@ -107,6 +107,10 @@ export default function ProfileScreen() {
 
   function handleOpenBuilds() {
     router.push(ROUTES.TABS.GARAGE);
+  }
+
+  function handleOpenSavedBuilds() {
+    router.push(ROUTES.SAVED_BUILDS);
   }
 
   function confirmLogout() {
@@ -223,7 +227,27 @@ export default function ProfileScreen() {
           onPress={handleOpenSettings}
         />
       </View>
+      <View style={styles.savedCard}>
+        <View style={styles.savedIcon}>
+          <Bookmark size={20} color={MOTORCYCLE_SHOWCASE_COLORS.accent} />
+        </View>
 
+        <View style={styles.savedContent}>
+          <Text style={styles.savedTitle}>Saved Builds</Text>
+
+          <Text style={styles.savedDescription}>
+            Lihat Build yang Anda simpan sebagai referensi modifikasi.
+          </Text>
+        </View>
+
+        <AppButton
+          theme="dark"
+          title="Buka"
+          variant="secondary"
+          onPress={handleOpenSavedBuilds}
+          style={styles.savedButton}
+        />
+      </View>
       <View style={styles.accountCard}>
         <Text style={styles.sectionTitle}>Account</Text>
 
@@ -332,5 +356,41 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Medium",
     fontSize: 13,
     color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
+  },
+  savedCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    padding: spacing.lg,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: MOTORCYCLE_SHOWCASE_COLORS.border,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.surface,
+  },
+  savedIcon: {
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: radius.full,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.surfaceSoft,
+  },
+  savedContent: {
+    flex: 1,
+  },
+  savedTitle: {
+    fontFamily: "PlusJakartaSans-Bold",
+    fontSize: 15,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textPrimary,
+  },
+  savedDescription: {
+    marginTop: spacing.xs,
+    fontFamily: "Inter-Regular",
+    fontSize: 12,
+    lineHeight: 18,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
+  },
+  savedButton: {
+    minWidth: 76,
   },
 });

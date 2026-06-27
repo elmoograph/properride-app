@@ -13,6 +13,7 @@ export const ROUTES = {
   },
 
   PROFILE_SETUP: "/profile-setup",
+  SAVED_BUILDS: "/saved-builds",
   PROFILE: {
     EDIT: "/profile/edit",
     PUBLIC_PATTERN: "/profile/[userId]",
