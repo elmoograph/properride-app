@@ -80,10 +80,14 @@ export function BuildShowcaseHero({
           <ArrowLeft size={22} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
         </Pressable>
 
-        <Pressable style={styles.addButton} onPress={onPressAddMotorcycle}>
-          <Plus size={16} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
-          <Text style={styles.addButtonText}>Tambah motor</Text>
-        </Pressable>
+        {onPressAddMotorcycle ? (
+          <Pressable style={styles.addButton} onPress={onPressAddMotorcycle}>
+            <Plus size={16} color={MOTORCYCLE_SHOWCASE_COLORS.textPrimary} />
+            <Text style={styles.addButtonText}>Tambah motor</Text>
+          </Pressable>
+        ) : (
+          <View style={styles.addButtonPlaceholder} />
+        )}
       </View>
 
       <View style={styles.bottomContent}>
@@ -232,5 +236,9 @@ const styles = StyleSheet.create({
   },
   namePillDisabled: {
     paddingRight: spacing.lg,
+  },
+  addButtonPlaceholder: {
+    width: 38,
+    height: 38,
   },
 });

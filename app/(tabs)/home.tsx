@@ -23,49 +23,100 @@ import {
   getFeedBuilds,
   getFeedErrorMessage,
 } from "@/src/features/feed/repositories/feed.repository";
-import type { FeedBuild } from "@/src/features/feed/types/feed.types";
+import type {
+  FeedBuild,
+  FeedFilterKey,
+} from "@/src/features/feed/types/feed.types";
 import { MOTORCYCLE_SHOWCASE_COLORS } from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
 import { spacing } from "@/src/theme";
+import { FeedFilterBar } from "@/src/features/feed/components/FeedFilterBar";
+import { SAVED_BUILD_COPY } from "@/src/features/savedBuild/constants/savedBuild.constants";
+import {
+  getSavedBuildErrorMessage,
+  getSavedBuildIds,
+  saveBuild,
+  unsaveBuild,
+} from "@/src/features/savedBuild/repositories/savedBuild.repository";
 
 export default function HomeScreen() {
   const { user } = useAuth();
 
   const [builds, setBuilds] = useState<FeedBuild[]>([]);
 
+  const [activeFilter, setActiveFilter] = useState<FeedFilterKey>("all");
+
   const [loading, setLoading] = useState(true);
+
   const [refreshing, setRefreshing] = useState(false);
+
   const [loadingMore, setLoadingMore] = useState(false);
+
+  const [filterLoading, setFilterLoading] = useState(false);
+
   const [loadFailed, setLoadFailed] = useState(false);
 
   const [nextPage, setNextPage] = useState<number | null>(0);
+
   const [hasMore, setHasMore] = useState(true);
 
-  /*
-   * FlatList kadang memanggil onEndReached lebih dari sekali.
-   * Ref ini mencegah request pagination ganda sebelum state selesai update.
-   */
+  const isFiltered = activeFilter !== "all";
+
+  const [savedBuildIds, setSavedBuildIds] = useState<Set<string>>(new Set());
+
+  const [savingBuildIds, setSavingBuildIds] = useState<Set<string>>(new Set());
+
+  const activeRequestIdRef = useRef(0);
   const loadingMoreRef = useRef(false);
 
-  const loadInitialFeed = useCallback(async () => {
-    setLoadFailed(false);
+  const activeFilterRef = useRef<FeedFilterKey>("all");
 
-    try {
-      const result = await getFeedBuilds({
-        page: 0,
-        pageSize: FEED_PAGE_SIZE,
-      });
+  const loadInitialFeed = useCallback(
+    async (filter: FeedFilterKey) => {
+      const requestId = activeRequestIdRef.current + 1;
 
-      setBuilds(result.items);
-      setHasMore(result.hasMore);
-      setNextPage(result.nextPage);
-    } catch (error) {
-      console.error(getFeedErrorMessage(error));
-      setLoadFailed(true);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
+      activeRequestIdRef.current = requestId;
+      setLoadFailed(false);
+
+      try {
+        const result = await getFeedBuilds({
+          page: 0,
+          pageSize: FEED_PAGE_SIZE,
+          filter,
+        });
+        let nextSavedBuildIds = new Set<string>();
+
+        if (user?.id) {
+          nextSavedBuildIds = await getSavedBuildIds(
+            user.id,
+            result.items.map((build) => build.id),
+          );
+        }
+
+        if (requestId !== activeRequestIdRef.current) {
+          return;
+        }
+
+        setBuilds(result.items);
+        setSavedBuildIds(nextSavedBuildIds);
+        setHasMore(result.hasMore);
+        setNextPage(result.nextPage);
+      } catch (error) {
+        if (requestId !== activeRequestIdRef.current) {
+          return;
+        }
+
+        console.error(getFeedErrorMessage(error));
+        setLoadFailed(true);
+      } finally {
+        if (requestId === activeRequestIdRef.current) {
+          setLoading(false);
+          setRefreshing(false);
+          setFilterLoading(false);
+        }
+      }
+    },
+    [user?.id],
+  );
 
   const loadMoreFeed = useCallback(async () => {
     if (
@@ -78,14 +129,33 @@ export default function HomeScreen() {
       return;
     }
 
+    const pageToLoad = nextPage;
+    const filterToLoad = activeFilterRef.current;
+
     loadingMoreRef.current = true;
     setLoadingMore(true);
 
     try {
       const result = await getFeedBuilds({
-        page: nextPage,
+        page: pageToLoad,
         pageSize: FEED_PAGE_SIZE,
+        filter: filterToLoad,
       });
+      let nextSavedBuildIds = new Set<string>();
+
+      if (user?.id) {
+        nextSavedBuildIds = await getSavedBuildIds(
+          user.id,
+          result.items.map((build) => build.id),
+        );
+      }
+      /*
+       * Abaikan hasil pagination jika filter sudah berubah
+       * selama request berjalan.
+       */
+      if (filterToLoad !== activeFilterRef.current) {
+        return;
+      }
 
       setBuilds((currentBuilds) => {
         const existingIds = new Set(currentBuilds.map((build) => build.id));
@@ -95,6 +165,15 @@ export default function HomeScreen() {
         );
 
         return [...currentBuilds, ...uniqueNewBuilds];
+      });
+      setSavedBuildIds((currentIds) => {
+        const nextIds = new Set(currentIds);
+
+        nextSavedBuildIds.forEach((id) => {
+          nextIds.add(id);
+        });
+
+        return nextIds;
       });
 
       setHasMore(result.hasMore);
@@ -107,12 +186,13 @@ export default function HomeScreen() {
       loadingMoreRef.current = false;
       setLoadingMore(false);
     }
-  }, [hasMore, loading, nextPage, refreshing]);
+  }, [hasMore, loading, nextPage, refreshing, user?.id]);
 
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
-      void loadInitialFeed();
+
+      void loadInitialFeed(activeFilterRef.current);
     }, [loadInitialFeed]),
   );
 
@@ -121,15 +201,11 @@ export default function HomeScreen() {
       return;
     }
 
-    /*
-     * Pagination di-reset agar refresh selalu mengambil
-     * data terbaru mulai dari halaman pertama.
-     */
     setRefreshing(true);
     setHasMore(true);
     setNextPage(0);
 
-    void loadInitialFeed();
+    void loadInitialFeed(activeFilterRef.current);
   }
 
   function handleOpenBuild(buildId: string) {
@@ -144,16 +220,134 @@ export default function HomeScreen() {
 
     router.push(ROUTES.PROFILE.PUBLIC(userId));
   }
+  function handleChangeFilter(filter: FeedFilterKey) {
+    if (
+      filter === activeFilterRef.current ||
+      filterLoading ||
+      refreshing ||
+      loadingMore
+    ) {
+      return;
+    }
+
+    activeFilterRef.current = filter;
+
+    setActiveFilter(filter);
+    setBuilds([]);
+    setHasMore(true);
+    setNextPage(0);
+    setLoadFailed(false);
+    setFilterLoading(true);
+
+    void loadInitialFeed(filter);
+  }
+
+  function setBuildSaving(buildId: string, isSaving: boolean) {
+    setSavingBuildIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+
+      if (isSaving) {
+        nextIds.add(buildId);
+      } else {
+        nextIds.delete(buildId);
+      }
+
+      return nextIds;
+    });
+  }
+
+  async function handleToggleSave(buildId: string) {
+    if (!user?.id || savingBuildIds.has(buildId)) {
+      return;
+    }
+
+    const currentlySaved = savedBuildIds.has(buildId);
+
+    setBuildSaving(buildId, true);
+
+    setSavedBuildIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+
+      if (currentlySaved) {
+        nextIds.delete(buildId);
+      } else {
+        nextIds.add(buildId);
+      }
+
+      return nextIds;
+    });
+
+    try {
+      if (currentlySaved) {
+        await unsaveBuild({
+          userId: user.id,
+          motorcycleId: buildId,
+        });
+      } else {
+        await saveBuild({
+          userId: user.id,
+          motorcycleId: buildId,
+        });
+      }
+    } catch (error) {
+      console.error(getSavedBuildErrorMessage(error));
+
+      const message = error instanceof Error ? error.message.toLowerCase() : "";
+
+      const alreadySaved =
+        !currentlySaved &&
+        (message.includes("duplicate key") ||
+          message.includes("saved_builds_unique_user_motorcycle"));
+
+      if (alreadySaved) {
+        setSavedBuildIds((currentIds) => {
+          const nextIds = new Set(currentIds);
+          nextIds.add(buildId);
+          return nextIds;
+        });
+
+        return;
+      }
+
+      setSavedBuildIds((currentIds) => {
+        const nextIds = new Set(currentIds);
+
+        if (currentlySaved) {
+          nextIds.add(buildId);
+        } else {
+          nextIds.delete(buildId);
+        }
+
+        return nextIds;
+      });
+
+      Alert.alert(
+        currentlySaved
+          ? SAVED_BUILD_COPY.UNSAVE_FAILED_TITLE
+          : SAVED_BUILD_COPY.SAVE_FAILED_TITLE,
+        currentlySaved
+          ? SAVED_BUILD_COPY.UNSAVE_FAILED_MESSAGE
+          : SAVED_BUILD_COPY.SAVE_FAILED_MESSAGE,
+      );
+    } finally {
+      setBuildSaving(buildId, false);
+    }
+  }
 
   function renderBuild({ item }: { item: FeedBuild }) {
     return (
       <FeedBuildCard
         build={item}
+        saved={savedBuildIds.has(item.id)}
+        saving={savingBuildIds.has(item.id)}
         onPressBuild={() => {
           handleOpenBuild(item.id);
         }}
         onPressOwner={() => {
           handleOpenOwner(item.user_id);
+        }}
+        onPressSave={() => {
+          void handleToggleSave(item.id);
         }}
       />
     );
@@ -161,16 +355,33 @@ export default function HomeScreen() {
 
   function renderHeader() {
     return (
-      <PageHeader
-        variant="dark"
-        eyebrow={FEED_COPY.EYEBROW}
-        title={FEED_COPY.TITLE}
-        subtitle={FEED_COPY.SUBTITLE}
-      />
+      <View style={styles.header}>
+        <PageHeader
+          variant="dark"
+          eyebrow={FEED_COPY.EYEBROW}
+          title={FEED_COPY.TITLE}
+          subtitle={FEED_COPY.SUBTITLE}
+        />
+
+        <FeedFilterBar
+          activeFilter={activeFilter}
+          disabled={
+            filterLoading ||
+            refreshing ||
+            loadingMore ||
+            savingBuildIds.size > 0
+          }
+          onChangeFilter={handleChangeFilter}
+        />
+      </View>
     );
   }
 
   function renderFooter() {
+    if (filterLoading) {
+      return null;
+    }
+
     if (loadingMore) {
       return (
         <View style={styles.footer}>
@@ -217,7 +428,7 @@ export default function HomeScreen() {
               title={FEED_COPY.RETRY}
               onPress={() => {
                 setLoading(true);
-                void loadInitialFeed();
+                void loadInitialFeed(activeFilterRef.current);
               }}
             />
           }
@@ -237,11 +448,25 @@ export default function HomeScreen() {
         renderItem={renderBuild}
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={
-          <EmptyState
-            variant="dark"
-            title={FEED_COPY.EMPTY_TITLE}
-            description={FEED_COPY.EMPTY_DESCRIPTION}
-          />
+          filterLoading ? (
+            <View style={styles.filterLoading}>
+              <ActivityIndicator color={MOTORCYCLE_SHOWCASE_COLORS.accent} />
+            </View>
+          ) : (
+            <EmptyState
+              variant="dark"
+              title={
+                isFiltered
+                  ? FEED_COPY.FILTER_EMPTY_TITLE
+                  : FEED_COPY.EMPTY_TITLE
+              }
+              description={
+                isFiltered
+                  ? FEED_COPY.FILTER_EMPTY_DESCRIPTION
+                  : FEED_COPY.EMPTY_DESCRIPTION
+              }
+            />
+          )
         }
         ListFooterComponent={renderFooter}
         contentContainerStyle={styles.listContent}
@@ -298,5 +523,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: MOTORCYCLE_SHOWCASE_COLORS.textMuted,
     textAlign: "center",
+  },
+  header: {
+    marginBottom: spacing["2xl"],
+  },
+  filterLoading: {
+    minHeight: 220,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

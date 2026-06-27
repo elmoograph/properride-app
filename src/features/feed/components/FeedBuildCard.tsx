@@ -4,6 +4,7 @@ import {
   ImageIcon,
   Package,
   UserRound,
+  Bookmark,
 } from "lucide-react-native";
 
 import { FEED_COPY } from "@/src/features/feed/constants/feed.constants";
@@ -14,8 +15,11 @@ import { radius, spacing } from "@/src/theme";
 
 type FeedBuildCardProps = {
   build: FeedBuild;
+  saved: boolean;
+  saving?: boolean;
   onPressBuild: () => void;
   onPressOwner: () => void;
+  onPressSave: () => void;
 };
 
 function getBuildTitle(build: FeedBuild): string {
@@ -58,8 +62,11 @@ function getStatusLabel(status: FeedBuild["status"]): string {
 
 export function FeedBuildCard({
   build,
+  saved,
+  saving = false,
   onPressBuild,
   onPressOwner,
+  onPressSave,
 }: FeedBuildCardProps) {
   const title = getBuildTitle(build);
   const subtitle = getBuildSubtitle(build);
@@ -103,7 +110,28 @@ export function FeedBuildCard({
             {ownerUsername}
           </Text>
         </View>
-
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={saved ? "Hapus simpanan Build" : "Simpan Build"}
+          disabled={saving}
+          onPress={onPressSave}
+          style={({ pressed }) => [
+            styles.saveButton,
+            saved ? styles.saveButtonActive : null,
+            pressed && !saving ? styles.pressed : null,
+            saving ? styles.saveButtonDisabled : null,
+          ]}
+        >
+          <Bookmark
+            size={18}
+            color={
+              saved
+                ? MOTORCYCLE_SHOWCASE_COLORS.background
+                : MOTORCYCLE_SHOWCASE_COLORS.accent
+            }
+            fill={saved ? MOTORCYCLE_SHOWCASE_COLORS.background : "transparent"}
+          />
+        </Pressable>
         <ChevronRight size={18} color={MOTORCYCLE_SHOWCASE_COLORS.textMuted} />
       </Pressable>
 
@@ -385,5 +413,21 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-SemiBold",
     fontSize: 11,
     color: MOTORCYCLE_SHOWCASE_COLORS.background,
+  },
+  saveButton: {
+    width: 38,
+    height: 38,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: MOTORCYCLE_SHOWCASE_COLORS.accent,
+    backgroundColor: "transparent",
+  },
+  saveButtonActive: {
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.accent,
+  },
+  saveButtonDisabled: {
+    opacity: 0.55,
   },
 });

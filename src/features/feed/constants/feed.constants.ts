@@ -1,3 +1,9 @@
+import type { FeedFilterKey } from "@/src/features/feed/types/feed.types";
+
+export type FeedFilterOption = {
+  key: FeedFilterKey;
+  label: string;
+};
 export const FEED_VIEW = "feed_builds";
 
 export const FEED_PAGE_SIZE = 10;
@@ -23,4 +29,33 @@ export const FEED_COPY = {
   LOAD_MORE_FAILED: "Build berikutnya tidak dapat dimuat.",
 
   END_OF_FEED: "Semua Build terbaru sudah ditampilkan.",
+  FILTER_EMPTY_TITLE: "Tidak ada",
+  FILTER_EMPTY_DESCRIPTION: "Tidak ada",
 } as const;
+
+export const FEED_FILTERS: readonly FeedFilterOption[] = [
+  {
+    key: "all",
+    label: "All",
+  },
+  {
+    key: "nmax",
+    label: "NMAX",
+  },
+  {
+    key: "aerox",
+    label: "Aerox",
+  },
+  {
+    key: "pcx",
+    label: "PCX",
+  },
+  {
+    key: "vespa",
+    label: "Vespa",
+  },
+  {
+    key: "mt15",
+    label: "MT-15",
+  },
+] as const;

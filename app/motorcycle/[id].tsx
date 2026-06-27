@@ -65,7 +65,7 @@ export default function MotorcycleDetailScreen() {
     useState(false);
   const motorcycleId = Array.isArray(id) ? id[0] : id;
   const [motorcycle, setMotorcycle] = useState<Motorcycle | null>(null);
-
+  const isOwner = motorcycle?.user_id === user?.id;
   const [galleryPosts, setGalleryPosts] = useState<MotorcycleGalleryPost[]>([]);
 
   const [parts, setParts] = useState<Part[]>([]);
@@ -157,7 +157,7 @@ export default function MotorcycleDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
-      loadDetail();
+      void loadDetail();
     }, [loadDetail]),
   );
 
@@ -167,7 +167,7 @@ export default function MotorcycleDetailScreen() {
   }, [motorcycleId]);
 
   function handleAddPart() {
-    if (!motorcycleId) {
+    if (!motorcycleId || !isOwner) {
       return;
     }
 
@@ -179,7 +179,7 @@ export default function MotorcycleDetailScreen() {
   }
 
   function handleEdit() {
-    if (!motorcycleId) {
+    if (!motorcycleId || !isOwner) {
       return;
     }
 
@@ -195,7 +195,7 @@ export default function MotorcycleDetailScreen() {
     router.replace(ROUTES.TABS.GARAGE);
   }, []);
   function handleOpenMotorcyclePicker() {
-    if (ownerMotorcycles.length <= 1) {
+    if (!isOwner || ownerMotorcycles.length <= 1) {
       return;
     }
 
@@ -216,6 +216,10 @@ export default function MotorcycleDetailScreen() {
     router.replace(ROUTES.MOTORCYCLE.DETAIL(nextMotorcycleId));
   }
   function handleAddMotorcycle() {
+    if (!isOwner) {
+      return;
+    }
+
     router.push(ROUTES.MOTORCYCLE.ADD);
   }
 
@@ -234,6 +238,10 @@ export default function MotorcycleDetailScreen() {
   }, [handleBack]);
 
   function confirmDelete() {
+    if (!isOwner || deleting) {
+      return;
+    }
+
     Alert.alert(
       MOTORCYCLE_COPY.DELETE_CONFIRM_TITLE,
       MOTORCYCLE_COPY.DELETE_CONFIRM_MESSAGE,
@@ -252,7 +260,7 @@ export default function MotorcycleDetailScreen() {
   }
 
   async function handleDelete() {
-    if (!motorcycleId) {
+    if (!motorcycleId || !isOwner || deleting) {
       return;
     }
 
@@ -284,7 +292,7 @@ export default function MotorcycleDetailScreen() {
   }
 
   function handleAddGallery() {
-    if (!motorcycleId) {
+    if (!motorcycleId || !isOwner) {
       return;
     }
 
@@ -292,6 +300,10 @@ export default function MotorcycleDetailScreen() {
   }
 
   function handleOpenMoreMenu() {
+    if (!isOwner) {
+      return;
+    }
+
     setMoreMenuVisible(true);
   }
 
@@ -303,7 +315,7 @@ export default function MotorcycleDetailScreen() {
     setSelectedGalleryPost(post);
   }
   function confirmDeleteGalleryPost(post: MotorcycleGalleryPost) {
-    if (deletingGalleryPost) {
+    if (!isOwner || deletingGalleryPost) {
       return;
     }
 
@@ -326,7 +338,7 @@ export default function MotorcycleDetailScreen() {
     );
   }
   async function handleDeleteGalleryPost(post: MotorcycleGalleryPost) {
-    if (deletingGalleryPost) {
+    if (!isOwner || deletingGalleryPost) {
       return;
     }
 
@@ -450,20 +462,24 @@ export default function MotorcycleDetailScreen() {
         >
           <BuildShowcaseHero
             motorcycle={motorcycle}
-            hasMultipleMotorcycles={ownerMotorcycles.length > 1}
+            hasMultipleMotorcycles={isOwner && ownerMotorcycles.length > 1}
             onPressBack={handleBack}
-            onPressAddMotorcycle={handleAddMotorcycle}
-            onPressMotorcyclePicker={handleOpenMotorcyclePicker}
+            onPressAddMotorcycle={isOwner ? handleAddMotorcycle : undefined}
+            onPressMotorcyclePicker={
+              isOwner ? handleOpenMotorcyclePicker : undefined
+            }
           />
 
           <BuildShowcaseStats summary={motorcycleSummary} />
 
-          <BuildShowcaseOwnerActions
-            onPressEditBuild={handleEdit}
-            onPressAddPart={handleAddPart}
-            onPressAddGallery={handleAddGallery}
-            onPressMore={handleOpenMoreMenu}
-          />
+          {isOwner ? (
+            <BuildShowcaseOwnerActions
+              onPressEditBuild={handleEdit}
+              onPressAddPart={handleAddPart}
+              onPressAddGallery={handleAddGallery}
+              onPressMore={handleOpenMoreMenu}
+            />
+          ) : null}
 
           <BuildShowcaseTabs
             activeTab={activeShowcaseTab}
@@ -489,7 +505,7 @@ export default function MotorcycleDetailScreen() {
                     key={group.category}
                     category={group.category}
                     parts={group.parts}
-                    showVisibility={motorcycle.user_id === user?.id}
+                    showVisibility={isOwner}
                     onPressPart={handleOpenPart}
                   />
                 ))
@@ -526,7 +542,7 @@ export default function MotorcycleDetailScreen() {
               {galleryPosts.length > 0 ? (
                 <MotorcycleGalleryPostGrid
                   posts={galleryPosts}
-                  showVisibility={motorcycle.user_id === user?.id}
+                  showVisibility={isOwner}
                   onPressPost={handleOpenGalleryPost}
                 />
               ) : (
@@ -544,34 +560,39 @@ export default function MotorcycleDetailScreen() {
           ) : null}
         </ScrollView>
 
-        <ActionSheetModal
-          visible={moreMenuVisible}
-          title={MOTORCYCLE_SHOWCASE_COPY.MORE_MENU_TITLE}
-          description={MOTORCYCLE_SHOWCASE_COPY.MORE_MENU_DESCRIPTION}
-          cancelLabel={MOTORCYCLE_SHOWCASE_COPY.MORE_MENU_CANCEL}
-          onClose={handleCloseMoreMenu}
-          items={[
-            {
-              label: MOTORCYCLE_SHOWCASE_COPY.MORE_MENU_DELETE_BUILD,
-              variant: "danger",
-              icon: <Trash2 size={18} color={colors.danger} />,
-              onPress: confirmDelete,
-            },
-          ]}
-        />
-        <MotorcycleSwitcherModal
-          visible={motorcycleSwitcherVisible}
-          motorcycles={ownerMotorcycles}
-          activeMotorcycleId={motorcycleId}
-          onClose={handleCloseMotorcyclePicker}
-          onSelectMotorcycle={handleSelectMotorcycle}
-        />
+        {isOwner ? (
+          <>
+            <ActionSheetModal
+              visible={moreMenuVisible}
+              title={MOTORCYCLE_SHOWCASE_COPY.MORE_MENU_TITLE}
+              description={MOTORCYCLE_SHOWCASE_COPY.MORE_MENU_DESCRIPTION}
+              cancelLabel={MOTORCYCLE_SHOWCASE_COPY.MORE_MENU_CANCEL}
+              onClose={handleCloseMoreMenu}
+              items={[
+                {
+                  label: MOTORCYCLE_SHOWCASE_COPY.MORE_MENU_DELETE_BUILD,
+                  variant: "danger",
+                  icon: <Trash2 size={18} color={colors.danger} />,
+                  onPress: confirmDelete,
+                },
+              ]}
+            />
+
+            <MotorcycleSwitcherModal
+              visible={motorcycleSwitcherVisible}
+              motorcycles={ownerMotorcycles}
+              activeMotorcycleId={motorcycleId}
+              onClose={handleCloseMotorcyclePicker}
+              onSelectMotorcycle={handleSelectMotorcycle}
+            />
+          </>
+        ) : null}
       </Screen>
       <MotorcycleGalleryPostViewer
         visible={Boolean(selectedGalleryPost)}
         posts={galleryPosts}
         initialPostId={selectedGalleryPost?.id}
-        canDelete={motorcycle.user_id === user?.id}
+        canDelete={isOwner}
         deleting={deletingGalleryPost}
         onClose={handleCloseGalleryPost}
         onDeletePost={confirmDeleteGalleryPost}

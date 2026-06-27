@@ -58,11 +58,31 @@ export default function EditPartScreen() {
     try {
       const data = await getPartById(partId);
 
-      setPart(data);
-
-      if (data) {
-        setForm(mapPartToForm(data));
+      if (!data) {
+        setPart(null);
+        return;
       }
+
+      if (data.user_id !== user?.id) {
+        Alert.alert(
+          "Akses Ditolak",
+          "Anda tidak memiliki izin untuk mengedit Part ini.",
+          [
+            {
+              text: COMMON_COPY.OK,
+              onPress: () => {
+                router.replace(ROUTES.PART.DETAIL(data.id));
+              },
+            },
+          ],
+        );
+
+        setPart(null);
+        return;
+      }
+
+      setPart(data);
+      setForm(mapPartToForm(data));
     } catch {
       Alert.alert(
         PART_COPY.DETAIL_LOAD_FAILED_TITLE,
@@ -71,12 +91,12 @@ export default function EditPartScreen() {
     } finally {
       setLoading(false);
     }
-  }, [partId]);
+  }, [partId, user?.id]);
 
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
-      loadPart();
+      void loadPart();
     }, [loadPart]),
   );
 
@@ -117,7 +137,7 @@ export default function EditPartScreen() {
     path: string | null;
     previousPathToDelete: string | null;
   }> {
-    if (!user || !form.mainImageLocalUri) {
+    if (!user || !part || part.user_id !== user.id || !form.mainImageLocalUri) {
       return {
         url: form.mainImageUrl || null,
         path: part?.main_image_path || null,
@@ -163,7 +183,7 @@ export default function EditPartScreen() {
   }
 
   async function handleSubmit() {
-    if (!partId || !part || submitting) {
+    if (!partId || !part || part.user_id !== user?.id || submitting) {
       return;
     }
 

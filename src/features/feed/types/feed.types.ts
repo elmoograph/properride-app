@@ -31,3 +31,5 @@ export type FeedBuild = {
   gallery_post_count: number;
   gallery_media_count: number;
 };
+
+export type FeedFilterKey = "all" | "nmax" | "aerox" | "pcx" | "vespa" | "mt15";

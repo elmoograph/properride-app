@@ -3,11 +3,15 @@ import {
   FEED_PAGE_SIZE,
   FEED_VIEW,
 } from "@/src/features/feed/constants/feed.constants";
-import type { FeedBuild } from "@/src/features/feed/types/feed.types";
+import type {
+  FeedBuild,
+  FeedFilterKey,
+} from "@/src/features/feed/types/feed.types";
 
 type GetFeedBuildsParams = {
   page?: number;
   pageSize?: number;
+  filter?: FeedFilterKey;
 };
 
 export type FeedBuildPage = {
@@ -15,22 +19,52 @@ export type FeedBuildPage = {
   hasMore: boolean;
   nextPage: number | null;
 };
+function getFeedFilterExpression(filter: FeedFilterKey): string | null {
+  switch (filter) {
+    case "nmax":
+      return "model.ilike.%nmax%";
 
+    case "aerox":
+      return "model.ilike.%aerox%";
+
+    case "pcx":
+      return "model.ilike.%pcx%";
+
+    case "vespa":
+      return "brand.ilike.%vespa%,model.ilike.%vespa%";
+
+    case "mt15":
+      return [
+        "model.ilike.%mt-15%",
+        "model.ilike.%mt15%",
+        "model.ilike.%mt 15%",
+      ].join(",");
+
+    case "all":
+    default:
+      return null;
+  }
+}
 export async function getFeedBuilds({
   page = 0,
   pageSize = FEED_PAGE_SIZE,
+  filter = "all",
 }: GetFeedBuildsParams = {}): Promise<FeedBuildPage> {
   const normalizedPage = Math.max(0, page);
   const normalizedPageSize = Math.max(1, pageSize);
 
   const from = normalizedPage * normalizedPageSize;
-
-  // Ambil satu item tambahan untuk mendeteksi halaman berikutnya.
   const to = from + normalizedPageSize;
 
-  const { data, error } = await supabase
-    .from(FEED_VIEW)
-    .select("*")
+  let query = supabase.from(FEED_VIEW).select("*");
+
+  const filterExpression = getFeedFilterExpression(filter);
+
+  if (filterExpression) {
+    query = query.or(filterExpression);
+  }
+
+  const { data, error } = await query
     .order("created_at", {
       ascending: false,
       nullsFirst: false,

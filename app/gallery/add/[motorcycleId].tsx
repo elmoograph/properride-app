@@ -1,10 +1,22 @@
-import { useState, type ReactNode } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { useCallback, useState, type ReactNode } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { ArrowLeft, Globe2, LockKeyhole } from "lucide-react-native";
 
 import { Screen } from "@/src/components/layout";
-import { AppButton, AppInput, FormSection } from "@/src/components/ui";
+import {
+  AppButton,
+  AppInput,
+  EmptyState,
+  FormSection,
+} from "@/src/components/ui";
 import { COMMON_COPY } from "@/src/constants/copy";
 import { ROUTES } from "@/src/constants/routes";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
@@ -16,6 +28,8 @@ import type {
   GalleryVisibility,
   PickedGalleryMedia,
 } from "@/src/features/motorcycleImage/types/motorcycleImage.types";
+import { getMotorcycleById } from "@/src/features/motorcycle/repositories/motorcycle.repository";
+import type { Motorcycle } from "@/src/features/motorcycle/types/motorcycle.types";
 import {
   appendGalleryMedia,
   INITIAL_GALLERY_POST_FORM,
@@ -41,6 +55,61 @@ export default function AddGalleryScreen() {
   const resolvedMotorcycleId = Array.isArray(motorcycleId)
     ? motorcycleId[0]
     : motorcycleId;
+
+  const [motorcycle, setMotorcycle] = useState<Motorcycle | null>(null);
+
+  const [loading, setLoading] = useState(true);
+
+  const loadMotorcycle = useCallback(async () => {
+    if (!resolvedMotorcycleId) {
+      setMotorcycle(null);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const data = await getMotorcycleById(resolvedMotorcycleId);
+
+      if (!data) {
+        setMotorcycle(null);
+        return;
+      }
+
+      if (data.user_id !== user?.id) {
+        Alert.alert(
+          "Akses Ditolak",
+          "Anda tidak memiliki izin untuk menambahkan Gallery pada Build ini.",
+          [
+            {
+              text: COMMON_COPY.OK,
+              onPress: () => {
+                router.replace(ROUTES.MOTORCYCLE.DETAIL(data.id));
+              },
+            },
+          ],
+        );
+
+        setMotorcycle(null);
+        return;
+      }
+
+      setMotorcycle(data);
+    } catch (error) {
+      Alert.alert(
+        "Gallery Tidak Dapat Dimuat",
+        "Terjadi kendala saat memuat data Build. Silakan coba kembali.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [resolvedMotorcycleId, user?.id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      void loadMotorcycle();
+    }, [loadMotorcycle]),
+  );
 
   const [form, setForm] = useState<GalleryPostFormValues>(
     INITIAL_GALLERY_POST_FORM,
@@ -158,7 +227,7 @@ export default function AddGalleryScreen() {
   }
 
   async function uploadSelectedMedia(selectedMedia: PickedGalleryMedia[]) {
-    if (!user) {
+    if (!user || !motorcycle || motorcycle.user_id !== user.id) {
       return [];
     }
 
@@ -187,7 +256,13 @@ export default function AddGalleryScreen() {
   }
 
   async function handleSubmit() {
-    if (!user || !resolvedMotorcycleId || submitting) {
+    if (
+      !user ||
+      !resolvedMotorcycleId ||
+      !motorcycle ||
+      motorcycle.user_id !== user.id ||
+      submitting
+    ) {
       return;
     }
 
@@ -273,6 +348,40 @@ export default function AddGalleryScreen() {
     submitting && uploadProgress.total > 0
       ? `${MOTORCYCLE_IMAGE_COPY.PUBLISHING_LABEL} ${uploadProgress.completed}/${uploadProgress.total}`
       : MOTORCYCLE_IMAGE_COPY.PUBLISH_BUTTON;
+
+  if (loading) {
+    return (
+      <Screen
+        backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+        contentContainerStyle={styles.centerContainer}
+      >
+        <ActivityIndicator color={MOTORCYCLE_SHOWCASE_COLORS.accent} />
+      </Screen>
+    );
+  }
+
+  if (!motorcycle) {
+    return (
+      <Screen
+        backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+        contentContainerStyle={styles.centerContainer}
+      >
+        <EmptyState
+          variant="dark"
+          title="Build Tidak Ditemukan"
+          description="Build tidak tersedia atau Anda tidak memiliki akses untuk menambahkan Gallery."
+          action={
+            <AppButton
+              theme="dark"
+              title={COMMON_COPY.BACK}
+              variant="secondary"
+              onPress={navigateBack}
+            />
+          }
+        />
+      </Screen>
+    );
+  }
 
   return (
     <Screen
@@ -655,5 +764,10 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
+  },
+  centerContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.background,
   },
 });

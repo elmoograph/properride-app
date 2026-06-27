@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { Pencil, Trash2 } from "lucide-react-native";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 
@@ -31,12 +32,16 @@ import type { ReactNode } from "react";
 import { MOTORCYCLE_SHOWCASE_COLORS } from "@/src/features/motorcycle/constants/motorcycleShowcase.constants";
 
 export default function PartDetailScreen() {
+  const { user } = useAuth();
+
   const { id } = useLocalSearchParams<{ id: string }>();
   const partId = Array.isArray(id) ? id[0] : id;
 
   const [part, setPart] = useState<Part | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
+
+  const isOwner = part?.user_id === user?.id;
 
   const loadPart = useCallback(async () => {
     if (!partId) {
@@ -60,12 +65,12 @@ export default function PartDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
-      loadPart();
+      void loadPart();
     }, [loadPart]),
   );
 
   function handleEdit() {
-    if (!partId) {
+    if (!partId || !isOwner) {
       return;
     }
 
@@ -73,6 +78,11 @@ export default function PartDetailScreen() {
   }
 
   function handleBackToMotorcycle() {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
     if (part?.motorcycle_id) {
       router.replace(ROUTES.MOTORCYCLE.DETAIL(part.motorcycle_id));
       return;
@@ -82,6 +92,10 @@ export default function PartDetailScreen() {
   }
 
   function confirmDelete() {
+    if (!isOwner || deleting) {
+      return;
+    }
+
     Alert.alert(
       PART_COPY.DELETE_CONFIRM_TITLE,
       PART_COPY.DELETE_CONFIRM_MESSAGE,
@@ -93,28 +107,40 @@ export default function PartDetailScreen() {
         {
           text: COMMON_COPY.DELETE,
           style: "destructive",
-          onPress: handleDelete,
+          onPress: () => {
+            void handleDelete();
+          },
         },
       ],
     );
   }
 
   async function handleDelete() {
-    if (!part) {
+    if (!part || !isOwner || deleting) {
       return;
     }
 
     setDeleting(true);
 
-    try {
-      if (part.main_image_path) {
-        await deleteUploadedImage({
-          bucket: STORAGE_BUCKETS.MOTORCYCLE_IMAGES,
-          path: part.main_image_path,
-        });
-      }
+    const imagePath = part.main_image_path;
+    const motorcycleId = part.motorcycle_id;
 
+    try {
       await deletePart(part.id);
+
+      if (imagePath) {
+        try {
+          await deleteUploadedImage({
+            bucket: STORAGE_BUCKETS.MOTORCYCLE_IMAGES,
+            path: imagePath,
+          });
+        } catch (storageError) {
+          console.warn(
+            "Part terhapus, tetapi file gambar gagal dibersihkan:",
+            storageError,
+          );
+        }
+      }
 
       Alert.alert(
         PART_COPY.DELETE_SUCCESS_TITLE,
@@ -123,7 +149,7 @@ export default function PartDetailScreen() {
           {
             text: COMMON_COPY.OK,
             onPress: () =>
-              router.replace(ROUTES.MOTORCYCLE.DETAIL(part.motorcycle_id)),
+              router.replace(ROUTES.MOTORCYCLE.DETAIL(motorcycleId)),
           },
         ],
       );
@@ -139,31 +165,23 @@ export default function PartDetailScreen() {
     }
   }
 
-  if (!part) {
+  if (loading) {
     return (
       <Screen
         backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
         contentContainerStyle={styles.centerContainer}
       >
-        <EmptyState
-          variant="dark"
-          title={PART_COPY.DETAIL_NOT_FOUND_TITLE}
-          description={PART_COPY.DETAIL_NOT_FOUND_DESCRIPTION}
-          action={
-            <AppButton
-              title={COMMON_COPY.BACK}
-              variant="secondary"
-              onPress={handleBackToMotorcycle}
-            />
-          }
-        />
+        <ActivityIndicator color={MOTORCYCLE_SHOWCASE_COLORS.accent} />
       </Screen>
     );
   }
 
   if (!part) {
     return (
-      <Screen contentContainerStyle={styles.centerContainer}>
+      <Screen
+        backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+        contentContainerStyle={styles.centerContainer}
+      >
         <EmptyState
           variant="dark"
           title={PART_COPY.DETAIL_NOT_FOUND_TITLE}
@@ -203,18 +221,24 @@ export default function PartDetailScreen() {
               </Text>
             </View>
 
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Edit part"
-              disabled={deleting}
-              onPress={handleEdit}
-              style={({ pressed }) => [
-                styles.editButton,
-                pressed ? styles.pressed : null,
-              ]}
-            >
-              <Pencil size={18} color={MOTORCYCLE_SHOWCASE_COLORS.background} />
-            </Pressable>
+            {isOwner ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Edit part"
+                disabled={deleting}
+                onPress={handleEdit}
+                style={({ pressed }) => [
+                  styles.editButton,
+                  pressed ? styles.pressed : null,
+                  deleting ? styles.disabled : null,
+                ]}
+              >
+                <Pencil
+                  size={18}
+                  color={MOTORCYCLE_SHOWCASE_COLORS.background}
+                />
+              </Pressable>
+            ) : null}
           </View>
 
           <PartInfoGrid part={part} />
@@ -275,29 +299,31 @@ export default function PartDetailScreen() {
             </Text>
           </PartDetailSection>
 
-          <View style={styles.dangerSection}>
-            <View style={styles.dangerContent}>
-              <Text style={styles.dangerTitle}>Delete Part</Text>
+          {isOwner ? (
+            <View style={styles.dangerSection}>
+              <View style={styles.dangerContent}>
+                <Text style={styles.dangerTitle}>Delete Part</Text>
 
-              <Text style={styles.dangerDescription}>
-                Part akan dihapus permanen dari setup build ini.
-              </Text>
+                <Text style={styles.dangerDescription}>
+                  Part akan dihapus permanen dari setup build ini.
+                </Text>
+              </View>
+
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Hapus part"
+                disabled={deleting}
+                onPress={confirmDelete}
+                style={({ pressed }) => [
+                  styles.deleteButton,
+                  pressed ? styles.pressed : null,
+                  deleting ? styles.disabled : null,
+                ]}
+              >
+                <Trash2 size={19} color={colors.danger} />
+              </Pressable>
             </View>
-
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Hapus part"
-              disabled={deleting}
-              onPress={confirmDelete}
-              style={({ pressed }) => [
-                styles.deleteButton,
-                pressed ? styles.pressed : null,
-                deleting ? styles.disabled : null,
-              ]}
-            >
-              <Trash2 size={19} color={colors.danger} />
-            </Pressable>
-          </View>
+          ) : null}
         </View>
       </ScrollView>
     </Screen>

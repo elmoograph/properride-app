@@ -59,11 +59,31 @@ export default function EditMotorcycleScreen() {
     try {
       const data = await getMotorcycleById(motorcycleId);
 
-      setMotorcycle(data);
-
-      if (data) {
-        setForm(mapMotorcycleToForm(data));
+      if (!data) {
+        setMotorcycle(null);
+        return;
       }
+
+      if (data.user_id !== user?.id) {
+        Alert.alert(
+          "Akses Ditolak",
+          "Anda tidak memiliki izin untuk mengedit Build ini.",
+          [
+            {
+              text: COMMON_COPY.OK,
+              onPress: () => {
+                router.replace(ROUTES.MOTORCYCLE.DETAIL(data.id));
+              },
+            },
+          ],
+        );
+
+        setMotorcycle(null);
+        return;
+      }
+
+      setMotorcycle(data);
+      setForm(mapMotorcycleToForm(data));
     } catch (error) {
       Alert.alert(
         MOTORCYCLE_COPY.DETAIL_LOAD_FAILED_TITLE,
@@ -72,12 +92,12 @@ export default function EditMotorcycleScreen() {
     } finally {
       setLoading(false);
     }
-  }, [motorcycleId]);
+  }, [motorcycleId, user?.id]);
 
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
-      loadMotorcycle();
+      void loadMotorcycle();
     }, [loadMotorcycle]),
   );
 
@@ -114,7 +134,12 @@ export default function EditMotorcycleScreen() {
   }
 
   async function uploadHeroImageIfNeeded(): Promise<string | null> {
-    if (!user || !form.heroImageLocalUri) {
+    if (
+      !user ||
+      !motorcycle ||
+      motorcycle.user_id !== user.id ||
+      !form.heroImageLocalUri
+    ) {
       return form.heroImageUrl || null;
     }
 
@@ -129,7 +154,12 @@ export default function EditMotorcycleScreen() {
   }
 
   async function handleSubmit() {
-    if (!motorcycleId) {
+    if (
+      !motorcycleId ||
+      !motorcycle ||
+      motorcycle.user_id !== user?.id ||
+      submitting
+    ) {
       return;
     }
 
@@ -183,6 +213,11 @@ export default function EditMotorcycleScreen() {
   }
 
   function handleBackToGarage() {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
     router.replace(ROUTES.TABS.GARAGE);
   }
   function handleCancel() {
@@ -202,6 +237,17 @@ export default function EditMotorcycleScreen() {
       ],
     );
   }
+  if (loading) {
+    return (
+      <Screen
+        backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+        contentContainerStyle={styles.centerContainer}
+      >
+        <ActivityIndicator color={MOTORCYCLE_SHOWCASE_COLORS.accent} />
+      </Screen>
+    );
+  }
+
   if (!motorcycle) {
     return (
       <Screen
@@ -215,25 +261,6 @@ export default function EditMotorcycleScreen() {
           action={
             <AppButton
               theme="dark"
-              title={COMMON_COPY.BACK}
-              variant="secondary"
-              onPress={handleBackToGarage}
-            />
-          }
-        />
-      </Screen>
-    );
-  }
-
-  if (!motorcycle) {
-    return (
-      <Screen contentContainerStyle={styles.centerContainer}>
-        <EmptyState
-          variant="dark"
-          title={MOTORCYCLE_COPY.DETAIL_NOT_FOUND_TITLE}
-          description={MOTORCYCLE_COPY.DETAIL_NOT_FOUND_DESCRIPTION}
-          action={
-            <AppButton
               title={COMMON_COPY.BACK}
               variant="secondary"
               onPress={handleBackToGarage}
