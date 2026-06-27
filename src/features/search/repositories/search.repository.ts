@@ -10,8 +10,12 @@ function normalizeSearchQuery(query: string): string {
   return query.trim().replace(/\s+/g, " ");
 }
 
+function escapeIlikeValue(value: string): string {
+  return value.replace(/[%_]/g, "\\$&").replace(/,/g, " ");
+}
+
 function toIlikePattern(query: string): string {
-  return `%${query}%`;
+  return `%${escapeIlikeValue(query)}%`;
 }
 
 export async function searchBuilds(
@@ -68,6 +72,7 @@ export async function searchProfiles(
   const { data, error } = await supabase
     .from("profiles")
     .select("id, username, full_name, avatar_url, bio, location")
+    .eq("is_completed", true)
     .or(
       [
         `username.ilike.${pattern}`,

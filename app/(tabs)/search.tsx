@@ -28,6 +28,7 @@ import type {
   SearchProfileResult,
   SearchTabKey,
 } from "@/src/features/search/types/search.types";
+import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { radius, spacing } from "@/src/theme";
 
 const SEARCH_DEBOUNCE_MS = 450;
@@ -50,6 +51,7 @@ function normalizeQuery(query: string): string {
 }
 
 export default function SearchScreen() {
+  const { user } = useAuth();
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState<SearchTabKey>("builds");
 
@@ -96,11 +98,17 @@ export default function SearchScreen() {
       setBuildResults(results.builds);
       setProfileResults(results.profiles);
 
-      if (results.builds.length === 0 && results.profiles.length > 0) {
-        setActiveTab("riders");
-      } else {
-        setActiveTab("builds");
-      }
+      setActiveTab((currentTab) => {
+        if (results.builds.length === 0 && results.profiles.length > 0) {
+          return "riders";
+        }
+
+        if (results.profiles.length === 0 && results.builds.length > 0) {
+          return "builds";
+        }
+
+        return currentTab;
+      });
     } catch (error) {
       if (requestId !== activeRequestIdRef.current) {
         return;
@@ -145,11 +153,12 @@ export default function SearchScreen() {
     router.push(ROUTES.MOTORCYCLE.DETAIL(buildId));
   }
 
-  function handleOpenOwner(userId: string) {
-    router.push(ROUTES.PROFILE.PUBLIC(userId));
-  }
+  function handleOpenUserProfile(userId: string) {
+    if (userId === user?.id) {
+      router.push(ROUTES.TABS.PROFILE);
+      return;
+    }
 
-  function handleOpenProfile(userId: string) {
     router.push(ROUTES.PROFILE.PUBLIC(userId));
   }
 
@@ -175,7 +184,7 @@ export default function SearchScreen() {
             handleOpenBuild(item.build.id);
           }}
           onPressOwner={() => {
-            handleOpenOwner(item.build.user_id);
+            handleOpenUserProfile(item.build.user_id);
           }}
         />
       );
@@ -185,7 +194,7 @@ export default function SearchScreen() {
       <SearchProfileResultCard
         profile={item.profile}
         onPress={() => {
-          handleOpenProfile(item.profile.id);
+          handleOpenUserProfile(item.profile.id);
         }}
       />
     );
