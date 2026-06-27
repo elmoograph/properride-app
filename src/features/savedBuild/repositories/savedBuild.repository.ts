@@ -53,7 +53,8 @@ export async function getSavedBuilds(userId: string): Promise<FeedBuild[]> {
         owner_avatar_url,
         part_count,
         gallery_post_count,
-        gallery_media_count
+        gallery_media_count,
+        like_count
       )
     `,
     )

@@ -45,6 +45,13 @@ import {
   unlikeBuild,
 } from "@/src/features/buildLike/repositories/buildLike.repository";
 
+function buildLikeCountMap(buildItems: FeedBuild[]) {
+  return buildItems.reduce<Record<string, number>>((counts, build) => {
+    counts[build.id] = build.like_count;
+    return counts;
+  }, {});
+}
+
 export default function HomeScreen() {
   const { user } = useAuth();
 
@@ -85,19 +92,14 @@ export default function HomeScreen() {
 
   const activeFilterRef = useRef<FeedFilterKey>("all");
 
-  function buildLikeCountMap(buildItems: FeedBuild[]) {
-    return buildItems.reduce<Record<string, number>>((counts, build) => {
-      counts[build.id] = build.like_count;
-      return counts;
-    }, {});
-  }
-
   const loadInitialFeed = useCallback(
     async (filter: FeedFilterKey) => {
       const requestId = activeRequestIdRef.current + 1;
 
       activeRequestIdRef.current = requestId;
       setLoadFailed(false);
+      setHasMore(false);
+      setNextPage(null);
 
       try {
         const result = await getFeedBuilds({
@@ -153,6 +155,7 @@ export default function HomeScreen() {
       loadingMoreRef.current ||
       loading ||
       refreshing ||
+      filterLoading ||
       !hasMore ||
       nextPage === null
     ) {
@@ -237,7 +240,7 @@ export default function HomeScreen() {
       loadingMoreRef.current = false;
       setLoadingMore(false);
     }
-  }, [hasMore, loading, nextPage, refreshing, user?.id]);
+  }, [filterLoading, hasMore, loading, nextPage, refreshing, user?.id]);
 
   useFocusEffect(
     useCallback(() => {
@@ -248,7 +251,12 @@ export default function HomeScreen() {
   );
 
   function handleRefresh() {
-    if (refreshing) {
+    if (
+      refreshing ||
+      filterLoading ||
+      savingBuildIds.size > 0 ||
+      likingBuildIds.size > 0
+    ) {
       return;
     }
 
@@ -271,12 +279,15 @@ export default function HomeScreen() {
 
     router.push(ROUTES.PROFILE.PUBLIC(userId));
   }
+
   function handleChangeFilter(filter: FeedFilterKey) {
     if (
       filter === activeFilterRef.current ||
       filterLoading ||
       refreshing ||
-      loadingMore
+      loadingMore ||
+      savingBuildIds.size > 0 ||
+      likingBuildIds.size > 0
     ) {
       return;
     }

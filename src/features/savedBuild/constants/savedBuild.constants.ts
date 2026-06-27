@@ -30,4 +30,5 @@ export const SAVED_BUILD_COPY = {
   PROFILE_ENTRY_DESCRIPTION:
     "Lihat kembali Build yang Anda simpan sebagai inspirasi.",
   RETRY_BUTTON: "Coba Lagi",
+  LOAD_FAILED_DESCRIPTION: "Gagal memuat halaman",
 } as const;

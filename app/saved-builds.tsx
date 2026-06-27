@@ -23,7 +23,21 @@ import {
   getSavedBuilds,
   unsaveBuild,
 } from "@/src/features/savedBuild/repositories/savedBuild.repository";
+import { BUILD_LIKE_COPY } from "@/src/features/buildLike/constants/buildLike.constants";
+import {
+  getBuildLikeErrorMessage,
+  getLikedBuildIds,
+  likeBuild,
+  unlikeBuild,
+} from "@/src/features/buildLike/repositories/buildLike.repository";
 import { radius, spacing } from "@/src/theme";
+
+function buildLikeCountMap(buildItems: FeedBuild[]) {
+  return buildItems.reduce<Record<string, number>>((counts, build) => {
+    counts[build.id] = build.like_count;
+    return counts;
+  }, {});
+}
 
 export default function SavedBuildsScreen() {
   const { user } = useAuth();
@@ -32,20 +46,38 @@ export default function SavedBuildsScreen() {
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [savingBuildIds, setSavingBuildIds] = useState<Set<string>>(new Set());
+  const [likedBuildIds, setLikedBuildIds] = useState<Set<string>>(new Set());
+
+  const [likingBuildIds, setLikingBuildIds] = useState<Set<string>>(new Set());
+
+  const [likeCountByBuildId, setLikeCountByBuildId] = useState<
+    Record<string, number>
+  >({});
 
   const loadSavedBuilds = useCallback(async () => {
     if (!user?.id) {
       setBuilds([]);
+      setSavingBuildIds(new Set());
+      setLikedBuildIds(new Set());
+      setLikingBuildIds(new Set());
+      setLikeCountByBuildId({});
       setLoading(false);
       return;
     }
 
     setLoadFailed(false);
+    setSavingBuildIds(new Set());
+    setLikingBuildIds(new Set());
 
     try {
       const savedBuilds = await getSavedBuilds(user.id);
+      const buildIds = savedBuilds.map((build) => build.id);
+
+      const likedIds = await getLikedBuildIds(user.id, buildIds);
 
       setBuilds(savedBuilds);
+      setLikedBuildIds(likedIds);
+      setLikeCountByBuildId(buildLikeCountMap(savedBuilds));
     } catch (error) {
       console.error(getSavedBuildErrorMessage(error));
       setLoadFailed(true);
@@ -97,8 +129,37 @@ export default function SavedBuildsScreen() {
     });
   }
 
+  function setBuildLiking(buildId: string, isLiking: boolean) {
+    setLikingBuildIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+
+      if (isLiking) {
+        nextIds.add(buildId);
+      } else {
+        nextIds.delete(buildId);
+      }
+
+      return nextIds;
+    });
+  }
+
+  function updateLikeCount(buildId: string, delta: number) {
+    setLikeCountByBuildId((currentCounts) => {
+      const currentCount = currentCounts[buildId] ?? 0;
+
+      return {
+        ...currentCounts,
+        [buildId]: Math.max(0, currentCount + delta),
+      };
+    });
+  }
+
   async function handleUnsaveBuild(buildId: string) {
-    if (!user?.id || savingBuildIds.has(buildId)) {
+    if (
+      !user?.id ||
+      savingBuildIds.has(buildId) ||
+      likingBuildIds.has(buildId)
+    ) {
       return;
     }
 
@@ -126,6 +187,92 @@ export default function SavedBuildsScreen() {
       );
     } finally {
       setBuildSaving(buildId, false);
+    }
+  }
+
+  async function handleToggleLike(buildId: string) {
+    if (
+      !user?.id ||
+      likingBuildIds.has(buildId) ||
+      savingBuildIds.has(buildId)
+    ) {
+      return;
+    }
+
+    const currentlyLiked = likedBuildIds.has(buildId);
+
+    setBuildLiking(buildId, true);
+
+    setLikedBuildIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+
+      if (currentlyLiked) {
+        nextIds.delete(buildId);
+      } else {
+        nextIds.add(buildId);
+      }
+
+      return nextIds;
+    });
+
+    updateLikeCount(buildId, currentlyLiked ? -1 : 1);
+
+    try {
+      if (currentlyLiked) {
+        await unlikeBuild({
+          userId: user.id,
+          motorcycleId: buildId,
+        });
+      } else {
+        await likeBuild({
+          userId: user.id,
+          motorcycleId: buildId,
+        });
+      }
+    } catch (error) {
+      console.error(getBuildLikeErrorMessage(error));
+
+      const message = error instanceof Error ? error.message.toLowerCase() : "";
+
+      const alreadyLiked =
+        !currentlyLiked &&
+        (message.includes("duplicate key") ||
+          message.includes("build_likes_unique_user_motorcycle"));
+
+      if (alreadyLiked) {
+        setLikedBuildIds((currentIds) => {
+          const nextIds = new Set(currentIds);
+          nextIds.add(buildId);
+          return nextIds;
+        });
+
+        return;
+      }
+
+      setLikedBuildIds((currentIds) => {
+        const nextIds = new Set(currentIds);
+
+        if (currentlyLiked) {
+          nextIds.add(buildId);
+        } else {
+          nextIds.delete(buildId);
+        }
+
+        return nextIds;
+      });
+
+      updateLikeCount(buildId, currentlyLiked ? 1 : -1);
+
+      Alert.alert(
+        currentlyLiked
+          ? BUILD_LIKE_COPY.UNLIKE_FAILED_TITLE
+          : BUILD_LIKE_COPY.LIKE_FAILED_TITLE,
+        currentlyLiked
+          ? BUILD_LIKE_COPY.UNLIKE_FAILED_MESSAGE
+          : BUILD_LIKE_COPY.LIKE_FAILED_MESSAGE,
+      );
+    } finally {
+      setBuildLiking(buildId, false);
     }
   }
 
@@ -161,10 +308,10 @@ export default function SavedBuildsScreen() {
       <FeedBuildCard
         build={item}
         saved
-        liked={false}
+        liked={likedBuildIds.has(item.id)}
         saving={savingBuildIds.has(item.id)}
-        liking={false}
-        likeCount={item.like_count}
+        liking={likingBuildIds.has(item.id)}
+        likeCount={likeCountByBuildId[item.id] ?? item.like_count}
         onPressBuild={() => {
           handleOpenBuild(item.id);
         }}
@@ -174,7 +321,9 @@ export default function SavedBuildsScreen() {
         onPressSave={() => {
           void handleUnsaveBuild(item.id);
         }}
-        onPressLike={() => {}}
+        onPressLike={() => {
+          void handleToggleLike(item.id);
+        }}
       />
     );
   }
@@ -199,7 +348,7 @@ export default function SavedBuildsScreen() {
         <EmptyState
           variant="dark"
           title={SAVED_BUILD_COPY.LOAD_FAILED_TITLE}
-          description="Gagal memuat halaman"
+          description={SAVED_BUILD_COPY.LOAD_FAILED_DESCRIPTION}
           action={
             <AppButton
               theme="dark"
