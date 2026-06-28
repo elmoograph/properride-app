@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   BackHandler,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,7 +15,7 @@ import { Screen } from "@/src/components/layout";
 import { AppButton, EmptyState, ActionSheetModal } from "@/src/components/ui";
 import { COMMON_COPY } from "@/src/constants/copy";
 import { ROUTES } from "@/src/constants/routes";
-import { colors, spacing } from "@/src/theme";
+import { colors, radius, spacing } from "@/src/theme";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { MOTORCYCLE_COPY } from "@/src/features/motorcycle/constants/motorcycle.constants";
 import {
@@ -30,6 +31,11 @@ import type { Part } from "@/src/features/part/types/part.types";
 import { PART_COPY } from "@/src/features/part/constants/part.constants";
 import { getPartsByMotorcycleId } from "@/src/features/part/repositories/part.repository";
 import { groupPartsByCategory } from "@/src/features/part/utils/partSummary";
+
+import { ReportContentModal } from "@/src/features/safety/components/ReportContentModal";
+import { SAFETY_COPY } from "@/src/features/safety/constants/safety.constants";
+import { createContentReport } from "@/src/features/safety/repositories/safety.repository";
+import type { ReportReason } from "@/src/features/safety/types/safety.types";
 
 import { calculateMotorcycleDetailSummary } from "@/src/features/motorcycle/utils/motorcycleSummary";
 import { BuildShowcaseHero } from "@/src/features/motorcycle/components/BuildShowcaseHero";
@@ -72,6 +78,9 @@ export default function MotorcycleDetailScreen() {
 
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
+
+  const [reportModalVisible, setReportModalVisible] = useState(false);
+  const [reportSubmitting, setReportSubmitting] = useState(false);
 
   const groupedParts = groupPartsByCategory(parts);
 
@@ -215,6 +224,7 @@ export default function MotorcycleDetailScreen() {
 
     router.replace(ROUTES.MOTORCYCLE.DETAIL(nextMotorcycleId));
   }
+
   function handleAddMotorcycle() {
     if (!isOwner) {
       return;
@@ -337,6 +347,60 @@ export default function MotorcycleDetailScreen() {
       ],
     );
   }
+
+  function handleOpenReportBuild() {
+    if (!user?.id || !motorcycle || isOwner) {
+      return;
+    }
+
+    setReportModalVisible(true);
+  }
+
+  function handleCloseReportBuild() {
+    if (reportSubmitting) {
+      return;
+    }
+
+    setReportModalVisible(false);
+  }
+
+  async function handleSubmitReportBuild(params: {
+    reason: ReportReason;
+    details: string;
+  }) {
+    if (!user?.id || !motorcycle || isOwner || reportSubmitting) {
+      return;
+    }
+
+    try {
+      setReportSubmitting(true);
+
+      await createContentReport({
+        reporterId: user.id,
+        reportedUserId: motorcycle.user_id,
+        motorcycleId: motorcycle.id,
+        reason: params.reason,
+        details: params.details,
+      });
+
+      setReportModalVisible(false);
+
+      Alert.alert(
+        SAFETY_COPY.REPORT_SUCCESS_TITLE,
+        SAFETY_COPY.REPORT_SUCCESS_MESSAGE,
+      );
+    } catch (error) {
+      console.error(error);
+
+      Alert.alert(
+        SAFETY_COPY.REPORT_FAILED_TITLE,
+        SAFETY_COPY.REPORT_FAILED_MESSAGE,
+      );
+    } finally {
+      setReportSubmitting(false);
+    }
+  }
+
   async function handleDeleteGalleryPost(post: MotorcycleGalleryPost) {
     if (!isOwner || deletingGalleryPost) {
       return;
@@ -472,6 +536,23 @@ export default function MotorcycleDetailScreen() {
             }
           />
 
+          {!isOwner ? (
+            <View style={styles.visitorSafetyActions}>
+              <Pressable
+                accessibilityRole="button"
+                onPress={handleOpenReportBuild}
+                style={({ pressed }) => [
+                  styles.reportButton,
+                  pressed ? styles.pressed : null,
+                ]}
+              >
+                <Text style={styles.reportButtonText}>
+                  {SAFETY_COPY.REPORT_BUILD_TITLE}
+                </Text>
+              </Pressable>
+            </View>
+          ) : null}
+
           <BuildShowcaseStats summary={motorcycleSummary} />
 
           {isOwner ? (
@@ -589,6 +670,14 @@ export default function MotorcycleDetailScreen() {
             />
           </>
         ) : null}
+
+        <ReportContentModal
+          visible={reportModalVisible}
+          title={SAFETY_COPY.REPORT_BUILD_TITLE}
+          submitting={reportSubmitting}
+          onClose={handleCloseReportBuild}
+          onSubmit={handleSubmitReportBuild}
+        />
       </Screen>
       <MotorcycleGalleryPostViewer
         visible={Boolean(selectedGalleryPost)}
@@ -662,5 +751,29 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
+  },
+  visitorSafetyActions: {
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.background,
+  },
+  reportButton: {
+    alignSelf: "flex-start",
+    minHeight: 36,
+    justifyContent: "center",
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: MOTORCYCLE_SHOWCASE_COLORS.border,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.surface,
+  },
+  reportButtonText: {
+    fontFamily: "Inter-SemiBold",
+    fontSize: 12,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
+  },
+  pressed: {
+    opacity: 0.72,
   },
 });
