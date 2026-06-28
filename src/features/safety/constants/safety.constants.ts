@@ -62,4 +62,5 @@ export const SAFETY_COPY = {
   BLOCKED_PROFILE_TITLE: "Rider Diblokir",
   BLOCKED_PROFILE_DESCRIPTION:
     "Anda telah memblokir rider ini. Buka blokir untuk melihat Profile dan Build mereka kembali.",
+  BLOCK_USER_LOADING: "Memblokir...",
 } as const;

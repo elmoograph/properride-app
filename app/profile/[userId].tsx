@@ -35,6 +35,15 @@ import { ProfileBuildCard } from "@/src/features/profile/components/ProfileBuild
 import { getPublicMotorcyclesByUserId } from "@/src/features/motorcycle/repositories/motorcycle.repository";
 import type { Motorcycle } from "@/src/features/motorcycle/types/motorcycle.types";
 
+import { ReportContentModal } from "@/src/features/safety/components/ReportContentModal";
+import { SAFETY_COPY } from "@/src/features/safety/constants/safety.constants";
+import {
+  blockUser,
+  createContentReport,
+  isUserBlocked,
+} from "@/src/features/safety/repositories/safety.repository";
+import type { ReportReason } from "@/src/features/safety/types/safety.types";
+
 const INITIAL_FOLLOW_STATS: FollowStats = {
   followerCount: 0,
   followingCount: 0,
@@ -66,12 +75,19 @@ export default function PublicProfileScreen() {
   const [loadFailed, setLoadFailed] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
 
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockLoading, setBlockLoading] = useState(false);
+
+  const [reportModalVisible, setReportModalVisible] = useState(false);
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+
   const loadPublicProfile = useCallback(async () => {
     if (!profileUserId) {
       setProfile(null);
       setMotorcycles([]);
       setFollowStats(INITIAL_FOLLOW_STATS);
       setIsFollowing(false);
+      setIsBlocked(false);
       setLoading(false);
       setLoadFailed(false);
       return;
@@ -93,18 +109,33 @@ export default function PublicProfileScreen() {
             })
           : Promise.resolve(false);
 
-      const [profileData, statsData, motorcyclesData, followingData] =
-        await Promise.all([
-          profileRequest,
-          followStatsRequest,
-          motorcyclesRequest,
-          followingRequest,
-        ]);
+      const blockedRequest =
+        viewerUserId && viewerUserId !== profileUserId
+          ? isUserBlocked({
+              blockerId: viewerUserId,
+              blockedId: profileUserId,
+            })
+          : Promise.resolve(false);
+
+      const [
+        profileData,
+        statsData,
+        motorcyclesData,
+        followingData,
+        blockedData,
+      ] = await Promise.all([
+        profileRequest,
+        followStatsRequest,
+        motorcyclesRequest,
+        followingRequest,
+        blockedRequest,
+      ]);
 
       setProfile(profileData);
       setFollowStats(statsData);
       setMotorcycles(motorcyclesData);
       setIsFollowing(followingData);
+      setIsBlocked(blockedData);
     } catch (error) {
       console.error("Gagal memuat Public Profile:", error);
       setLoadFailed(true);
@@ -211,6 +242,111 @@ export default function PublicProfileScreen() {
     }
   }
 
+  function confirmBlockUser() {
+    if (!viewerUserId || !profileUserId || isOwner || blockLoading) {
+      return;
+    }
+
+    Alert.alert(SAFETY_COPY.BLOCK_USER_TITLE, SAFETY_COPY.BLOCK_USER_MESSAGE, [
+      {
+        text: SAFETY_COPY.BLOCK_USER_CANCEL,
+        style: "cancel",
+      },
+      {
+        text: SAFETY_COPY.BLOCK_USER_CONFIRM,
+        style: "destructive",
+        onPress: () => {
+          void handleBlockUser();
+        },
+      },
+    ]);
+  }
+
+  async function handleBlockUser() {
+    if (!viewerUserId || !profileUserId || isOwner || blockLoading) {
+      return;
+    }
+
+    try {
+      setBlockLoading(true);
+
+      await blockUser({
+        blockerId: viewerUserId,
+        blockedId: profileUserId,
+      });
+
+      setIsBlocked(true);
+      setIsFollowing(false);
+      setMotorcycles([]);
+
+      Alert.alert(
+        SAFETY_COPY.BLOCK_SUCCESS_TITLE,
+        SAFETY_COPY.BLOCK_SUCCESS_MESSAGE,
+      );
+    } catch (error) {
+      console.error(error);
+
+      Alert.alert(
+        SAFETY_COPY.BLOCK_FAILED_TITLE,
+        SAFETY_COPY.BLOCK_FAILED_MESSAGE,
+      );
+    } finally {
+      setBlockLoading(false);
+    }
+  }
+
+  function handleOpenReportProfile() {
+    if (!viewerUserId || !profileUserId || isOwner || reportSubmitting) {
+      return;
+    }
+
+    setReportModalVisible(true);
+  }
+
+  function handleCloseReportProfile() {
+    if (reportSubmitting) {
+      return;
+    }
+
+    setReportModalVisible(false);
+  }
+
+  async function handleSubmitReportProfile(params: {
+    reason: ReportReason;
+    details: string;
+  }) {
+    if (!viewerUserId || !profileUserId || isOwner || reportSubmitting) {
+      return;
+    }
+
+    try {
+      setReportSubmitting(true);
+
+      await createContentReport({
+        reporterId: viewerUserId,
+        reportedUserId: profileUserId,
+        reason: params.reason,
+        details: params.details,
+      });
+
+      setReportModalVisible(false);
+
+      Alert.alert(
+        SAFETY_COPY.REPORT_SUCCESS_TITLE,
+        SAFETY_COPY.REPORT_SUCCESS_MESSAGE,
+      );
+    } catch (error) {
+      console.error(error);
+
+      Alert.alert(
+        SAFETY_COPY.REPORT_FAILED_TITLE,
+        SAFETY_COPY.REPORT_FAILED_MESSAGE,
+      );
+    } finally {
+      setReportSubmitting(false);
+    }
+  }
+
   function handleOpenBuild(motorcycleId: string) {
     router.push(ROUTES.MOTORCYCLE.DETAIL(motorcycleId));
   }
@@ -300,7 +436,28 @@ export default function PublicProfileScreen() {
       </Screen>
     );
   }
-
+  if (isBlocked && !isOwner) {
+    return (
+      <Screen
+        backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+        contentContainerStyle={styles.centerContainer}
+      >
+        <EmptyState
+          variant="dark"
+          title={SAFETY_COPY.BLOCKED_PROFILE_TITLE}
+          description={SAFETY_COPY.BLOCKED_PROFILE_DESCRIPTION}
+          action={
+            <AppButton
+              theme="dark"
+              variant="secondary"
+              title={COMMON_COPY.BACK}
+              onPress={handleBack}
+            />
+          }
+        />
+      </Screen>
+    );
+  }
   return (
     <Screen
       scroll
@@ -336,48 +493,101 @@ export default function PublicProfileScreen() {
         onPressFollowing={handleOpenFollowing}
       />
 
-      <PublicProfileActions
-        isOwner={isOwner}
-        isFollowing={isFollowing}
-        loading={followLoading}
-        onEditProfile={handleEditProfile}
-        onFollow={handleFollow}
-        onUnfollow={confirmUnfollow}
+      {!isBlocked ? (
+        <PublicProfileActions
+          isOwner={isOwner}
+          isFollowing={isFollowing}
+          loading={followLoading}
+          onEditProfile={handleEditProfile}
+          onFollow={handleFollow}
+          onUnfollow={confirmUnfollow}
+        />
+      ) : null}
+
+      {!isOwner ? (
+        <View style={styles.safetyActions}>
+          <Pressable
+            accessibilityRole="button"
+            disabled={reportSubmitting || blockLoading}
+            onPress={handleOpenReportProfile}
+            style={({ pressed }) => [
+              styles.safetyButton,
+              pressed ? styles.safetyButtonPressed : null,
+              reportSubmitting || blockLoading
+                ? styles.safetyButtonDisabled
+                : null,
+            ]}
+          >
+            <Text style={styles.safetyButtonText}>
+              {SAFETY_COPY.REPORT_PROFILE_TITLE}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            disabled={reportSubmitting || blockLoading}
+            onPress={confirmBlockUser}
+            style={({ pressed }) => [
+              styles.safetyButton,
+              styles.blockButton,
+              pressed ? styles.safetyButtonPressed : null,
+              reportSubmitting || blockLoading
+                ? styles.safetyButtonDisabled
+                : null,
+            ]}
+          >
+            <Text style={[styles.safetyButtonText, styles.blockButtonText]}>
+              {blockLoading
+                ? SAFETY_COPY.BLOCK_USER_LOADING
+                : SAFETY_COPY.BLOCK_USER_TITLE}
+            </Text>
+          </Pressable>
+        </View>
+      ) : null}
+
+      {!isBlocked ? (
+        <View style={styles.buildSection}>
+          <Text style={styles.sectionTitle}>
+            {PROFILE_COPY.PUBLIC.BUILDS_SECTION_TITLE}
+          </Text>
+
+          <Text style={styles.sectionSubtitle}>
+            {PROFILE_COPY.PUBLIC.BUILDS_SECTION_SUBTITLE}
+          </Text>
+
+          {motorcycles.length === 0 ? (
+            <View style={styles.emptyBuildCard}>
+              <Text style={styles.emptyBuildTitle}>
+                {PROFILE_COPY.PUBLIC.BUILDS_EMPTY_TITLE}
+              </Text>
+
+              <Text style={styles.emptyBuildDescription}>
+                {PROFILE_COPY.PUBLIC.BUILDS_EMPTY_MESSAGE}
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.buildList}>
+              {motorcycles.map((motorcycle) => (
+                <ProfileBuildCard
+                  key={motorcycle.id}
+                  motorcycle={motorcycle}
+                  onPress={() => {
+                    handleOpenBuild(motorcycle.id);
+                  }}
+                />
+              ))}
+            </View>
+          )}
+        </View>
+      ) : null}
+
+      <ReportContentModal
+        visible={reportModalVisible}
+        title={SAFETY_COPY.REPORT_PROFILE_TITLE}
+        submitting={reportSubmitting}
+        onClose={handleCloseReportProfile}
+        onSubmit={handleSubmitReportProfile}
       />
-
-      <View style={styles.buildSection}>
-        <Text style={styles.sectionTitle}>
-          {PROFILE_COPY.PUBLIC.BUILDS_SECTION_TITLE}
-        </Text>
-
-        <Text style={styles.sectionSubtitle}>
-          {PROFILE_COPY.PUBLIC.BUILDS_SECTION_SUBTITLE}
-        </Text>
-
-        {motorcycles.length === 0 ? (
-          <View style={styles.emptyBuildCard}>
-            <Text style={styles.emptyBuildTitle}>
-              {PROFILE_COPY.PUBLIC.BUILDS_EMPTY_TITLE}
-            </Text>
-
-            <Text style={styles.emptyBuildDescription}>
-              {PROFILE_COPY.PUBLIC.BUILDS_EMPTY_MESSAGE}
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.buildList}>
-            {motorcycles.map((motorcycle) => (
-              <ProfileBuildCard
-                key={motorcycle.id}
-                motorcycle={motorcycle}
-                onPress={() => {
-                  handleOpenBuild(motorcycle.id);
-                }}
-              />
-            ))}
-          </View>
-        )}
-      </View>
     </Screen>
   );
 }
@@ -448,5 +658,39 @@ const styles = StyleSheet.create({
   buildList: {
     gap: spacing.lg,
     marginTop: spacing.sm,
+  },
+
+  safetyActions: {
+    flexDirection: "row",
+    gap: spacing.md,
+  },
+  safetyButton: {
+    flex: 1,
+    minHeight: 42,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: MOTORCYCLE_SHOWCASE_COLORS.border,
+    backgroundColor: MOTORCYCLE_SHOWCASE_COLORS.surface,
+  },
+  blockButton: {
+    borderColor: "rgba(255,99,99,0.45)",
+    backgroundColor: "rgba(255,99,99,0.1)",
+  },
+  safetyButtonText: {
+    fontFamily: "Inter-SemiBold",
+    fontSize: 12,
+    color: MOTORCYCLE_SHOWCASE_COLORS.textSecondary,
+  },
+  blockButtonText: {
+    color: "#FF8A8A",
+  },
+  safetyButtonPressed: {
+    opacity: 0.72,
+  },
+  safetyButtonDisabled: {
+    opacity: 0.5,
   },
 });
