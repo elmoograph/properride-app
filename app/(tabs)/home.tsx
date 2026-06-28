@@ -44,6 +44,10 @@ import {
   likeBuild,
   unlikeBuild,
 } from "@/src/features/buildLike/repositories/buildLike.repository";
+import {
+  filterBlockedUsers,
+  getBlockedUserIds,
+} from "@/src/features/safety/repositories/safety.repository";
 
 function buildLikeCountMap(buildItems: FeedBuild[]) {
   return buildItems.reduce<Record<string, number>>((counts, build) => {
@@ -107,12 +111,18 @@ export default function HomeScreen() {
           pageSize: FEED_PAGE_SIZE,
           filter,
         });
+
+        let visibleBuilds = result.items;
         let nextSavedBuildIds = new Set<string>();
         let nextLikedBuildIds = new Set<string>();
 
-        const buildIds = result.items.map((build) => build.id);
-
         if (user?.id) {
+          const blockedUserIds = await getBlockedUserIds(user.id);
+
+          visibleBuilds = filterBlockedUsers(result.items, blockedUserIds);
+
+          const buildIds = visibleBuilds.map((build) => build.id);
+
           const [savedIds, likedIds] = await Promise.all([
             getSavedBuildIds(user.id, buildIds),
             getLikedBuildIds(user.id, buildIds),
@@ -126,12 +136,12 @@ export default function HomeScreen() {
           return;
         }
 
-        setBuilds(result.items);
+        setBuilds(visibleBuilds);
         setSavedBuildIds(nextSavedBuildIds);
         setHasMore(result.hasMore);
         setNextPage(result.nextPage);
         setLikedBuildIds(nextLikedBuildIds);
-        setLikeCountByBuildId(buildLikeCountMap(result.items));
+        setLikeCountByBuildId(buildLikeCountMap(visibleBuilds));
       } catch (error) {
         if (requestId !== activeRequestIdRef.current) {
           return;
@@ -174,12 +184,18 @@ export default function HomeScreen() {
         pageSize: FEED_PAGE_SIZE,
         filter: filterToLoad,
       });
+
+      let visibleBuilds = result.items;
       let nextSavedBuildIds = new Set<string>();
       let nextLikedBuildIds = new Set<string>();
 
-      const buildIds = result.items.map((build) => build.id);
-
       if (user?.id) {
+        const blockedUserIds = await getBlockedUserIds(user.id);
+
+        visibleBuilds = filterBlockedUsers(result.items, blockedUserIds);
+
+        const buildIds = visibleBuilds.map((build) => build.id);
+
         const [savedIds, likedIds] = await Promise.all([
           getSavedBuildIds(user.id, buildIds),
           getLikedBuildIds(user.id, buildIds),
@@ -199,10 +215,9 @@ export default function HomeScreen() {
       setBuilds((currentBuilds) => {
         const existingIds = new Set(currentBuilds.map((build) => build.id));
 
-        const uniqueNewBuilds = result.items.filter(
+        const uniqueNewBuilds = visibleBuilds.filter(
           (build) => !existingIds.has(build.id),
         );
-
         return [...currentBuilds, ...uniqueNewBuilds];
       });
       setSavedBuildIds((currentIds) => {
@@ -227,7 +242,7 @@ export default function HomeScreen() {
 
       setLikeCountByBuildId((currentCounts) => ({
         ...currentCounts,
-        ...buildLikeCountMap(result.items),
+        ...buildLikeCountMap(visibleBuilds),
       }));
 
       setHasMore(result.hasMore);

@@ -24,6 +24,11 @@ import {
   getSearchErrorMessage,
   searchProperRide,
 } from "@/src/features/search/repositories/search.repository";
+import {
+  filterBlockedProfiles,
+  filterBlockedUsers,
+  getBlockedUserIds,
+} from "@/src/features/safety/repositories/safety.repository";
 import type {
   SearchProfileResult,
   SearchTabKey,
@@ -69,61 +74,81 @@ export default function SearchScreen() {
   const normalizedQuery = normalizeQuery(query);
   const canSearch = normalizedQuery.length >= MIN_SEARCH_LENGTH;
 
-  const runSearch = useCallback(async (nextQuery: string) => {
-    const normalizedNextQuery = normalizeQuery(nextQuery);
-    const requestId = activeRequestIdRef.current + 1;
+  const runSearch = useCallback(
+    async (nextQuery: string) => {
+      const normalizedNextQuery = normalizeQuery(nextQuery);
+      const requestId = activeRequestIdRef.current + 1;
 
-    activeRequestIdRef.current = requestId;
+      activeRequestIdRef.current = requestId;
 
-    if (normalizedNextQuery.length < MIN_SEARCH_LENGTH) {
-      setBuildResults([]);
-      setProfileResults([]);
-      setSearching(false);
-      setSearchFailed(false);
-      setHasSearched(false);
-      return;
-    }
-
-    setSearching(true);
-    setSearchFailed(false);
-    setHasSearched(true);
-
-    try {
-      const results = await searchProperRide(normalizedNextQuery);
-
-      if (requestId !== activeRequestIdRef.current) {
-        return;
-      }
-
-      setBuildResults(results.builds);
-      setProfileResults(results.profiles);
-
-      setActiveTab((currentTab) => {
-        if (results.builds.length === 0 && results.profiles.length > 0) {
-          return "riders";
-        }
-
-        if (results.profiles.length === 0 && results.builds.length > 0) {
-          return "builds";
-        }
-
-        return currentTab;
-      });
-    } catch (error) {
-      if (requestId !== activeRequestIdRef.current) {
-        return;
-      }
-
-      console.error(getSearchErrorMessage(error));
-      setBuildResults([]);
-      setProfileResults([]);
-      setSearchFailed(true);
-    } finally {
-      if (requestId === activeRequestIdRef.current) {
+      if (normalizedNextQuery.length < MIN_SEARCH_LENGTH) {
+        setBuildResults([]);
+        setProfileResults([]);
         setSearching(false);
+        setSearchFailed(false);
+        setHasSearched(false);
+        return;
       }
-    }
-  }, []);
+
+      setSearching(true);
+      setSearchFailed(false);
+      setHasSearched(true);
+
+      try {
+        const results = await searchProperRide(normalizedNextQuery);
+
+        if (requestId !== activeRequestIdRef.current) {
+          return;
+        }
+
+        const blockedUserIds = user?.id
+          ? await getBlockedUserIds(user.id)
+          : new Set<string>();
+
+        if (requestId !== activeRequestIdRef.current) {
+          return;
+        }
+
+        const visibleBuilds = filterBlockedUsers(
+          results.builds,
+          blockedUserIds,
+        );
+        const visibleProfiles = filterBlockedProfiles(
+          results.profiles,
+          blockedUserIds,
+        );
+
+        setBuildResults(visibleBuilds);
+        setProfileResults(visibleProfiles);
+
+        setActiveTab((currentTab) => {
+          if (visibleBuilds.length === 0 && visibleProfiles.length > 0) {
+            return "riders";
+          }
+
+          if (visibleProfiles.length === 0 && visibleBuilds.length > 0) {
+            return "builds";
+          }
+
+          return currentTab;
+        });
+      } catch (error) {
+        if (requestId !== activeRequestIdRef.current) {
+          return;
+        }
+
+        console.error(getSearchErrorMessage(error));
+        setBuildResults([]);
+        setProfileResults([]);
+        setSearchFailed(true);
+      } finally {
+        if (requestId === activeRequestIdRef.current) {
+          setSearching(false);
+        }
+      }
+    },
+    [user?.id],
+  );
 
   useEffect(() => {
     const timeout = setTimeout(() => {
