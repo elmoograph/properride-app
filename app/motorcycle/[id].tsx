@@ -34,7 +34,6 @@ import { groupPartsByCategory } from "@/src/features/part/utils/partSummary";
 
 import { ReportContentModal } from "@/src/features/safety/components/ReportContentModal";
 import { SAFETY_COPY } from "@/src/features/safety/constants/safety.constants";
-import { createContentReport } from "@/src/features/safety/repositories/safety.repository";
 import type { ReportReason } from "@/src/features/safety/types/safety.types";
 
 import { calculateMotorcycleDetailSummary } from "@/src/features/motorcycle/utils/motorcycleSummary";
@@ -59,6 +58,10 @@ import {
 import { MotorcycleGalleryPostViewer } from "@/src/features/motorcycleImage/components/MotorcycleGalleryPostViewer";
 import { deleteUploadedGalleryMedia } from "@/src/features/motorcycleImage/utils/uploadGalleryMedia";
 import { MotorcycleSwitcherModal } from "@/src/features/motorcycle/components/MotorcycleSwitcherModal";
+import {
+  createContentReport,
+  isUserBlocked,
+} from "@/src/features/safety/repositories/safety.repository";
 
 export default function MotorcycleDetailScreen() {
   const [activeShowcaseTab, setActiveShowcaseTab] =
@@ -81,7 +84,7 @@ export default function MotorcycleDetailScreen() {
 
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [reportSubmitting, setReportSubmitting] = useState(false);
-
+  const [isBlockedOwner, setIsBlockedOwner] = useState(false);
   const groupedParts = groupPartsByCategory(parts);
 
   const galleryMediaCount = galleryPosts.reduce(
@@ -117,11 +120,14 @@ export default function MotorcycleDetailScreen() {
   const [deletingGalleryPost, setDeletingGalleryPost] = useState(false);
   const loadDetail = useCallback(async () => {
     if (!motorcycleId) {
+      setMotorcycle(null);
+      setIsBlockedOwner(false);
       setLoading(false);
       return;
     }
 
     try {
+      setIsBlockedOwner(false);
       const motorcycleData = await getMotorcycleById(motorcycleId);
 
       if (!motorcycleData) {
@@ -129,24 +135,34 @@ export default function MotorcycleDetailScreen() {
         setParts([]);
         setGalleryPosts([]);
         setOwnerMotorcycles([]);
+        setIsBlockedOwner(false);
 
         return;
       }
 
-      const isOwner = motorcycleData.user_id === user?.id;
+      const owner = motorcycleData.user_id === user?.id;
+
+      const blockedOwner =
+        user?.id && motorcycleData.user_id !== user.id
+          ? await isUserBlocked({
+              blockerId: user.id,
+              blockedId: motorcycleData.user_id,
+            })
+          : false;
 
       const [galleryPostData, partsData, ownerMotorcyclesData] =
         await Promise.all([
           getMotorcycleGalleryPosts(motorcycleId),
 
           getPartsByMotorcycleId(motorcycleId, {
-            includePrivate: isOwner,
+            includePrivate: owner,
           }),
 
           getMotorcyclesByUserId(motorcycleData.user_id),
         ]);
 
       setMotorcycle(motorcycleData);
+      setIsBlockedOwner(blockedOwner);
       setGalleryPosts(
         galleryPostData.filter((galleryPost) => galleryPost.media.length > 0),
       );
@@ -349,7 +365,7 @@ export default function MotorcycleDetailScreen() {
   }
 
   function handleOpenReportBuild() {
-    if (!user?.id || !motorcycle || isOwner) {
+    if (!user?.id || !motorcycle || isOwner || isBlockedOwner) {
       return;
     }
 
@@ -368,10 +384,15 @@ export default function MotorcycleDetailScreen() {
     reason: ReportReason;
     details: string;
   }) {
-    if (!user?.id || !motorcycle || isOwner || reportSubmitting) {
+    if (
+      !user?.id ||
+      !motorcycle ||
+      isOwner ||
+      isBlockedOwner ||
+      reportSubmitting
+    ) {
       return;
     }
-
     try {
       setReportSubmitting(true);
 
@@ -506,6 +527,29 @@ export default function MotorcycleDetailScreen() {
             <AppButton
               title={COMMON_COPY.BACK}
               variant="secondary"
+              onPress={handleBack}
+            />
+          }
+        />
+      </Screen>
+    );
+  }
+
+  if (isBlockedOwner && !isOwner) {
+    return (
+      <Screen
+        backgroundColor={MOTORCYCLE_SHOWCASE_COLORS.background}
+        contentContainerStyle={styles.centerContainer}
+      >
+        <EmptyState
+          variant="dark"
+          title={SAFETY_COPY.BLOCKED_PROFILE_TITLE}
+          description={SAFETY_COPY.BLOCKED_PROFILE_DESCRIPTION}
+          action={
+            <AppButton
+              theme="dark"
+              variant="secondary"
+              title={COMMON_COPY.BACK}
               onPress={handleBack}
             />
           }
